@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0b1a12">
+<meta name="theme-color" content="#081510">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="YaKyoLife - 棒球人生模擬器">
 <title>YaKyoLife - 棒球人生模擬器</title>
 <meta name="description" content="從高中三大賽到名人堂，一場種子化的台灣棒球員生涯模擬。選秀、旅外、國際賽、傷病、感情、引退——每一個決定都算數。">
 <meta property="og:type" content="website">
@@ -13,120 +17,230 @@
 <meta name="twitter:title" content="YaKyoLife - 棒球人生模擬器">
 <meta name="twitter:description" content="從高中三大賽到名人堂，一場種子化的台灣棒球員生涯模擬。選秀、旅外、國際賽、傷病、感情、引退——每一個決定都算數。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23fff%22 stroke=%22%23d0d0d0%22/%3E%3Cpath d=%22M8 6 Q13 16 8 26 M24 6 Q19 16 24 26%22 stroke=%22%23c0392b%22 stroke-width=%221.5%22 fill=%22none%22/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23fff%22 stroke=%22%23d0d0d0%22/%3E%3Cpath d=%22M8 6 Q13 16 8 26 M24 6 Q19 16 24 26%22 stroke=%22%23c0392b%22 stroke-width=%221.5%22 fill=%22none%22/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=IBM+Plex+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0b1a12; --panel:#132920; --panel2:#1a382a; --edge:#2b4d3a;
-  --chalk:#ece7d6; --dim:#93ab9c; --amber:#ffc95c; --clay:#c9764a;
-  --good:#8fd08f; --bad:#e2695c; --blue:#7fb3d5;
-  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+/* Theme tokens: one set per body[data-theme]; default = a (深綠記分板).
+   Values mirror the design prototype (yakyulife-app.dc.html helmet style). */
+body{
+  --bg:#081510;--panel:#132920;--panel2:#1a382a;--edge:#2b4d3a;--text:#ece7d6;--dim:#93ab9c;
+  --accent:#ffc95c;--good:#8fd08f;--bad:#e2695c;--info:#7fb3d5;--gold:#ffc95c;--r:10px;
   --sans:'Noto Sans TC',-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;
+  --head:'Noto Sans TC',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --disp:'IBM Plex Mono',monospace;
+  --glow:0 0 8px rgba(255,201,92,.35);
+  --btnbg:linear-gradient(#2a5038,#1f3f2c);--btnedge:#3c6a4c;--btntx:#ece7d6;
+  --bgfx:radial-gradient(ellipse 120% 60% at 50% -10%,rgba(29,70,48,.5) 0%,transparent 60%);
+  --shadow:rgba(0,0,0,.35);
+  /* legacy aliases: older inline templates still reference these */
+  --chalk:var(--text);--amber:var(--accent);--blue:var(--info);--clay:var(--accent);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{background:var(--bg);color:var(--chalk);font-family:var(--sans);font-size:15px;line-height:1.6;
-  background-image:radial-gradient(ellipse 120% 60% at 50% -10%,#16352644 0%,transparent 60%);}
-#app{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+body[data-theme='b']{--bg:#07090c;--panel:#0c1014;--panel2:#10161c;--edge:#232c36;--text:#d8dde2;--dim:#5c6873;
+  --accent:#ffb32e;--good:#49b675;--bad:#e2695c;--info:#3a7bd5;--gold:#ffb32e;--r:4px;
+  --head:'DotGothic16',monospace;--disp:'DotGothic16',monospace;
+  --glow:0 0 10px rgba(255,179,46,.6);--btnbg:#132018;--btnedge:#49b675;--btntx:#d8dde2;--bgfx:none;--shadow:rgba(0,0,0,.5)}
+body[data-theme='c']{--bg:#f4efe1;--panel:#faf6ea;--panel2:#ece5d2;--edge:#1e1c18;--text:#1e1c18;--dim:#6f6857;
+  --accent:#b3402f;--good:#2f6b3a;--bad:#b3402f;--info:#35506b;--gold:#b3402f;--r:0px;
+  --head:'Noto Serif TC',serif;--disp:'Noto Serif TC',serif;
+  --glow:none;--btnbg:#1e1c18;--btnedge:#1e1c18;--btntx:#f4efe1;--bgfx:none;--shadow:rgba(30,28,24,.12)}
+body[data-theme='d']{--bg:#f6f7f6;--panel:#ffffff;--panel2:#f2f4f2;--edge:#e2e6e3;--text:#1a201c;--dim:#7a857e;
+  --accent:#0f7b4d;--good:#0f7b4d;--bad:#c0392b;--info:#4a76a8;--gold:#b8862d;--r:12px;
+  --glow:none;--btnbg:#0f7b4d;--btnedge:#0f7b4d;--btntx:#ffffff;--bgfx:none;--shadow:rgba(26,32,28,.1)}
+/* touch-action:manipulation keeps pan + pinch but kills double-tap zoom (tap-heavy game) */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{height:100%;overscroll-behavior-y:none}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6}
+/* stadium glow lives on a fixed pseudo-element: body is only 100vh tall, so a
+   body background-image would tile once per viewport and show a seam on scroll */
+body::before{content:'';position:fixed;inset:0;z-index:-1;background:var(--bgfx);pointer-events:none}
+a{color:var(--info)}
+/* ---------- 版型骨架:手機單欄(預設) / 桌面三欄(>920px) ---------- */
+#app{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+#mid{flex:1;display:flex;flex-direction:column;min-width:0}
+#tl-side{display:none;background:var(--panel);border-right:1px solid var(--edge)}
 /* ---------- 記分板 ---------- */
-#board{position:sticky;top:0;z-index:20;background:linear-gradient(#173125,#122519);
-  border-bottom:2px solid var(--edge);padding:10px 14px 8px;box-shadow:0 6px 18px #0009}
+#board{position:sticky;top:0;z-index:20;background:var(--panel);
+  border-bottom:2px solid var(--edge);padding:10px 14px 8px;box-shadow:0 6px 18px var(--shadow);
+  padding-top:calc(10px + env(safe-area-inset-top,0px))}
 #bd-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-#bd-name{font-weight:900;font-size:17px;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#bd-name small{color:var(--dim);font-weight:500;font-size:12px;margin-left:6px}
-#bd-team{color:var(--amber);font-size:12.5px;font-weight:700;letter-spacing:.06em;white-space:nowrap}
+#bd-name{font-family:var(--head);font-weight:900;font-size:17px;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#bd-name small{color:var(--dim);font-weight:500;font-size:12px;margin-left:6px;font-family:var(--sans)}
+#bd-team{color:var(--accent);font-size:12.5px;font-weight:700;letter-spacing:.06em;white-space:nowrap}
 #bd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
-.bd-cell{background:#0d2115;border:1px solid var(--edge);border-radius:6px;padding:4px 6px 3px;text-align:center}
-.bd-cell b{display:block;font-family:var(--mono);font-size:17px;font-weight:700;color:var(--amber);
-  text-shadow:0 0 8px #ffc95c55;line-height:1.2}
+.bd-cell{background:var(--panel2);border:1px solid var(--edge);border-radius:var(--r);padding:4px 6px 3px;text-align:center}
+.bd-cell b{display:block;font-family:var(--disp);font-size:17px;font-weight:700;color:var(--accent);
+  text-shadow:var(--glow);line-height:1.2}
 .bd-cell span{font-size:10px;color:var(--dim);letter-spacing:.15em}
 #lamps{display:flex;gap:14px;justify-content:center;margin-top:7px}
 .lamp{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--dim);letter-spacing:.12em}
-.lamp i{width:9px;height:9px;border-radius:50%;background:#243c2e;border:1px solid #35543f;display:inline-block}
-.lamp.on{color:var(--chalk)} .lamp.on i{background:var(--amber);box-shadow:0 0 8px var(--amber);border-color:var(--amber)}
+.lamp i{width:9px;height:9px;border-radius:50%;background:var(--panel2);border:1px solid var(--edge);display:inline-block}
+.lamp.on{color:var(--text);font-weight:700} .lamp.on i{background:var(--accent);box-shadow:var(--glow);border-color:var(--accent)}
+/* ---------- 生涯時間軸:手機橫向膠囊列 ---------- */
+#tl-strip{display:flex;gap:8px;overflow-x:auto;margin-top:10px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+#tl-strip:empty{display:none}
+.tl-chip{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--edge);border-radius:999px;
+  padding:3px 10px;white-space:nowrap;flex:none;cursor:pointer}
+.tl-chip.now{color:var(--accent);border-color:var(--accent);font-weight:700}
+/* ---------- 生涯時間軸:桌面側欄 ---------- */
+#tl-in{display:flex;flex-direction:column;gap:18px;padding:22px 16px 22px 22px}
+.tl-brand{display:flex;align-items:center;gap:10px}
+.tl-brand .stitch{flex:none}
+.tl-brand b{font-family:var(--head);font-weight:900;font-size:16px;letter-spacing:.06em;display:block;line-height:1.3}
+.tl-brand span.sub{font-size:10px;color:var(--dim);letter-spacing:.2em;display:block}
+#tl-list{flex:1;position:relative;padding-left:16px;min-height:40px}
+#tl-list::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--edge)}
+.tlg{margin-bottom:16px}
+.tlg-h{font-family:var(--head);font-size:10px;letter-spacing:.3em;color:var(--dim);font-weight:700;margin-bottom:9px;padding-left:8px}
+.tl-item{display:flex;align-items:center;gap:10px;margin-bottom:9px;cursor:pointer}
+.tl-item .dot{width:10px;height:10px;border-radius:50%;background:var(--panel2);border:2px solid var(--edge);flex:none;margin-left:-13px}
+.tl-item.now .dot{width:16px;height:16px;background:var(--accent);border:3px solid var(--panel);box-shadow:0 0 12px var(--accent);margin-left:-16px}
+.tl-item .t{font-family:var(--mono);font-size:12px;color:var(--dim);line-height:1.45}
+.tl-item.now .t{color:var(--accent);font-weight:700;font-size:13px}
+.tl-item .t b{color:var(--accent);font-weight:700}
+.tl-item.gone{cursor:default;opacity:.55}
+.tl-seed{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.tl-seed b{color:var(--accent)}
+.tl-ver{display:block;font-size:10px;opacity:.7;letter-spacing:.05em;margin-top:2px}
 /* ---------- 主紀錄 ---------- */
 #log{flex:1;padding:14px 14px 20px;display:flex;flex-direction:column;gap:10px}
-.card{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:12px 14px;
-  animation:pop .25s ease;overflow-wrap:anywhere}
+.yr-block{display:flex;flex-direction:column;gap:10px}
+.yr-body{display:flex;flex-direction:column;gap:10px}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);padding:12px 14px;
+  animation:pop .25s ease;overflow-wrap:anywhere;overflow-x:auto}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.card h4{font-size:12px;letter-spacing:.2em;color:var(--dim);font-weight:700;margin-bottom:6px;
-  display:flex;align-items:center;gap:8px}
-.card h4::before{content:'';width:8px;height:8px;background:var(--clay);border-radius:2px;transform:rotate(45deg);flex:none}
-.card.gold h4::before{background:var(--amber)} .card.bad h4::before{background:var(--bad)}
-.card.good h4::before{background:var(--good)} .card.info h4::before{background:var(--blue)}
+.card h4{font-family:var(--head);font-size:12px;letter-spacing:.2em;color:var(--dim);font-weight:700;margin-bottom:6px;
+  display:flex;align-items:center;gap:7px}
+.card h4::before{content:'■';font-size:9px;line-height:1;flex:none}
+.card.gold{border:1.5px solid var(--gold)}
+.card.gold h4{color:var(--gold);text-shadow:var(--glow)}
+.card.bad h4{color:var(--bad)} .card.good h4{color:var(--good)} .card.info h4{color:var(--info)}
 .card p{font-size:14px} .card p+p{margin-top:4px}
-.tag{display:inline-block;font-family:var(--mono);font-size:12px;padding:0 6px;border-radius:4px;
-  background:#0d2115;border:1px solid var(--edge);color:var(--amber);margin:0 2px}
-.up{color:var(--good);font-weight:700}.dn{color:var(--bad);font-weight:700}.hl{color:var(--amber);font-weight:700}
-.statline{font-family:var(--mono);font-size:12.5px;color:var(--chalk);background:#0d2115;border:1px dashed var(--edge);
-  border-radius:6px;padding:6px 8px;margin-top:6px;line-height:1.7}
-table.fin{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:6px}
-table.fin th,table.fin td{border-bottom:1px solid var(--edge);padding:4px 4px;text-align:right}
-table.fin th{color:var(--dim);font-weight:500;letter-spacing:.05em}
-table.fin td:first-child,table.fin th:first-child{text-align:left}
+.tag{display:inline-block;font-family:var(--mono);font-size:12px;padding:0 6px;border-radius:min(var(--r),4px);
+  background:var(--panel2);border:1px solid var(--edge);color:var(--accent);margin:0 2px}
+.up{color:var(--good);font-weight:700}.dn{color:var(--bad);font-weight:700}.hl{color:var(--accent);font-weight:700}
+.statline{font-family:var(--mono);font-size:12.5px;color:var(--text);background:var(--panel2);border:1px dashed var(--edge);
+  border-radius:min(var(--r),6px);padding:6px 10px;margin-top:6px;line-height:1.7}
+table.fin,table.st{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;margin-top:6px}
+table.fin th,table.fin td,table.st th,table.st td{border-bottom:1px solid var(--edge);padding:4px 4px;text-align:right;white-space:nowrap}
+table.fin th,table.st th{color:var(--dim);font-weight:500;letter-spacing:.05em}
+table.fin td:first-child,table.fin th:first-child,table.st td:first-child,table.st th:first-child{text-align:left}
 .divider{text-align:center;color:var(--dim);font-size:11px;letter-spacing:.4em;padding:6px 0 0}
+.divider::before,.divider::after{content:'———'}
 .yr-head{text-align:center;color:var(--dim);font-size:11px;letter-spacing:.3em;padding:8px 0 0;cursor:pointer;user-select:none}
-.yr-head:hover{color:var(--amber)}
+.yr-head:hover{color:var(--accent)}
 .yr-block.collapsed .yr-body{display:none}
 .yr-block.collapsed .yr-head::after{content:' ▸'}
 .yr-block:not(.collapsed) .yr-head.has-body::after{content:' ▾'}
-.divider::before,.divider::after{content:'———'}
 /* ---------- 操作區 ---------- */
-#act{position:sticky;bottom:0;z-index:20;background:linear-gradient(#122519ee,#0b1a12);border-top:2px solid var(--edge);
-  padding:12px 14px calc(12px + env(safe-area-inset-bottom));backdrop-filter:blur(6px)}
-#act .title{font-size:12px;letter-spacing:.2em;color:var(--dim);margin-bottom:8px;font-weight:700}
-.btn{display:block;width:100%;background:var(--panel2);border:1px solid var(--edge);color:var(--chalk);
-  font-family:var(--sans);font-size:15px;font-weight:700;border-radius:10px;padding:11px 14px;margin-top:8px;
+#act-side{position:sticky;bottom:0;z-index:20;background:var(--panel);border-top:2px solid var(--edge);
+  box-shadow:0 -8px 24px var(--shadow);max-height:52vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* point-allocation UI: expand to show every ability row; tiny screens still scroll */
+#act-side.alloc{max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px)}
+#act-in{display:flex;flex-direction:column}
+#act-toggle{display:none;margin:8px auto 0;background:none;border:1px solid var(--edge);color:var(--dim);
+  font-size:11px;font-family:var(--sans);padding:3px 14px;border-radius:999px;cursor:pointer;flex:none}
+#act-toggle:hover{color:var(--accent);border-color:var(--accent)}
+#act{padding:10px 14px calc(12px + env(safe-area-inset-bottom))}
+#act .title{font-family:var(--head);font-size:12px;letter-spacing:.2em;color:var(--dim);margin-bottom:8px;font-weight:700}
+#act.collapsed{display:none!important}
+.btn{display:block;width:100%;background:var(--panel2);border:1px solid var(--edge);color:var(--text);
+  font-family:var(--sans);font-size:15px;font-weight:700;border-radius:var(--r);padding:11px 14px;margin-top:8px;
   cursor:pointer;text-align:left;transition:.15s}
-.btn:active{transform:scale(.98)} .btn:hover{border-color:var(--amber)}
+.btn:active{transform:scale(.98)} .btn:hover{border-color:var(--accent)}
 .btn small{display:block;font-weight:400;font-size:12px;color:var(--dim);margin-top:2px}
-.btn.main{background:linear-gradient(#2a5038,#1f3f2c);border-color:#3c6a4c;text-align:center}
-.btn.warn{border-color:#6a3c3c}
-/* 骰子 */
+.btn.main{background:var(--btnbg);border-color:var(--btnedge);color:var(--btntx);text-align:center}
+.btn.main small{color:inherit;opacity:.8}
+.btn.warn{border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+#act .row2{display:flex;gap:8px}#act .row2 .btn{flex:1;text-align:center}
+/* 骰子與加點 */
 #dice{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.die{width:44px;height:44px;border-radius:9px;background:var(--chalk);color:#12251a;font-family:var(--mono);
-  font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;
-  box-shadow:inset 0 -3px 0 #0003;position:relative}
-.die::after{content:'';position:absolute;inset:4px;border-radius:6px;border:1.5px dashed #c9764a55}
-.die.used{opacity:.22;transform:scale(.9)} .die.active{outline:3px solid var(--amber);outline-offset:2px}
+/* dice as baseballs: light ball face + dashed stitch ring (per-theme tint), depth per theme */
+.die{width:44px;height:44px;border-radius:var(--r);background:#ece7d6;border:2px solid rgba(0,0,0,.16);
+  color:#13291c;font-family:var(--disp);font-size:22px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;
+  --stitch:rgba(179,64,47,.5);
+  background-image:linear-gradient(rgba(255,255,255,.25),rgba(0,0,0,.08));
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.die::after{content:'';position:absolute;inset:4px;border-radius:calc(var(--r)*.6);
+  border:1.5px dashed var(--stitch);pointer-events:none}
+.die.active{border-color:var(--accent);
+  box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 0 10px color-mix(in srgb,var(--accent) 60%,transparent)}
+.die.used{opacity:.25;transform:scale(.9)}
 .die.six{color:#b3402f}
-.pool{font-family:var(--mono);font-size:15px;color:var(--amber);margin-bottom:10px}
-.abrow{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--edge);
-  border-radius:8px;padding:7px 10px;margin-top:6px;cursor:pointer;user-select:none}
-.abrow:active{background:var(--panel2)}
+body[data-theme='b'] .die{background:var(--panel2);background-image:none;color:var(--text);border-color:var(--edge);
+  --stitch:rgba(226,105,92,.45);box-shadow:inset 0 0 8px rgba(0,0,0,.6)}
+body[data-theme='b'] .die.active{border-color:var(--accent);color:var(--accent);
+  box-shadow:inset 0 0 8px rgba(0,0,0,.6),0 0 12px color-mix(in srgb,var(--accent) 70%,transparent)}
+body[data-theme='b'] .die.six{color:var(--bad)}
+body[data-theme='c'] .die{background:#faf6ea;background-image:none;color:#1e1c18;border-color:#1e1c18;
+  --stitch:rgba(179,64,47,.6);box-shadow:2.5px 2.5px 0 var(--edge)}
+body[data-theme='c'] .die.active{border-color:var(--accent);box-shadow:2.5px 2.5px 0 var(--accent)}
+body[data-theme='d'] .die{background:#ffffff;background-image:none;color:var(--text);border-color:var(--edge);
+  --stitch:rgba(192,57,43,.45);box-shadow:0 2px 6px rgba(26,32,28,.18),inset 0 -2px 0 rgba(0,0,0,.05)}
+body[data-theme='d'] .die.active{border-color:var(--accent);box-shadow:0 3px 10px color-mix(in srgb,var(--accent) 40%,transparent),inset 0 -2px 0 rgba(0,0,0,.05)}
+@keyframes diceroll{0%{transform:translateY(-5px) rotate(-7deg)}50%{transform:translateY(2px) rotate(5deg)}100%{transform:none}}
+.die.rolling{animation:diceroll .14s linear infinite}
+@keyframes sixflash{0%,100%{box-shadow:none}45%{box-shadow:0 0 16px var(--bad),0 0 4px var(--bad)}}
+.die.flash6{animation:sixflash .6s ease}
+.pool{font-family:var(--mono);font-size:14px;color:var(--accent);font-weight:700;text-shadow:var(--glow);margin-bottom:10px}
+.abrow{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--edge);
+  border-radius:var(--r);padding:8px 10px;margin-top:6px;cursor:pointer;user-select:none}
+.abrow:active{border-color:var(--accent)}
 .abrow .nm{width:74px;font-size:13.5px;font-weight:700;flex:none}
-.abrow .bar{flex:1;height:8px;background:#0d2115;border-radius:4px;overflow:hidden}
-.abrow .bar i{display:block;height:100%;background:linear-gradient(90deg,#3c6a4c,var(--amber));border-radius:4px;transition:.2s}
-.abrow .val{font-family:var(--mono);width:58px;text-align:right;font-size:14px;flex:none}
+.abrow .bar{flex:1;height:8px;background:var(--bg);border-radius:4px}
+.abrow .bar i{display:block;height:100%;background:var(--accent);border-radius:4px;transition:.2s}
+.abrow .val{font-family:var(--mono);width:62px;text-align:right;font-size:14px;flex:none}
 .abrow .val b{color:var(--good)}
 .abrow.capped{opacity:.45}
-#act .row2{display:flex;gap:8px}#act .row2 .btn{flex:1;text-align:center}
-/* 開場 */
-#start{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;
-  background-image:radial-gradient(ellipse 120% 50% at 50% -5%,#1d4630aa,transparent 60%)}
-#start .wrap{max-width:560px;margin:0 auto;padding:40px 22px 60px}
-#start h1{font-size:34px;font-weight:900;letter-spacing:.08em;line-height:1.25;margin-top:18px}
-#start h1 em{font-style:normal;color:var(--amber)}
-#start .sub{color:var(--dim);margin:10px 0 26px;font-size:13.5px;letter-spacing:.08em}
+.bar{position:relative}
+.bar em{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--accent);opacity:.5;border-radius:1px}
+/* ---------- 開場 ---------- */
+#start{position:fixed;inset:0;z-index:50;background:var(--bg);background-image:var(--bgfx);overflow-y:auto}
+#start .wrap{max-width:560px;margin:0 auto;padding:44px 22px 60px;
+  padding-top:calc(44px + env(safe-area-inset-top,0px))}
+#start h1{font-family:var(--head);font-size:34px;font-weight:900;letter-spacing:.08em;line-height:1.25;margin-top:18px}
+#start h1 em{font-style:normal;color:var(--accent);text-shadow:var(--glow)}
+#start .sub{color:var(--dim);margin:10px 0 8px;font-size:13.5px;letter-spacing:.08em}
 .field{margin-top:18px}
 .field label{display:block;font-size:12px;letter-spacing:.25em;color:var(--dim);font-weight:700;margin-bottom:8px}
-.field input{width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:10px;color:var(--chalk);
+.field input{width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);color:var(--text);
   font-family:var(--sans);font-size:16px;padding:11px 14px;outline:none}
-.field input:focus{border-color:var(--amber)}
+.field input:focus{border-color:var(--accent)}
 .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .seg.two{grid-template-columns:repeat(2,1fr)}
-.seg button{background:var(--panel);border:1px solid var(--edge);border-radius:10px;color:var(--dim);
+.seg button{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);color:var(--dim);
   font-family:var(--sans);font-size:14.5px;font-weight:700;padding:11px 4px;cursor:pointer}
-.seg button.on{background:var(--panel2);color:var(--amber);border-color:var(--amber)}
+.seg button.on{background:var(--panel2);color:var(--accent);border-color:var(--accent)}
+#fld-ui{display:none} /* desktop-width only; shown via the media query below */
 .seedline{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:22px}
-.seedline b{color:var(--amber)}
-.stitch{width:64px;height:64px;border-radius:50%;background:var(--chalk);position:relative;box-shadow:inset -6px -8px 0 #00000014}
+.seedline b{color:var(--accent)}
+#seed-show{width:120px;background:var(--panel);color:var(--accent);border:1px solid var(--edge);
+  border-radius:min(var(--r),6px);padding:2px 6px;font-family:inherit;font-size:12px;text-align:center}
+.stitch{width:64px;height:64px;border-radius:50%;background:#ece7d6;position:relative;
+  box-shadow:inset -6px -8px 0 rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.15)}
 .stitch::before,.stitch::after{content:'';position:absolute;top:8px;bottom:8px;width:18px;
   border:3px dashed #b3402f;border-top:none;border-bottom:none}
 .stitch::before{left:8px;border-right:none;border-radius:50% 0 0 50%}
 .stitch::after{right:8px;border-left:none;border-radius:0 50% 50% 0}
+.stitch.small{width:28px;height:28px;box-shadow:inset -3px -4px 0 rgba(0,0,0,.1)}
+.stitch.small::before,.stitch.small::after{top:4px;bottom:4px;width:8px;border-width:2px}
+/* theme b: 8-bit pixel baseball logo */
+body[data-theme='b'] .stitch{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23232c36' d='M6 0h4v1h-4zM4 1h2v1h-2zM10 1h2v1h-2zM3 2h1v1h-1zM12 2h1v1h-1zM2 3h1v1h-1zM13 3h1v1h-1zM1 4h1v1h-1zM14 4h1v1h-1zM1 5h1v1h-1zM14 5h1v1h-1zM0 6h1v1h-1zM15 6h1v1h-1zM0 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM15 8h1v1h-1zM0 9h1v1h-1zM15 9h1v1h-1zM1 10h1v1h-1zM14 10h1v1h-1zM1 11h1v1h-1zM14 11h1v1h-1zM2 12h1v1h-1zM13 12h1v1h-1zM3 13h1v1h-1zM12 13h1v1h-1zM4 14h2v1h-2zM10 14h2v1h-2zM6 15h4v1h-4z'/%3E%3Cpath fill='%23d8dde2' d='M6 1h4v1h-4zM4 2h8v1h-8zM3 3h1v1h-1zM5 3h6v1h-6zM12 3h1v1h-1zM2 4h1v1h-1zM4 4h8v1h-8zM13 4h1v1h-1zM2 5h1v1h-1zM4 5h8v1h-8zM13 5h1v1h-1zM1 6h1v1h-1zM3 6h10v1h-10zM14 6h1v1h-1zM1 7h1v1h-1zM3 7h10v1h-10zM14 7h1v1h-1zM1 8h1v1h-1zM3 8h10v1h-10zM14 8h1v1h-1zM1 9h1v1h-1zM3 9h10v1h-10zM14 9h1v1h-1zM2 10h1v1h-1zM4 10h8v1h-8zM13 10h1v1h-1zM2 11h1v1h-1zM4 11h8v1h-8zM13 11h1v1h-1zM3 12h1v1h-1zM5 12h6v1h-6zM12 12h1v1h-1zM4 13h8v1h-8zM6 14h4v1h-4z'/%3E%3Cpath fill='%23e2695c' d='M4 3h1v1h-1zM11 3h1v1h-1zM3 4h1v1h-1zM12 4h1v1h-1zM3 5h1v1h-1zM12 5h1v1h-1zM2 6h1v1h-1zM13 6h1v1h-1zM2 7h1v1h-1zM13 7h1v1h-1zM2 8h1v1h-1zM13 8h1v1h-1zM2 9h1v1h-1zM13 9h1v1h-1zM3 10h1v1h-1zM12 10h1v1h-1zM3 11h1v1h-1zM12 11h1v1h-1zM4 12h1v1h-1zM11 12h1v1h-1z'/%3E%3C/svg%3E") center/contain no-repeat;border:none;border-radius:0;box-shadow:none}
+body[data-theme='b'] .stitch::before,body[data-theme='b'] .stitch::after{content:none}
+#btn-menu{background:var(--panel2);border:1px solid var(--edge);color:var(--text);border-radius:min(var(--r),8px);
+ font-family:var(--sans);font-size:14px;font-weight:700;line-height:1;padding:9px 15px;margin-left:8px;
+ cursor:pointer;flex:none;white-space:nowrap}
+#btn-menu:hover{color:var(--accent);border-color:var(--accent)}
+/* ---------- 主題化對話框(取代原生 confirm) ---------- */
+#modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:22px}
+#modal.show{display:flex}
+#modal-box{background:var(--panel);border:1.5px solid var(--edge);border-radius:var(--r);padding:18px 18px 14px;
+  max-width:340px;width:100%;box-shadow:0 18px 50px var(--shadow);animation:pop .2s ease}
+#modal-box h3{font-family:var(--head);font-size:13px;letter-spacing:.25em;color:var(--dim);font-weight:700;margin-bottom:4px}
+#modal-box p{font-size:14px;margin:6px 0 4px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .bar{position:relative}
 .bar em{position:absolute;top:-2px;bottom:-2px;width:2px;background:#ffc95c66;border-radius:1px}
@@ -164,6 +278,26 @@ table.fin td:first-child,table.fin th:first-child{text-align:left}
 .team-item.locked{opacity:.4;filter:grayscale(1)}
 .team-name{font-weight:700;font-size:12px}
 .team-lv{font-size:10.5px;color:var(--dim);margin-top:2px}
+/* ---------- 桌面三欄(>920px) ---------- */
+@media(min-width:921px){
+  /* body.mobile-ui opts out of the desktop layout (user toggle in the menu) */
+  body:not(.mobile-ui) #app{display:grid;grid-template-columns:250px minmax(0,1fr) 340px;align-items:stretch;
+    max-width:1360px;margin:0 auto;border-left:1px solid var(--edge);border-right:1px solid var(--edge)}
+  body:not(.mobile-ui) #tl-side{display:block}
+  body:not(.mobile-ui) #tl-in{position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto}
+  body:not(.mobile-ui) #tl-strip{display:none}
+  body:not(.mobile-ui) #board{padding:14px 26px 12px;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+  body:not(.mobile-ui) .bd-cell b{font-size:19px}
+  body:not(.mobile-ui) #log{padding:18px 26px 26px}
+  body:not(.mobile-ui) #act-side{position:static;max-height:none;overflow:visible;border-top:none;border-left:1px solid var(--edge);box-shadow:none}
+  body:not(.mobile-ui) #act-in{position:sticky;top:0;max-height:100vh;overflow-y:auto;padding:12px 6px 16px}
+  body:not(.mobile-ui) #act-toggle{display:none!important}
+  body:not(.mobile-ui) #act.collapsed{display:block!important}
+  body:not(.mobile-ui) #act{padding:8px 14px 16px}
+  body:not(.mobile-ui) #start .wrap{padding-top:64px}
+  body.mobile-ui #app{max-width:560px;margin:0 auto}
+  #fld-ui{display:block} /* unguarded: visible in both layouts so it can switch back */
+}
 </style>
 </head>
 <body>
@@ -171,7 +305,7 @@ table.fin td:first-child,table.fin th:first-child{text-align:left}
   <div class="wrap">
     <div class="stitch"></div>
     <h1 id="logo-tap">YaKyoLife<br><em>棒球人生模擬器</em></h1>
-    <div id="ver-badge" style="position:fixed;top:6px;right:8px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.55;font-family:monospace;z-index:50;pointer-events:none">v1.3.5</div>
+    <div id="ver-badge" style="position:fixed;top:6px;right:8px;font-size:10px;letter-spacing:1px;color:var(--dim);opacity:.55;font-family:monospace;z-index:50;pointer-events:none">v1.4.0</div>
     <p class="sub">高中三年養成 → 選秀・旅日・旅美 → 國際賽 → 衰退與引退。每一顆骰子都算數。</p>
     <div class="field"><label>球員姓名</label><input id="in-name" maxlength="10" placeholder="例如：林家正" value=""></div>
     <div class="field"><label>守位</label>
@@ -179,12 +313,21 @@ table.fin td:first-child,table.fin th:first-child{text-align:left}
         <button data-v="P" class="on">投手</button><button data-v="C">捕手</button>
         <button data-v="IF">內野手</button><button data-v="OF">外野手</button>
       </div></div>
+    <div class="field"><label>佈景主題</label>
+      <div class="seg two" id="seg-theme">
+        <button data-t="a" class="on">深綠記分板</button><button data-t="b">電子看板</button>
+        <button data-t="c">報紙版面</button><button data-t="d">現代儀表板</button>
+      </div></div>
+    <div class="field" id="fld-ui"><label>介面版型</label>
+      <div class="seg two" id="seg-ui">
+        <button data-u="0" class="on">電腦版</button><button data-u="1">手機版</button>
+      </div></div>
     <button class="btn main" style="margin-top:28px" id="btn-start">開始生涯 ▸ 高一春天</button>
     <button class="btn" style="margin-top:10px;text-align:center" id="btn-achv">📖 成就圖鑑</button>
     <p class="seedline">世界種子
-      <input id="seed-show" maxlength="24" style="width:120px;background:#0e2015;color:#ffc95c;border:1px solid #2b4a38;border-radius:6px;padding:2px 6px;font-family:inherit;font-size:12px;text-align:center">
-      · <a href="#" id="seed-re" style="color:var(--blue)">換一個</a><br>相同種子＋相同選擇＝相同人生（可直接輸入朋友的種子碼）</p>
-    <footer style="text-align:center;margin-top:22px;color:var(--dim);font-size:12px">Produced by <a href="https://www.threads.com/@mr.themost" target="_blank" rel="noopener" style="color:var(--amber);text-decoration:none">最先生 Mr.TheMost</a></footer>
+      <input id="seed-show" maxlength="24">
+      · <a href="#" id="seed-re">換一個</a><br>相同種子＋相同選擇＝相同人生（可直接輸入朋友的種子碼）</p>
+    <footer style="text-align:center;margin-top:22px;color:var(--dim);font-size:12px">Produced by <a href="https://www.threads.com/@mr.themost" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">最先生 Mr.TheMost</a></footer>
   </div>
 </div>
 <div id="achv-overlay" class="achv-overlay" style="display:none">
@@ -206,24 +349,35 @@ table.fin td:first-child,table.fin th:first-child{text-align:left}
   </div>
 </div>
 <div id="app">
-  <header id="board" style="display:none">
-    <div id="bd-top"><div id="bd-name"></div><div id="bd-team"></div><span id="bd-tj" style="color:var(--dim);font-size:11px;margin-left:6px;white-space:nowrap"></span><button id="btn-restart" title="重新開始">↺</button></div>
-    <div id="bd-grid">
-      <div class="bd-cell"><b id="bd-age">16</b><span>年齡</span></div>
-      <div class="bd-cell"><b id="bd-year">2026</b><span>年份</span></div>
-      <div class="bd-cell"><b id="bd-ovr">30</b><span>綜合</span></div>
-      <div class="bd-cell"><b id="bd-sal">0</b><span>生涯薪(萬)</span></div>
-    </div>
-    <div id="lamps">
-      <span class="lamp" id="lp0"><i></i>季初</span>
-      <span class="lamp" id="lp1"><i></i>賽季中</span>
-      <span class="lamp" id="lp2"><i></i>季末</span>
-    </div>
-  </header>
-  <main id="log"></main>
-  <button id="act-toggle" style="display:none">⌄ 收合選項</button>
-  <footer id="act" style="display:none"></footer>
+  <aside id="tl-side"><div id="tl-in">
+    <div class="tl-brand"><span class="stitch small"></span><div><b>YaKyoLife</b><span class="sub">棒球人生模擬器</span></div></div>
+    <div id="tl-list"></div>
+    <div class="tl-seed">SEED <b id="tl-seed"></b><span class="tl-ver" id="tl-ver"></span></div>
+  </div></aside>
+  <div id="mid">
+    <header id="board" style="display:none">
+      <div id="bd-top"><div id="bd-name"></div><div id="bd-team"></div><span id="bd-tj" style="color:var(--dim);font-size:11px;margin-left:6px;white-space:nowrap"></span><button id="btn-menu" title="選單">選單</button></div>
+      <div id="bd-grid">
+        <div class="bd-cell"><b id="bd-age">16</b><span>年齡</span></div>
+        <div class="bd-cell"><b id="bd-year">2026</b><span>年份</span></div>
+        <div class="bd-cell"><b id="bd-ovr">30</b><span>綜合</span></div>
+        <div class="bd-cell"><b id="bd-sal">0</b><span>生涯薪(萬)</span></div>
+      </div>
+      <div id="lamps">
+        <span class="lamp" id="lp0"><i></i>季初</span>
+        <span class="lamp" id="lp1"><i></i>賽季中</span>
+        <span class="lamp" id="lp2"><i></i>季末</span>
+      </div>
+      <div id="tl-strip"></div>
+    </header>
+    <main id="log"></main>
+  </div>
+  <aside id="act-side"><div id="act-in">
+    <button id="act-toggle" style="display:none">⌄ 收合選項</button>
+    <footer id="act" style="display:none"></footer>
+  </div></aside>
 </div>
+<div id="modal"><div id="modal-box"></div></div>
 <script>
 /* ================= RNG（種子化） ================= */
 let SEED = new URLSearchParams(location.search).get('seed') || Math.random().toString(36).slice(2,10);
@@ -319,8 +473,17 @@ function dposReview(cont){
     if(S.dpos==='1B'&&!dpQual('1B')){ S.dpos='DH';
       card('info','守位調整','連一壘都站不住了，新球季登錄為<b class="hl">指定打擊</b>。'); }
     cont(); return; }
-  if(S.pos==='P'){ /* 純體力決定投手類型,無玩家選擇 */
+  if(S.pos==='P'){ /* 體力決定投手類型;牛棚→先發需玩家同意,先發→牛棚仍自動 */
     const nr=pitcherRole(), old=S.role;
+    if((old==='MR'||old==='CL')&&nr==='SP'){
+      /* 後援投手體力練上先發線:球團徵詢,不強制轉 */
+      choose('球團徵詢：你的體力已達先發水準，要轉任先發嗎？',[
+        {t:'轉任先發，扛起輪值',main:true,f:()=>{ S.role='SP';
+          card('info','定位調整',`你點頭接下先發任務。新球季起，你是輪值的一員——<b class="hl">先發</b>。`); cont(); }},
+        {t:'留在牛棚，守住我的位置',s:'維持'+roleN(old)+'定位',f:()=>{ S.role=old;
+          card('info','留守牛棚',`你婉拒了教練團的提議——永遠準備待命，在球隊最需要我的時候，登板救火。`); cont(); }}]);
+      return;
+    }
     S.role=nr;
     if(old&&old!==nr){
       card('info','定位調整',`球團季末評估你的體力狀況，新球季將你的角色調整為 <b class="hl">${roleN(nr)}</b>。`); }
@@ -344,7 +507,7 @@ function dposReview(cont){
     f:()=>{ S.dpos=p; card('info','守位調整',`球團季末評估後，新球季改守 <b class="hl">${DPN[p]}</b>。`); cont(); }}));
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
-const APP_VER='v1.3.5';
+const APP_VER='v1.4.0';
 const TEAM_COLOR={
   /* 中職 */
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
@@ -658,7 +821,7 @@ function newState(name,pos,role){
     league:null,org:null,orgTeam:null,teamTally:{CPBL:{},NPB:{},MLB:{}},
     ab,traits:{genius:false,glass:false,iron:false,scum:false,
       late:false,disc:false,academy:false,intlace:false,franchise:false,clutch:false,phoenix:false,combo:false,onetool:false,rubber:false,legend:false,
-      yips:false,distract:false,cancer:false,ambience:false,goldcloth:false,thief:false,mrteam:false,confidante:false,smallschool:false,grinder:false},
+      yips:false,distract:false,cancer:false,ambience:false,goldcloth:false,thief:false,mrteam:false,confidante:false,smallschool:false,grinder:false,rainbow:false,taiwan:false},
     removed:[], /* 被覆蓋/解除的特性,結算畫刪除線 */
     cntSave:0,cntSaveWin:0,cntSnack:0,cntBoldWin:0,cntBoldFail:0,samePick:0,samePickKey:null,teamYears:0,
     six:0,bigInj:0,ironStreak:0,npbYears:0,
@@ -846,7 +1009,7 @@ function simSeason(lv){
       const ipg=clamp(5.0+d*0.05+(a.sta-50)*0.012+(a.ctl-par)*0.006+N0(0.12),4.8,6.5);
       st.IP=+(st.G*ipg).toFixed(1);
     }else{
-      st.G=Math.max(1,Math.round(clamp(45+(a.sta-40)*0.3,25,68)*f*perfF*(0.94+R()*0.08)));
+      st.G=Math.max(1,Math.round(clamp(45+(Math.min(a.sta,60)-40)*0.3,25,68)*f*perfF*(0.94+R()*0.08))); /* 高體力後援:出賽數貢獻以 sta60 封頂,不會貼近先發工作量 */
       st.IP=+(st.G*1.05).toFixed(1);
     }
     st.era=clamp(4.32-d*0.17+N0(0.35),1.40,9.90);
@@ -863,16 +1026,26 @@ function simSeason(lv){
       const dec=Math.round(st.G*0.72), wp=clamp(0.50+d*0.014+N0(0.05),0.15,0.85);
       st.W=Math.round(dec*wp); st.L=dec-st.W;
     }else if(S.role==='CL'){
-      st.W=ri(1,4); st.L=ri(0,4);
-      st.SV=d>=3?Math.round(clamp(20+d*2,0,48)*f*perfF):(chance(25)?ri(1,6):0);
-      st.HLD=Math.round(clamp(8+d,0,25)*f*perfF*0.4);
-    }else{ /* 中繼:累積中繼成功 HLD */
-      st.W=ri(1,6); st.L=ri(0,4);
-      st.HLD=Math.round(clamp(12+d*2,0,40)*f*perfF);
-      st.SV=chance(20)?ri(1,5):0;
+      /* 終結者:救援以出賽數為基礎(轉化率隨表現 d),SV 天生 <= G;每場最多 1 救援 */
+      const svRate=clamp(0.55+d*0.02,0.35,0.82);            /* 救援轉化率:35%~82% */
+      st.SV=Math.min(st.G, Math.round(st.G*svRate));         /* 不可超過出賽數 */
+      st.HLD=Math.min(Math.max(0,st.G-st.SV), Math.round(st.G*0.12)); /* 非救援登板的中繼 */
+      const dec=Math.max(1,Math.round(st.G*0.14)); st.W=Math.round(dec*clamp(0.45+d*0.02,0.3,0.7)); st.L=Math.max(0,dec-st.W);
+    }else{ /* 中繼:中繼成功 HLD 以出賽數為基礎 */
+      const hldRate=clamp(0.45+d*0.02,0.25,0.72);
+      st.HLD=Math.min(st.G, Math.round(st.G*hldRate));       /* 不可超過出賽數 */
+      st.SV=Math.min(Math.max(0,st.G-st.HLD), chance(25)?ri(1,5):0);
+      const dec=Math.max(1,Math.round(st.G*0.14)); st.W=Math.round(dec*clamp(0.5+d*0.015,0.35,0.7)); st.L=Math.max(0,dec-st.W);
+    }
+    /* 物理約束:每場最多一種結果 → 救援占比<=85%、勝+敗+救援+中繼 總和不可超過出賽數 */
+    if(!isSP()){
+      st.SV=Math.min(st.SV||0, Math.floor(st.G*0.85));
+      st.HLD=Math.min(st.HLD||0, Math.max(0,st.G-st.SV));
+      const decCap=Math.max(0,st.G-st.SV-st.HLD);
+      if((st.W+st.L)>decCap){ st.W=Math.min(st.W,decCap); st.L=Math.max(0,decCap-st.W); }
     }
   }else{
-    const q=a.con*0.6+a.eye*0.2+a.spd*0.2, d=q-par; st.d=d;
+    const q=a.con*0.5+a.pow*0.2+a.eye*0.18+a.spd*0.12, d=q-par-0.5; st.d=d; /* 加入 pow(長打產能計入實力);-0.5 校準,整體分布與舊版對齊 */
     /* 出賽規模:體力設上限,表現(d)決定實際多寡 */
     /* 體力係數:50+ 接近滿(~0.9-1.0)、45~50 尚可、40 明顯少、35 只剩代打量(~0.35) */
     let staF;
@@ -886,7 +1059,7 @@ function simSeason(lv){
     }
     /* 表現係數:打得好才有滿打席,爛表現(d<0)出賽再打折 */
     const perfF=clamp(0.82+d*0.03,0.45,1.12);
-    st.G=Math.round(L.g*clamp(staF*perfF,0.10,1.0)*f*(0.95+R()*0.06));
+    st.G=Math.min(L.g, Math.round(L.g*clamp(staF*perfF,0.10,1.0)*f*(0.95+R()*0.06))); /* 上限=聯盟場次,不可超過 */
     st.PA=Math.round(st.G*4.25);
     st._dh=dhThisYear; /* 供 accStat 記 DH 年 */
     st.BB=Math.round(st.PA*clamp(0.062+(a.eye-par)*0.0034,0.045,0.17));
@@ -898,7 +1071,44 @@ function simSeason(lv){
     st.RBI=Math.round(st.HR*2.1+(st.H-st.HR)*0.30);
     st.DEF=defRuns(lv);
   }
+  applySeasonForm(st,lv);   /* 低潮年/生涯年:調整率值與產出(不動出賽數) */
   return st;
+}
+/* 賽季狀態:10% 低潮(成績×0.65)、10% 生涯年(成績×1.2,需健康);倍率只作用產出/率值,出賽數 G 不變 */
+function applySeasonForm(st,lv){
+  if(S.seasonFactor<=0)return;                 /* 傷缺全季不觸發 */
+  st.form=0;                                    /* 0=正常 1=生涯年 -1=低潮 */
+  const roll=R();
+  const canCareer=S.seasonFactor>=0.9;          /* 生涯年需該季健康 */
+  let m=1;
+  if(roll<0.10){ st.form=-1; m=0.65; }          /* 低潮:成績打 65 折 */
+  else if(canCareer && roll<0.20){ st.form=1; m=1.20; } /* 生涯年:成績 ×1.2 */
+  if(m===1)return;
+  if(S.pos==='P'){
+    /* 投手:三振/勝場隨倍率;被安打與自責分反向(生涯年變少、低潮變多);SV/HLD 依倍率但不超過出賽數 */
+    st.SO=Math.round(st.SO*m);
+    st.W=Math.round(st.W*m); if(st.L!=null)st.L=Math.max(0,Math.round(st.L/(m||1)));
+    st.H=Math.max(0,Math.round(st.H/m)); st.ER=Math.max(0,Math.round(st.ER/m));
+    st.era=st.IP>0?+(st.ER*9/st.IP).toFixed(2):st.era;
+    st.WHIP=st.IP>0?+((st.H+st.BB)/st.IP).toFixed(2):st.WHIP;
+    if(st.SV)st.SV=Math.min(st.G,Math.round(st.SV*m));
+    if(st.HLD)st.HLD=Math.min(Math.max(0,st.G-(st.SV||0)),Math.round(st.HLD*m));
+    /* 物理約束(倍率後再夾):救援占比<=85%、勝+敗+救援+中繼 <= 出賽數 */
+    if(!isSP()){
+      st.SV=Math.min(st.SV||0, Math.floor(st.G*0.85));
+      st.HLD=Math.min(st.HLD||0, Math.max(0,st.G-st.SV));
+      const decCap=Math.max(0,st.G-st.SV-st.HLD);
+      if((st.W+st.L)>decCap){ st.W=Math.min(st.W,decCap); st.L=Math.max(0,decCap-st.W); }
+    }
+  }else{
+    /* 打者:安打/全壘打/盜壘/打點隨倍率;打席與出賽數不變(打率連帶變動) */
+    st.H=Math.round(st.H*m); st.HR=Math.round(st.HR*m); st.SB=Math.round(st.SB*m);
+    if(st.H>st.AB)st.H=st.AB;                   /* 安打不可超過打數 */
+    st.avg=st.AB?st.H/st.AB:0;
+    st.RBI=Math.round(st.HR*2.1+(st.H-st.HR)*0.30);
+  }
+  /* d 值(影響評價/獎項/下放)跟著狀態調整 */
+  st.d += st.form===1?4:st.form===-1?-4:0;
 }
 /* 守備分(近似 defensive runs):守位難度權重 × 守備工具相對聯盟基準的幅度 × 出賽比重 */
 function defRuns(lv){
@@ -937,8 +1147,9 @@ function statLine(st){
 function slgOf(st){
   if(!st.AB)return 0;
   const hr=st.HR, nonHR=Math.max(0,st.H-hr);
-  /* 非全壘打安打中,約 22% 二壘打、3% 三壘打(依聯盟慣例估) */
-  const doubles=nonHR*0.22, triples=nonHR*0.03, singles=nonHR-doubles-triples;
+  /* 非全壘打安打中,約 22% 二壘打、3% 三壘打——取整數支數,壘打數必為整數,小樣本 SLG 才不會出現 .320 這種不可能的值 */
+  const doubles=Math.round(nonHR*0.22), triples=Math.round(nonHR*0.03);
+  const singles=Math.max(0,nonHR-doubles-triples);
   const tb=singles + doubles*2 + triples*3 + hr*4;
   return tb/st.AB;
 }
@@ -958,6 +1169,131 @@ const $=id=>document.getElementById(id);
 var _curYearBody=null; /* 當前年度的內容容器 */
 var MAX_YEARS=8;         /* DOM 最多保留幾個年度區塊 */
 function logTarget(){ return _curYearBody || $('log'); }
+/* ================= 主題系統(純呈現層) ================= */
+const THEME_KEY='yakyu-theme';
+function applyTheme(t){
+  if(t!=='a'&&t!=='b'&&t!=='c'&&t!=='d')t='a';
+  document.body.dataset.theme=t;
+  try{localStorage.setItem(THEME_KEY,t);}catch(e){}
+  document.querySelectorAll('#seg-theme button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  const m=document.querySelector('meta[name="theme-color"]');
+  if(m)m.setAttribute('content',(getComputedStyle(document.body).getPropertyValue('--bg')||'#081510').trim());
+}
+/* ---------- 主題化對話框(純呈現層) ---------- */
+function modalOpen(html){ const m=$('modal'); if(!m)return; $('modal-box').innerHTML=html; m.classList.add('show'); }
+function modalClose(){ const m=$('modal'); if(m)m.classList.remove('show'); }
+function applyMobileUI(on){
+  document.body.classList.toggle('mobile-ui',!!on);
+  try{localStorage.setItem('yakyu-mobile-ui',on?'1':'0');}catch(e){}
+  document.querySelectorAll('#seg-ui button').forEach(b=>b.classList.toggle('on',(b.dataset.u==='1')===!!on));
+}
+function menuModal(){
+  const wide=matchMedia('(min-width:921px)').matches;
+  const mob=document.body.classList.contains('mobile-ui');
+  modalOpen(`<h3>選單</h3>
+    <button class="btn" id="md-theme" style="text-align:center">切換佈景主題</button>
+    ${wide?`<button class="btn" id="md-ui" style="text-align:center">${mob?'切回電腦版介面':'改用手機版介面'}</button>`:''}
+    <button class="btn warn" id="md-restart0" style="text-align:center">重新開始</button>
+    <button class="btn" id="md-close" style="text-align:center;margin-top:14px">關閉</button>`);
+  $('md-theme').onclick=themeModal;
+  const mu=$('md-ui'); if(mu)mu.onclick=()=>{ applyMobileUI(!mob); menuModal(); };
+  $('md-restart0').onclick=restartModal;
+  $('md-close').onclick=modalClose;
+}
+function restartModal(){
+  modalOpen(`<h3>重新開始</h3><p>確定要放棄這段人生，從頭開始嗎？</p>
+    <button class="btn warn" id="md-restart" style="text-align:center">放棄這段人生，重新開始</button>
+    <button class="btn" id="md-cancel" style="text-align:center">繼續目前的生涯</button>`);
+  $('md-restart').onclick=()=>{ _allowLeave=true; location.href=location.pathname; };
+  $('md-cancel').onclick=menuModal;
+}
+/* Accidental-reload guard: pull-to-refresh / F5 / tab close mid-game triggers the
+   native leave prompt; intentional restarts set _allowLeave, finished games skip it */
+let _allowLeave=false;
+window.addEventListener('beforeunload',function(ev){
+  if(!S||S.done||_allowLeave)return;
+  ev.preventDefault(); ev.returnValue='';
+});
+const THEME_NAMES={a:'深綠記分板',b:'電子看板',c:'報紙版面',d:'現代儀表板'};
+function themeModal(){
+  const cur=document.body.dataset.theme||'a';
+  modalOpen('<h3>佈景主題</h3>'+['a','b','c','d'].map(t=>
+    `<button class="btn${t===cur?' main':''}" data-mt="${t}" style="text-align:center">${THEME_NAMES[t]}${t===cur?' ✓':''}</button>`).join('')+
+    `<button class="btn" id="md-back" style="text-align:center;margin-top:14px">返回選單</button>`);
+  $('modal-box').querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{ applyTheme(b.dataset.mt); themeModal(); });
+  $('md-back').onclick=menuModal;
+}
+/* ================= 生涯時間軸(純呈現層,不觸碰 RNG) ================= */
+let TL=[];
+function tlStage(){
+  if(!S)return '';
+  if(S.stage==='HS')return '高中 · '+S.team;
+  if(S.stage==='U')return '大學 · '+S.team;
+  if(S.stage==='AMA')return '業餘 · '+S.team;
+  const og={CPBL:'中職',NPB:'旅日',MiLB:'旅美'}[S.org]||'職業';
+  return og+' · '+(S.orgTeam||'');
+}
+function tlPush(){
+  TL.push({year:S.year,stage:tlStage(),lab:stageLabel(),note:'',pri:0,el:_curYearBody?_curYearBody.parentElement:null});
+  renderTimeline();
+}
+function tlNote(pri,txt){ /* keep only the highest-priority note per year */
+  const e=TL[TL.length-1]; if(!e||!txt)return;
+  if(pri>=e.pri){ e.note=txt; e.pri=pri; renderTimeline(); }
+}
+function renderTimeline(){
+  const list=$('tl-list'), strip=$('tl-strip');
+  if(list){
+    let html='',cur=null;
+    TL.forEach((e,i)=>{
+      if(e.stage!==cur){ if(cur!==null)html+='</div>'; html+=`<div class="tlg"><div class="tlg-h">${e.stage}</div>`; cur=e.stage; }
+      const now=i===TL.length-1, gone=!(e.el&&e.el.isConnected);
+      html+=`<div class="tl-item${now?' now':''}${(gone&&!now)?' gone':''}" data-i="${i}"><span class="dot"></span><span class="t">${e.year} ${e.lab}${e.note?' <b>'+e.note+'</b>':''}</span></div>`;
+    });
+    if(cur!==null)html+='</div>';
+    list.innerHTML=html;
+  }
+  if(strip){
+    strip.innerHTML=TL.map((e,i)=>`<span class="tl-chip${i===TL.length-1?' now':''}" data-i="${i}">${e.year}${e.note?'★':''}</span>`).join('');
+    strip.scrollLeft=strip.scrollWidth;
+  }
+}
+function tlScrollTo(e){ /* scroll via window.scrollTo (not scrollIntoView; see handoff) */
+  if(!e||!e.el||!e.el.isConnected)return;
+  e.el.classList.remove('collapsed'); /* expand the target year so the jump has visible feedback */
+  const bd=$('board'), off=(bd?bd.offsetHeight:0)+10;
+  window.scrollTo(0,Math.max(0,e.el.getBoundingClientRect().top+window.scrollY-off));
+}
+function careerTimelineCard(){ /* two-layer horizontal timeline for the career summary */
+  if(!TL.length)return;
+  const eras=[];
+  TL.forEach(e=>{ const last=eras[eras.length-1];
+    if(last&&last.stage===e.stage)last.n++; else eras.push({stage:e.stage,from:e.year,n:1}); });
+  const eraCols=['var(--info)','var(--good)','var(--accent)','var(--dim)'];
+  const bands=eras.map((e,i)=>{ const to=e.from+e.n-1;
+    const span=e.n>1?`${e.from}–${String(to).slice(2)}`:String(e.from);
+    return `<div title="${e.stage} ${span}" style="flex:${e.n};min-width:0;background:var(--panel2);border-top:3px solid ${eraCols[i%4]};border-radius:var(--r);padding:6px 8px 5px">`+
+      `<div style="font-family:var(--head);font-size:11px;font-weight:700;letter-spacing:.08em;white-space:nowrap;overflow:hidden">${e.stage}</div>`+
+      `<div style="font-family:var(--mono);font-size:10px;opacity:.75;white-space:nowrap;overflow:hidden">${span}</div></div>`; }).join('');
+  const y0=TL[0].year, span=Math.max(1,TL.length-1);
+  let ms=TL.filter(e=>e.note);
+  if(ms.length>7)ms=ms.slice().sort((a,b)=>b.pri-a.pri||a.year-b.year).slice(0,7).sort((a,b)=>a.year-b.year);
+  /* milestone labels alternate between two rows so neighbouring years cannot collide */
+  const dots=ms.map((e,j)=>`<div style="position:absolute;left:${((e.year-y0)/span*100).toFixed(2)}%;top:0;transform:translateX(-50%);text-align:center">`+
+      `<span style="width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:var(--glow);display:block;margin:4px auto 0"></span>`+
+      `<div style="margin-top:${j%2?26:4}px">`+
+      `<span style="font-family:var(--mono);font-size:10px;color:var(--dim);display:block;white-space:nowrap">${e.year}</span>`+
+      `<span style="font-size:10.5px;font-weight:700;display:block;white-space:nowrap">${e.note}</span></div></div>`).join('');
+  /* guaranteed width per year; long careers scroll horizontally inside the card */
+  const minW=TL.length*32;
+  card('','生涯時間軸',
+    `<div style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin-top:4px;padding-bottom:4px">`+
+    `<div style="min-width:${minW}px">`+
+    `<div style="display:flex;gap:3px;margin-bottom:6px">${bands}</div>`+
+    `<div style="margin:0 26px"><div style="position:relative;height:${ms.some((_,j)=>j%2)?'96px':'62px'}">`+
+    `<i style="position:absolute;left:0;right:0;top:8px;height:2px;background:var(--edge)"></i>${dots}</div></div>`+
+    `</div></div>`);
+}
 function card(cls,title,html){ const d=document.createElement('div'); d.className='card '+cls;
   d.innerHTML=(title?`<h4>${title}</h4>`:'')+html; logTarget().appendChild(d);
   scrollBottom(); }
@@ -986,7 +1322,8 @@ function board(phase){
   [0,1,2].forEach(i=>$('lp'+i).classList.toggle('on',i===phase));
 }
 function actClear(){ const a=$('act'); a.innerHTML=''; a.classList.remove('collapsed');
-  const t=$('act-toggle'); if(t)t.style.display='none'; }
+  const t=$('act-toggle'); if(t)t.style.display='none';
+  const s=$('act-side'); if(s)s.classList.remove('alloc'); }
 function actToggleSync(){
   const a=$('act'), t=$('act-toggle'); if(!t)return;
   const has=a.innerHTML.trim()!=='' && a.style.display!=='none';
@@ -1005,7 +1342,8 @@ function choose(title,opts){
 }
 /* 加點介面：mode {dice:[..]} 或 {pool:n} */
 function allocUI(mode,label,done){
-  actClear(); const a=$('act'); const keys=POS_AB[S.pos];
+  actClear(); const _as=$('act-side'); if(_as)_as.classList.add('alloc');
+  const a=$('act'); const keys=POS_AB[S.pos];
   let dice=mode.dice?mode.dice.slice():null, pool=mode.pool||0, idx=0, hist=[];
   a.innerHTML=`<div class="title">${label}</div><div id="al-top"></div><div id="al-rows"></div><div class="row2" id="al-btm"></div>`;
   const touchedKeys={};
@@ -1038,6 +1376,16 @@ function allocUI(mode,label,done){
     actToggleSync();
   }
   render();
+  /* Roll-in animation on first render only; purely visual (Math.random, not the
+     seeded RNG) — game values always come from dice[] */
+  if(dice && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    a.querySelectorAll('#dice .die').forEach((el,i)=>{
+      el.classList.add('rolling');
+      const iv=setInterval(()=>{ el.textContent=1+Math.floor(Math.random()*6); },70);
+      setTimeout(()=>{ clearInterval(iv); el.classList.remove('rolling'); el.textContent=dice[i];
+        if(dice[i]===6)el.classList.add('flash6'); },260+i*90);
+    });
+  }
 }
 /* ================= 年度流程 ================= */
 function nextStep(){ if(S.done){ stepQ=[]; return; } /* 已引退:清空後續步驟,不再跑續約/結算 */ const f=stepQ.shift(); if(f)f(); }
@@ -1047,11 +1395,11 @@ function stageLabel(){
   if(S.stage==='AMA')return '業餘成棒';
   return LV[S.lv].n;
 }
-function startYear(){ stepQ=[phasePre,phaseMid,phaseEnd]; divider(`${S.year} 年 · ${S.age} 歲 · ${stageLabel()}`); nextStep(); }
+function startYear(){ stepQ=[phasePre,phaseMid,phaseEnd]; divider(`${S.year} 年 · ${S.age} 歲 · ${stageLabel()}`); tlPush(); nextStep(); }
 /* ---------- 季初 ---------- */
 function phasePre(){
   board(0); noteTeamSeason(); S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.prevD=S.lastD||0; S.lastD=0; /* 先保留上季 d 供投手定位判定 */
-  if(S.age>=48){ endGame('身體已到極限，'+S.year+' 年春訓後宣布引退。'); return; }
+  if(S.age>=48){ buyoutRemaining(1); endGame('身體已到極限，'+S.year+' 年春訓後宣布引退。'); return; }
   const declAge=S.age-(S.traits.disc?2:0); /* 自律狂:衰退曲線整體延後兩年 */
   if(declAge>=32){ const dec=declAge>=35?5+(declAge-35):2;
     POS_AB[S.pos].forEach(k=>S.ab[k]=clamp(S.ab[k]-dec,1,80));
@@ -1072,17 +1420,19 @@ function phasePre(){
     let msg=`自主訓練擲出 <b class="hl">${n}</b> 顆骰。`;
     if(newSix&&!S.traits.genius)msg+=` 高標值「6」累計 <b class="hl">${S.six}/5</b> 次。`;
     
-    /* 【修正】無巧不工改為：自動擲骰並加點，滿額溢出轉為成績加成 */
-    if(S.traits.combo && !S.skipMid && S.samePickKey) {
+    /* 【修正】大巧不工改為：自動擲骰並加點，滿額溢出轉為成績加成 */
+    if(S.traits.combo && !S.skipMid && (S.comboKey||S.samePickKey)) {
+      const ck = S.comboKey||S.samePickKey; /* 永遠用解鎖當下鎖定的能力 */
       const cv = S.traits.genius?ri(4,6):S.traits.late?ri(3,6):ri(1,6);
-      const gained = addAb(S.samePickKey, cv); /* 這裡改回用 addAb，我們直接抓底層的溢出值 */
+      const gained = addAb(ck, cv);
       const overflow = S.lastOverflow || 0;
-      
+
       if(overflow > 0) S.pendStat = (S.pendStat || 0) + overflow;
-      
-      let cmsg = `<br>無巧不工發動：系統自動擲出 <b class="hl">${cv}</b> 點，挹注於 <b class="hl">${ABL[S.samePickKey]}</b>`;
+
+      let cmsg = `<br>大巧不工發動：系統自動擲出 <b class="hl">${cv}</b> 點，挹注於 <b class="hl">${ABL[ck]}</b>`;
       if(gained > 0) cmsg += `（能力 <b class="up">+${gained}</b>）`;
       if(overflow > 0) cmsg += `（頂峰造極：溢出的 ${overflow} 點轉為<b class="up">本季成績加成</b>）`;
+      if(gained===0 && overflow===0) cmsg += `（能力加點，但不足以提升一級）`;
       msg += cmsg + `。`;
     }
     
@@ -1134,10 +1484,10 @@ function phasePre(){
   }
   if(S.stage==='PRO'&&S.age>=36&&S.rehab===0){
     const oldOpts=[{t:'再戰一年',main:true,f:afterAsk}];
-    /* 旅外老將:放棄現有合約,落葉歸根返台(重簽中職,原合約作廢) */
-    if(S.org!=='CPBL'&&ovr()>=LV.CPBL1.min){
-      oldOpts.push({t:'放棄合約，落葉歸根',s:'解約返台，重披中職戰袍',f:()=>{
-        card('good','落葉歸根',`年紀增長，在異鄉打拚的你，也開始想家。這時候有家鄉球隊招手，於是你決定放棄合約，重返臺灣獻技。`);
+    /* 旅外老將(衰退期):放棄現有合約,落葉歸根返台;ovr<30(真的打不動)不給 */
+    if(S.org!=='CPBL'&&ovr()>=LV.CPBL2.min){
+      oldOpts.push({t:'放棄合約，落葉歸根',s:'狀態不再，仍想把最後的球打給家鄉看',f:()=>{
+        card('good','落葉歸根',`狀態早已不在巔峰。但家鄉球隊仍然向你招手——他們要的不是現在的數據，是你這個名字陪著大家走過的那些年。你決定放棄合約，回家，把最後的球打給臺灣的球迷看。`);
         signTo('CPBL','CPBL1'); advance();
       }});
     }
@@ -1159,22 +1509,34 @@ function phaseMid(){
         else amateurSeason(); }}]); }}]);
   }));
 }
+function evOdds(){ /* 事件卡成功率:顯示與擲骰共用同一來源 */
+  let base=(S.traits.genius||S.traits.late||S.traits.clutch)?70:50; /* 天才/大器晚成/大心臟 70 */
+  if(S.traits.thief)base-=10; /* 薪水小倫 -10 */
+  const boldPen=S.traits.clutch?0:15; /* 大心臟:豪賭無懲罰 */
+  return {safe:Math.min(95,base+20), norm:base, bold:base-boldPen};
+}
 function drawEvents(n,done){
   if(n<=0){ done(); return; }
   choose('',[{t:`抽事件卡（剩 ${n} 張）`,main:true,f:()=>{
     const pool=EVENTS.filter(e=>e.for==='*'||(e.for==='P'&&S.pos==='P')||((e.for==='A'||e.for==='B')&&S.pos!=='P')||(e.for==='PRO'&&S.stage==='PRO'));
     const ev=pick(pool);
-    const base=(S.traits.genius||S.traits.late)?70:50;
+    const od=evOdds(); /* 與實際擲骰同源 */
     const after=()=>{ board(1); drawEvents(n-1,done); };
     choose(`事件｜${ev.n} — 你要怎麼應對？`,[
-      {t:'全力一搏',warn:true,s:`成功率 ${base-15}%｜加成／減益幅度最大（±3）`,f:()=>{resolveEvent(ev,'bold',after);}},
-      {t:'照常執行',main:true,s:`成功率 ${base}%｜標準幅度（±2）`,f:()=>{resolveEvent(ev,'norm',after);}},
-      {t:'保守應對',s:`成功率 ${Math.min(95,base+20)}%｜加成／減益幅度最小（±1）`,f:()=>{resolveEvent(ev,'safe',after);}}]);
+      {t:'全力一搏',warn:true,s:`成功率 ${od.bold}%｜${S.traits.clutch?'成功 +4／失敗僅 −2':'加成／減益幅度最大（±3）'}`,f:()=>{resolveEvent(ev,'bold',after);}},
+      {t:'照常執行',main:true,s:`成功率 ${od.norm}%｜標準幅度（±2）`,f:()=>{resolveEvent(ev,'norm',after);}},
+      {t:'保守應對',s:`成功率 ${od.safe}%｜加成／減益幅度最小（±1）`,f:()=>{resolveEvent(ev,'safe',after);}}]);
   }}]);
 }
 /* 出廠預設為全虛構人名;玩家可透過隱藏編輯器自訂名單(僅存於玩家本機) */
 let CHEER=['林曉晴','陳若彤','張沛慈','王詠恩','許昀熙','蘇采蓁','周依潔','郭芷萱'];
 const CHEER_DEFAULT=CHEER.slice();
+let CHEER_SAFE=['馮海莎']; /* 不會變成小三的名單:可交往/結婚,永不出現在外遇人選 */
+function datePool(){ /* 交往/結婚名單 */
+  if(CHEER_SAFE.length>=CHEER.length) return CHEER_SAFE.slice();      /* 安全名單較長:直接整組替換 */
+  return CHEER_SAFE.concat(CHEER.slice(CHEER_SAFE.length));           /* 較短:同數量替換進名單 */
+}
+function affairPool(){ return CHEER.slice(); } /* 外遇名單=原啦啦隊名單 */
 function loveEvent(next){
   const L=S.love;
   if(S.stage!=='PRO'||S.age<20){ next(); return; }
@@ -1194,33 +1556,33 @@ function loveEvent(next){
     const ask=()=>proposalAsk(next);
     if(chance(30)){ /* 三成機率先來一段插曲,結束後照樣問婚 */
       const r=R()*100;
-      if(r<40){ const t=pick(CHEER.filter(n=>n!==L.partner));
+      if(r<40){ const t=pick(affairPool().filter(n=>n!==L.partner));
         choose(`聚餐散場，${t} 說順路想搭你的車`,[
           {t:'讓她上車（賭一把）',warn:true,s:'沒被抓到＝體力提升｜被抓到＝能力下跌、當年分手率+30%',f:()=>{
             L.affairs++;
-            if(chance(55)){ const g=addAbStat('sta',2); board(1);
-              card('bad','深夜兜風',`沒有人拍到。你把方向盤握得很緊——<b class="up">體力 +${g}</b>。（這條路不會有好結局）`); ask(); }
+            if(chance(55)){ const gt=loveGainTxt('sta',2); board(1);
+              card('bad','深夜兜風',`沒有人拍到。你把方向盤握得很緊——${gt}。（這條路不會有好結局）`); ask(); }
             else loveCaughtDating(next); }},
           {t:`「不順路。」直接載 ${L.partner} 回家`,main:true,s:'感情穩固，絕對不虧',f:()=>{
-            const g=addAbStat('sta',1); board(1);
-            card('good','正確答案',`你傳訊息給 ${L.partner}：「馬上到。」——<b class="up">體力 +${g||1}</b>。`); ask(); }}]); return; }
-      if(r<70){ const g=addAbStat('sta',1); board(1);
-        card('good','明星賽放閃',`明星賽表演賽，鏡頭掃到看台上的 <b class="hl">${L.partner}</b>，你隔著全場比了一個手勢，轉播單位立刻切出愛心特效，隔天甜上熱搜——<b class="up">體力 +${g||1}</b>。`); ask(); return; }
-      const g=addAbStat('sta',1); board(1);
-      card('good','愛情長跑',`交往邁入第 ${y} 年。沒有大新聞，只有每個客場系列賽結束後，機場出口那杯她替你買好的熱美式——<b class="up">體力 +${g||1}</b>。`); ask(); return; }
+            const gt=loveGainTxt('sta',1); board(1);
+            card('good','正確答案',`你傳訊息給 ${L.partner}：「馬上到。」——${gt}。`); ask(); }}]); return; }
+      if(r<70){ const gt=loveGainTxt('sta',1); board(1);
+        card('good','明星賽放閃',`明星賽表演賽，鏡頭掃到看台上的 <b class="hl">${L.partner}</b>，你隔著全場比了一個手勢，轉播單位立刻切出愛心特效，隔天甜上熱搜——${gt}。`); ask(); return; }
+      const gt=loveGainTxt('sta',1); board(1);
+      card('good','愛情長跑',`交往邁入第 ${y} 年。沒有大新聞，只有每個客場系列賽結束後，機場出口那杯她替你買好的熱美式——${gt}。`); ask(); return; }
     ask(); return;
   }
   const fire=(L.st==='married'&&L.kids===0)?40:(L.st==='single'||L.st==='divorced')?40:30;
   if(!chance(fire)){ next(); return; }
   /* ---------- 未婚/離婚:緋聞 → 雙重關卡 → 交往 ---------- */
   if(L.st==='single'||L.st==='divorced'){
-    const p=pick(CHEER);
+    const p=pick(datePool());
     card('info','場外話題',`你和啦啦隊女神 <b class="hl">${p}</b> 被拍到球場外同框，緋聞登上娛樂版頭條。${L.exes.length?'（評論區：「離過婚還這麼搶手」）':''}`);
     choose('記者把麥克風遞到你面前：「兩位是在交往嗎？」',[
       {t:'大方承認：「請大家祝福我們」',s:'還要看她那邊敢不敢承認（球團有禁愛令傳聞）',f:()=>{
         if(chance(65)){ L.st='dating'; L.partner=p; L.dyrs=0; L.datedTimes=(L.datedTimes||0)+1;
-          const g=addAbStat('sta',1); board(1);
-          card('gold','戀情公開',`<b class="hl">${p}</b> 在社群發出十指緊扣的照片：「謝謝大家的祝福。」戀愛使人容光煥發——<b class="up">體力 +${g||1}</b>。你們正式交往了。`);
+          const gt=loveGainTxt('sta',1); board(1);
+          card('gold','戀情公開',`<b class="hl">${p}</b> 在社群發出十指緊扣的照片：「謝謝大家的祝福。」戀愛使人容光煥發——${gt}。你們正式交往了。`);
           if(L.datedTimes>=3&&L.kids===0&&!S.traits.married&&!S.traits.confidante){ S.traits.confidante=true; note('confidante');
             card('gold','隱藏稱號：閨中密友',`第三段戀情，還是走到了同樣的結局。「我愛上了你，你卻只把我當好姊妹。」——有些人註定是別人生命裡的過客。`); board(1); }
         }
@@ -1231,29 +1593,29 @@ function loveEvent(next){
   }
   /* ---------- 已婚 ---------- */
   if(L.kids<4&&chance([65,45,30,20][L.kids])){ /* 生子:第一胎最優先,越生越少 */
-    L.kids++; const kk=pick(POS_AB[S.pos]); const g=addAbStat(kk,2); board(1);
-    card('gold','新生命',`${L.partner} 平安生下你們的第 <b class="hl">${L.kids}</b> 個孩子。當了${L.kids>1?'幾次':''}爸爸的男人，眼神都不一樣了——<b class="up">${ABL[kk]} +${g}</b>。`);
+    L.kids++; const kk=pick(POS_AB[S.pos]); const gt=loveGainTxt(kk,2); board(1);
+    card('gold','新生命',`${L.partner} 平安生下你們的第 <b class="hl">${L.kids}</b> 個孩子。當了${L.kids>1?'幾次':''}爸爸的男人，眼神都不一樣了——${gt}。`);
     next(); return;
   }
   const r=R()*100;
   if(r<40){ /* 外遇誘惑:唯一可以賭的婚內事件 */
-    const t=pick(CHEER.filter(n=>n!==L.partner));
+    const t=pick(affairPool().filter(n=>n!==L.partner));
     choose(`客場飯店酒吧，${t} 傳來訊息：「睡了嗎？」`,[
       {t:'赴約（賭一把）',warn:true,s:'沒被抓到＝體力提升｜被抓到＝能力下跌、婚姻危機',f:()=>{
         L.affairs++;
-        if(chance(55)){ const g=addAbStat('sta',2); board(1);
-          card('bad','深夜行程',`你僥倖沒被拍到。不知為何，罪惡感反而讓你精神亢奮——<b class="up">體力 +${g}</b>。（你知道這不會有好下場）`);
+        if(chance(55)){ const gt=loveGainTxt('sta',2); board(1);
+          card('bad','深夜行程',`你僥倖沒被拍到。不知為何，罪惡感反而讓你精神亢奮——${gt}。（你知道這不會有好下場）`);
           next(); }
         else loveCaught(next); }},
       {t:'回訊息：「陪小孩讀完故事書了，晚安」',main:true,s:'家庭和睦，絕對不虧',f:()=>{
-        const g=addAbStat('sta',1); board(1);
-        card('good','家的方向',`你把手機扣在桌上，撥了視訊回家。${L.partner} 和孩子在鏡頭那頭揮手。心定了，身體就穩了——<b class="up">體力 +${g||1}</b>。`); next(); }}]); return; }
+        const gt=loveGainTxt('sta',1); board(1);
+        card('good','家的方向',`你把手機扣在桌上，撥了視訊回家。${L.partner} 和孩子在鏡頭那頭揮手。心定了，身體就穩了——${gt}。`); next(); }}]); return; }
   if(r<70&&L.kids>0){ /* 愛小孩新聞 */
-    const g=addAbStat('sta',1); board(1);
-    card('good','球場邊的父親',`你被拍到賽前隔著護網教孩子怎麼戴手套，影片配文「最強棒球教室」瘋傳。網友：「這才是人生勝利組。」——<b class="up">體力 +${g||1}</b>。`); next(); return; }
+    const gt=loveGainTxt('sta',1); board(1);
+    card('good','球場邊的父親',`你被拍到賽前隔著護網教孩子怎麼戴手套，影片配文「最強棒球教室」瘋傳。網友：「這才是人生勝利組。」——${gt}。`); next(); return; }
   /* 結婚紀念日 */
-  const g=addAbStat('sta',1); board(1);
-  card('good','結婚紀念日',`結婚紀念日，你推掉了自主訓練，陪 <b class="hl">${L.partner}</b> 回到當年辦婚禮的場地。她說：「明年也要來喔。」——<b class="up">體力 +${g||1}</b>。`); next();
+  const gt=loveGainTxt('sta',1); board(1);
+  card('good','結婚紀念日',`結婚紀念日，你推掉了自主訓練，陪 <b class="hl">${L.partner}</b> 回到當年辦婚禮的場地。她說：「明年也要來喔。」——${gt}。`); next();
 }
 function divorceRec(){ const L=S.love;
   L.exes.push({name:L.partner,kids:L.kids});
@@ -1284,8 +1646,7 @@ function proposalAsk(next){
   choose(`交往第 ${L.dyrs} 年——${L.partner} 看著別人的婚禮影片看了很久`,[
     {t:'就是現在——求婚',s:'固定加成：全體力提升、本季更不容易受傷',f:()=>{
       L.st='married'; L.kids=0; L.dyrs=0;
-      const g2=addAbStat('sta',2); S.tmpInj-=5; board(1);
-      const gTxt=g2>0?`<b class="up">體力 +${g2}</b>、`:`<b class="up">狀態火燙（成績加成）</b>、`;
+      const gTxt=loveGainTxt('sta',2)+'、'; S.tmpInj-=5; board(1);
       card('gold','婚禮',`你在主場本壘板後方單膝跪地，大螢幕打出「Marry Me」。<b class="hl">${L.partner}</b> 哭著點頭。休賽季完婚，紅毯用壘包排成——${gTxt}本季受傷機率 <b class="up">−5%</b>。`); next(); }},
     {t:'再存一點錢吧',main:true,s:'她沒說什麼,但交往越久分手風險越高',f:()=>{
       card('info','再等等','她關掉影片，笑著說沒事。你假裝沒看到她眼裡的東西。'); next(); }}]);
@@ -1311,6 +1672,15 @@ function loveCaughtDating(next){
     {t:'坦然分手',f:()=>{ const ex=L.partner;
       L.st=L.exes.length?'divorced':'single'; L.partner=null; L.dyrs=0;
       card('bad','分手',`<b class="hl">${ex}</b> 的限時動態只有一片黑。粉絲全都知道是誰的錯。`); next(); }}]);
+}
+function loveGainTxt(k,amt){ /* 戀愛事件加點:機制同事件卡(addAbStat);回傳誠實的顯示文字 */
+  const before=S.pendStat||0;
+  const g=addAbStat(k,amt);
+  const over=(S.pendStat||0)-before;
+  if(g>0&&over>0)return `<b class="up">${ABL[k]} +${g}</b>（溢出 ${over} 點轉為本季成績加成）`;
+  if(g>0)return `<b class="up">${ABL[k]} +${g}</b>`;
+  if(over>0)return `<b class="up">本季成績加成 +${over}</b>（${ABL[k]} 已達潛力上限）`;
+  return `${ABL[k]} 能力加點，但不足以提升一級`;
 }
 function addAbStat(k,amt){ 
   if(amt<=0)return addAb(k,amt);
@@ -1338,15 +1708,13 @@ function statBonus(pts,out){ /* 能力已達潛力上限,獎勵轉成當季成�
 }
 function resolveEvent(ev,mode,done){
   done=done||function(){};
-  let base=(S.traits.genius||S.traits.late||S.traits.clutch)?70:50; /* 大心臟:事件賭博基礎率同天才 */
-  if(S.traits.thief)base-=10; /* 薪水小倫 */
-  const boldPen=S.traits.clutch?0:15; /* 大心臟:消除豪賭 -15% */
+  const od=evOdds(); /* 與畫面顯示同源,保證所見即所得 */
   if(mode==='safe')S.cntSave++;
   let good,tag;
-  if(mode==='safe'){ good=chance(Math.min(95,base+20)); tag='保守應對'; }
-  else if(mode==='bold'){ good=chance(base-boldPen); tag='全力一搏';
+  if(mode==='safe'){ good=chance(od.safe); tag='保守應對'; }
+  else if(mode==='bold'){ good=chance(od.bold); tag='全力一搏';
     if(good)S.cntBoldWin++; else S.cntBoldFail++; }
-  else { good=chance(base); tag=''; }
+  else { good=chance(od.norm); tag=''; }
   if(mode==='safe'&&good)S.cntSaveWin=(S.cntSaveWin||0)+1; /* 自律狂:保守成功才算 */
   if((ev.n==='宵夜文化'||ev.n==='場外代言邀約')&&mode!=='safe'&&!good)S.cntSnack++;
   /* 效果固定 ±1;豪賭成功則同一項再 +1(等於賭中加倍成長),豪賭失敗則 -1 再 -1 */
@@ -1370,6 +1738,7 @@ function resolveEvent(ev,mode,done){
         if(!S.carry) S.carry={}; S.carry[k]=cr; S.ab[k]=cur;
         
         if(gained>0) out.push(`${ABL[k]} <span class="up">+${gained}</span>`);
+        else if(bud<=0) out.push(`${ABL[k]}：能力加點，但不足以提升一級`); /* 點數進了進度槽,未滿一級 */
         if(bud>0) statBonus(bud,out); /* 溢出部分轉換為成績加成 */
       }
       touched=true;
@@ -1382,7 +1751,7 @@ function resolveEvent(ev,mode,done){
     else if(k in S.ab){ applyAbil(k,dir); } }
   if(!touched){ applyAbil(pick(POS_AB[S.pos]),good?1:-1); }
   card(good?'good':'bad','事件卡｜'+ev.n+(tag?`（${tag}）`:''),
-    `${good?ev.gt:ev.bt}。${mode==='bold'&&good?'<b class="hl">豪賭成功！</b>':''}${mode==='bold'&&!good?'<b class="dn">豪賭失敗……</b>':''}<br>${out.join('｜')||'（素質增加，但不足以升級）'}`);
+    `${good?ev.gt:ev.bt}。${mode==='bold'&&good?'<b class="hl">豪賭成功！</b>':''}${mode==='bold'&&!good?'<b class="dn">豪賭失敗……</b>':''}<br>${out.join('｜')||'（能力加點，但不足以提升一級）'}`);
   checkTraitsMid();
   done();
 }
@@ -1397,7 +1766,8 @@ function allocDone(touched,isDice){
     else if(focused){ S.samePickKey=focused; S.samePick=1; }
     else { S.samePickKey=null; S.samePick=0; }
     if(S.samePick>=3&&!S.traits.combo){ S.traits.combo=true; S.samePickBonus=true;
-      traitCard('combo','無巧不工',`連續三年，你把所有汗水都澆在同一個工具上——<b class="hl">季初擲骰永久多 1 顆</b>。專精者的複利。`); }
+      S.comboKey=S.samePickKey; /* 鎖定解鎖當下的能力,之後不再變動 */
+      traitCard('combo','大巧不工',`連續三年，你把所有汗水都澆在同一個工具上——<b class="hl">季初系統會自動擲 1 顆骰，永遠加在你專精的「${ABL[S.comboKey]}」上</b>。專精者的複利。`); }
   }
   /* 大器晚成:25 歲後單季加點總幅度 >=8 */
   const gain=Object.values(touched).reduce((a,b)=>a+b,0);
@@ -1427,7 +1797,11 @@ function checkTraitsMid(){
     traitCard('cancer','更衣室毒瘤','教練受夠了你的不可控，隊友對你的新聞指指點點。比起成績，球團現在更想清理休息室的氣氛——<b class="dn">季中被交易機率大增、續約條件惡化</b>。','bad'); }
 }
 function teamNick(team){ /* ◯◯先生的◯◯:取隊名代表詞 */
-  const map={'台中猛瑪':'猛瑪','府城雄獅':'雄獅','桃園金剛':'金剛','新北騎士':'騎士','台北恐龍':'恐龍','高雄神鵰':'神鵰'};
+  const map={'台中猛瑪':'猛瑪','府城雄獅':'雄獅','桃園金剛':'金剛','新北騎士':'騎士','台北恐龍':'恐龍','高雄神鵰':'神鵰',
+    /* 撞名處理:襪王以顏色區分;大人兩隊隊色同為橘,以城市區分 */
+    '波士頓襪王':'紅襪王','風城襪王':'白襪王','東京大人':'東京大人','灣區大人':'灣區大人',
+    /* slice(-2) 切字修正 */
+    '競技者':'競技者','沙漠眼鏡蛇':'眼鏡蛇'};
   return map[team]||(team||'').slice(-2);
 }
 function teamChampRate(team){ /* 顯示用奪冠率:每隊每年略有波動,以隊名雜湊出基準 */
@@ -1467,13 +1841,18 @@ function tradeCheck(cont){
   let p=15+ (S.tradeHeat||0); /* 基礎 15% + 累積怨氣 */
   if(S.traits.cancer)p+=25; if(S.traits.ambience)p+=20;
   if(!chance(p)){ cont(); return; }
+  /* 一人一城:神主牌/◯◯先生是城市的象徵,球團絕不放人(非賣品) */
+  if(S.traits.franchise||S.traits.mrteam){
+    card('info','非賣品',`他隊捧著誘人的包裹來詢價，高層連會議都沒開就回絕了——<b class="hl">「他是這座城市的象徵，非賣品。」</b>`);
+    board(1); cont(); return;
+  }
   if(star){
     /* 明星:否決權詢問(同舊設定) */
     if(S.traits.cancer){ doTradeExec(); card('bad','毒瘤交易','球團受夠了休息室的氣氛，直接把你打包送走。'); board(1); cont(); return; }
     choose('交易大限：他隊送來報價，球團徵詢你的否決權',[
       {t:'點頭同意，換個環境',main:true,f:()=>{ doTradeExec(); card('info','轉隊','你打包行李，前往新的城市。'); board(1); cont(); }},
-      {t:'行使否決權，我要留下',warn:true,s:'未來 3 年冠軍機率下降、下張合約薪水 −1/3',f:()=>{
-        S.tradeRefuse=3; card('info','否決交易',`你按下否決鍵。忠誠是一種選擇——但球團的重建計畫被你打亂了，接下來幾年戰力受影響，你的下一張合約也別想拿滿。`); board(1); cont(); }}]);
+      {t:'行使否決權，我要留下',warn:true,s:'未來 2 年冠軍機率略降、下張合約薪水 −15%',f:()=>{
+        S.tradeRefuse=2; card('info','否決交易',`你按下否決鍵。忠誠是一種選擇——球團的重建計畫被你打亂了，短期戰力和你的下張合約都會付出一點代價，但這件球衣，你留下來了。`); board(1); cont(); }}]);
     return;
   }
   /* 非明星:交易傳言,可抱怨或沉默 */
@@ -1494,7 +1873,7 @@ function doTradeExec(){
   /* 季末交易 = 下季起改效力新隊(乾淨轉隊,不設 tradeFrom,避免隔年被誤顯示成兩隊 split) */
   S.teamYears=0; S.champThisTeam=false; S.champTeam=null; S.champStreak=0; /* 換隊,連霸中斷 */
   const list=S.org==='CPBL'?CPBL_TEAMS:S.org==='NPB'?NPB_TEAMS:MLB_TEAMS;
-  const nt=pick(list.filter(t=>t!==S.orgTeam)); S.orgTeam=nt; board(1);
+  const nt=pick(list.filter(t=>t!==S.orgTeam)); S.orgTeam=nt; tlNote(2,'轉隊 '+nt); board(1);
 }
 function portionOf(st,r){
   const p={...st};
@@ -1580,13 +1959,31 @@ function proSeason(){
     /* 野手防呆：打席數不可能少於出賽數 */
     st.PA = Math.max(st.PA, st.G); 
   }
-  if(S.pendStat>0&&S.seasonFactor>0){ const p=S.pendStat;
-    if(S.pos==='P'){ st.SO+=p*8; st.IP=+(st.IP+p*4).toFixed(1);
+  if(S.pendStat>0&&S.seasonFactor>0){
+    /* 【修正】狀態火燙的加成，必須依照該季實際出賽的比例（seasonFactor）進行打折 */
+    const p = S.pendStat * S.seasonFactor;
+    if(S.pos==='P'){
+      /* 狀態火燙=教練重用:後援先加出賽(不超過場次上限),再加內容;物理約束重夾 */
+      if(!isSP()){ const addG=Math.min(Math.max(0,68-st.G),Math.round(p*1.2)); st.G+=addG; st.IP=+(st.IP+addG*1.05).toFixed(1); }
+      st.SO+=Math.round(p*8); st.IP=+(st.IP+p*4).toFixed(1);
       if(isSP())st.W+=Math.round(p*0.4); else st.SV+=Math.round(p*0.6);
-      st.era=st.IP>0?clamp(st.era-p*0.05,1.40,9.90):st.era; st.ER=Math.round(st.era*st.IP/9); }
-    else { const addH=p*6, addHR=Math.round(p*1.4);
+      st.era=st.IP>0?clamp(st.era-p*0.05,1.40,9.90):st.era; st.ER=Math.round(st.era*st.IP/9);
+      if(!isSP()){ /* 救援/勝敗不可超過出賽數(物理約束) */
+        st.SV=Math.min(st.SV||0,Math.floor(st.G*0.85));
+        st.HLD=Math.min(st.HLD||0,Math.max(0,st.G-st.SV));
+        const decCap=Math.max(0,st.G-st.SV-st.HLD);
+        if((st.W+st.L)>decCap){ st.W=Math.min(st.W,decCap); st.L=Math.max(0,decCap-st.W); }
+      } }
+    else { const Lg=LV[S.lv];
+      /* 狀態火燙=教練重用:先轉為上場機會(G/PA 連動,不超過聯盟場次),打擊內容同步升溫 */
+      const addG=Math.min(Math.max(0,(Lg.g||120)-st.G), Math.round(p*1.5));
+      const addPA=Math.round(addG*4.25), addAB=Math.round(addPA*0.9);
+      st.G+=addG; st.PA+=addPA; st.AB+=addAB;
+      let addH=Math.round(addAB*0.55)+Math.round(p*1.5); /* 新打席打得火燙+原打席手感提升 */
+      addH=Math.max(0,Math.min(addH, st.AB-st.H));        /* 安打不可超過打數 */
+      const addHR=Math.min(addH, Math.round(p*1.2));
       st.H+=addH; st.HR+=addHR; st.RBI+=Math.round(addHR*2.1+(addH-addHR)*0.3);
-      st.AB+=addH; st.PA+=addH; st.avg=st.AB?st.H/st.AB:0; }
+      st.avg=st.AB?st.H/st.AB:0; }
   }
   S.pendStat=0;
   /* 投法對成績的加成/折損 */
@@ -1609,6 +2006,13 @@ function proSeason(){
       `<span class="tag">合計</span><div class="statline">${statLine(st)}</div>`);
   }
   else card('','球季數據',`<span class="tag">${S.teamName()}${S.dpos?'｜'+S.dpos:''}</span><div class="statline">${statLine(st)}</div>`);
+  /* 低潮年 / 生涯年 敘述卡 */
+  if(st.form===-1){
+    card('bad','巨大的低潮',`身體狀況很好，但是成績一直打不出來，遇到了巨大的低潮。孤獨、無助，就像是溺水一樣，只能隨意抓取孤木。`);
+  }else if(st.form===1){
+    if(S.pos==='P') card('gold','生涯年','縫線掠過指尖的感覺無與倫比，而你投出去的球像是有了生命，用一個無人能想像得到的角度，閃過了打者的球棒，並穩穩投進捕手的手套。');
+    else card('gold','生涯年','投來的每顆球看起來都像籃球一樣大，你看得到縫線、球的轉動，就和駭客任務的子彈一樣慢了下來，而你每一顆擊中甜蜜點的球，都往全壘打牆奔去。');
+  }
   const isInj = S.seasonFactor <= 0.45; /* 判斷是否為大傷報廢年 */
   S.log.push({y:S.year,age:S.age,tm:S.tradeFrom?`${S.tradeFrom}→${S.teamName()}`:S.teamName(),p:S.dpos||'',line:S.seasonFactor===0?'傷缺全季':statLine(st), inj: isInj, st: st});
   S.tradeFrom=null;
@@ -1620,8 +2024,10 @@ function proSeason(){
   else if(S.seasonFactor<0.95)S.ironStreak=0;
   /* 只會這個:先看夠不夠格當主力,夠格絕不判工具人;不夠格才看有無突出工具 */
   if(S.pos!=='P'){ const tg=toolGap();
-    /* 主力判定:本季出賽達聯盟場次 60% → 每日球員以上,絕不是工具人 */
-    const isRegular = S.seasonFactor>0 && st.G >= LV[S.lv].g*0.60;
+    /* 主力判定:還原健康狀態下的預估出賽數,傷病缺陣不影響評估
+       (出賽數公式含 seasonFactor,除回即得健康時的預估;表現係數仍保留) */
+    const projG = S.seasonFactor > 0 ? (st.G / S.seasonFactor) : 0;
+    const isRegular = projG >= LV[S.lv].g * 0.60;
     if(!S.traits.onetool && !isRegular && tg.gap>=22 && tg.val>=58 && careerAllStars()<4){ S.traits.onetool=true;
       const wasBefore=S.removed.includes('只會這個');
       S.removed=S.removed.filter(x=>x!=='只會這個'); /* 重新觸發:清掉刪除線記錄 */
@@ -1631,7 +2037,7 @@ function proSeason(){
         traitCard('onetool','只會這個',`歲月帶走了你的其他工具，只剩<b class="hl">${role}</b>那一項本領還在。教練把你當成板凳上的秘密武器——關鍵時刻，你仍然可靠。`,'bad');
       else
         traitCard('onetool','只會這個',`你只有一項武器強得誇張，其餘全是破洞。教練不敢讓你先發，只在關鍵時刻派你上去做一件事——你成了球隊的<b class="hl">${role}</b>。出賽數銳減，但那一項本領無人能及。`,'bad'); }
-    else if(S.traits.onetool && (tg.gap<18 || (S.seasonFactor>0 && st.G>=LV[S.lv].g*0.60))){ /* 補起來 或 打回主力 → 解除 */
+    else if(S.traits.onetool && (tg.gap<18 || isRegular)){ /* 補起來 或 實力打回主力 → 解除 */
       removeTrait('onetool','只會這個'); S.toolRole=null;
       card('good','不再是工具人','教練終於敢把你放進先發打線——你證明了自己不只是板凳上的一招鮮。<b class="hl">「只會這個」解除</b>，你是個完整的球員了。'); board(1); } }
   awards(bucket,st);
@@ -1749,6 +2155,8 @@ function awards(bucket,st){
   /* 6. 後續獲獎觸發特質 */
   const added=h.filter(x=>x.startsWith(String(y)));
   if(added.length){ card('gold','年度獎項',added.map(x=>x.slice(5)).join('｜'));
+    const topAw=added.find(x=>/年度MVP/.test(x))||added.find(x=>/最佳投手|王/.test(x))||added.find(x=>/新人王/.test(x))||added[0];
+    tlNote(3,topAw.slice(5));
     if(S.traits.yips){ removeTrait('yips','失憶症'); card('good','走出陰影','站上大舞台拿下獎項的那一刻，腦海裡的雜音消失了——<b class="hl">失憶症痊癒</b>。'); }
     if(S.traits.glass&&!S.traits.phoenix){ const big=added.some(x=>/MVP|最佳投手|打擊王|全壘打王|新人王/.test(x));
       if(big){ S.traits.phoenix=true; removeTrait('glass','玻璃人');
@@ -1777,6 +2185,9 @@ function maybeIntl(done){
       const rk=['冠軍','亞軍','季軍','複賽止步','預賽出局'][i], pts=[6,5,4,2,1][i];
       let gpts=pts; if(S.traits.intlace)gpts=Math.max(pts,2);
       S.pool+=gpts; S.injNext=S.traits.intlace?0:10; S.intlCount++;
+      /* Team Taiwan(挺台灣):國際賽出賽超過 5 次 */
+      if(!S.traits.taiwan&&S.intlCount>5){ S.traits.taiwan=true;
+        card('gold','隱藏稱號：Team Taiwan',`永遠把國家榮耀放在比職涯更高的位子，台灣球迷的心中永遠有一幅畫：你在球場上向全場比劃著胸口，那是你心中最榮耀的地方。`); board(1); }
       /* 累積國際賽個人成績(一屆約 6-8 場),依能力 d 值決定表現 */
       { const a=S.ab, par=52; const IS=S.intlStat;
         if(S.pos==='P'){ const dd=(a.vel+a.ctl+a.brk)/3-par;
@@ -1785,7 +2196,7 @@ function maybeIntl(done){
           const era=clamp(3.6-dd*0.16,0.8,8); IS.ER+=Math.round(era*ip/9);
           if(i<=2&&chance(45))IS.W++; if(!isSP()&&chance(30))IS.SV++;
           IS.G+=ri(1,3);
-        } else { const dd=(a.con*0.6+a.eye*0.2+a.spd*0.2)-par;
+        } else { const dd=(a.con*0.5+a.pow*0.2+a.eye*0.18+a.spd*0.12)-par-0.5; /* 同步賽季 d 公式(含 pow) */
           const g=ri(5,8), pa=g*ri(3,4); IS.G+=g; IS.PA+=pa;
           const ab=Math.round(pa*0.86); IS.AB+=ab;
           const avg=clamp(0.270+dd*0.006,0.15,0.5); const h=Math.round(ab*avg); IS.H+=h;
@@ -1797,7 +2208,7 @@ function maybeIntl(done){
       if(!S.traits.intlace&&S.intlCount>=3&&(S.intlTop4||0)>=2){ S.traits.intlace=true;
         card('gold','隱藏屬性解鎖：國際賽之鬼','只要穿上 CT 球衣，你的痛覺就會消失——你是為大場面而生的男人。<b class="hl">國際賽不再增加受傷風險，且每次徵召能力點保底 +2</b>。'); }
       if(i<=2)S.honors.push(`${S.year} ${name}${rk}`);
-      if(i===0){ noteChamp('champ_'+(wbc?'WBC':'P12'), name+'冠軍'); S.champIntl[wbc?'WBC':'P12']=true; }
+      if(i===0){ noteChamp('champ_'+(wbc?'WBC':'P12'), name+'冠軍'); S.champIntl[wbc?'WBC':'P12']=true; tlNote(3,(wbc?'經典賽':'12強')+'冠軍'); }
       else if(i===1) noteChamp('runner_'+(wbc?'WBC':'P12'), name+'亞軍');
       let ex=''; const mp=S.traits.clutch?2:1; if((i===0&&chance(30*mp))||(i===1&&chance(8*mp))){S.honors.push(`${S.year} ${name}MVP`);ex='你被選為<b class="hl">賽會MVP</b>！';}
       card(i<=1?'gold':'info',name,`中華隊最終成績：<b class="hl">${rk}</b>。${ex}獲得能力點 <b class="hl">${gpts}</b> 點。${S.traits.intlace?'國家英雄不知何謂疲憊。':'國際賽的高強度消耗，讓下季受傷風險上升。'}`);
@@ -1817,7 +2228,7 @@ function phaseEnd(){
       const tp=LV[S.lv].top;
       const pc=clamp(({CPBL:15,NPB:8,MLB:3.5})[tp]+(S.lastD||0)*0.5,2,({CPBL:26,NPB:15,MLB:9})[tp]);
       let pcc=pc; if(S.traits.clutch)pcc*=1.25; /* 大心臟 */
-      if(S.tradeRefuse>0){ pcc*=0.5; } /* 否決交易:戰力受影響 */
+      if(S.tradeRefuse>0){ pcc*=0.75; } /* 否決交易:戰力略受影響(成本已降) */
       if(chance(pcc)){ const cN={CPBL:'中職總冠軍',NPB:'日本一',MLB:'世界大賽冠軍'}[LV[S.lv].top];
         S.honors.push(`${S.year} ${cN}`); S.wonChamp=true; S.champThisTeam=true; S.champTeam=S.orgTeam;
         noteChamp('champ_'+tp, cN); S.champLg[tp]=true;
@@ -1850,7 +2261,7 @@ function movement(){
   }
   /* 職業 */
   if(S.skipMid){ advance(); return; } /* 復健年不異動 */
-  if(o<30){ endGame('能力已跌破中職二軍最低水準，'+S.year+' 年球季後遭釋出，被迫引退。'); return; }
+  if(o<30){ buyoutRemaining(1); endGame('能力已跌破中職二軍最低水準，'+S.year+' 年球季後遭釋出，被迫引退。'); return; }
   if(S.org==='NPB')S.npbYears++;
   if(LV[S.lv].top){ /* 轉換聯盟：直接解除球團 5 年控制期限制，往後只要合約到期就是自由球員 */
     if(S.svcOrg && S.svcOrg!==S.org){ S.faElig=true; }
@@ -1867,7 +2278,16 @@ function movement(){
     if(!S.traits.mrteam&&S.teamYears>=15&&(S.lastD||0)>=0){ S.traits.mrteam=true; S.mrTeamName=S.orgTeam;
       const nick=teamNick(S.orgTeam); const mrOrg=LV[S.lv]&&LV[S.lv].org;
       noteMrTeam(mrOrg, S.orgTeam, nick+'先生');
-      card('gold','隱藏稱號：'+nick+'先生',`十五個年頭，同一件球衣。球迷不再喊你的名字，他們喊你「<b class="hl">${nick}先生</b>」——你就是這支球隊的代名詞。`); board(1); } }
+      card('gold','隱藏稱號：'+nick+'先生',`十五個年頭，同一件球衣。球迷不再喊你的名字，他們喊你「<b class="hl">${nick}先生</b>」——你就是這支球隊的代名詞。`); board(1); }
+    /* ◯◯七彩球衣:同一聯盟生涯效力球隊數超標(中職>3、日職>5、美職>5) */
+    if(!S.traits.rainbow){
+      const RB={CPBL:['中職',3],NPB:['日職',5],MLB:['大聯盟',5]};
+      for(const lg in RB){
+        const n=Object.keys((S.teamTally&&S.teamTally[lg])||{}).length;
+        if(n>RB[lg][1]){ S.traits.rainbow=true; S.rainbowLg=RB[lg][0];
+          card('info','隱藏稱號：'+RB[lg][0]+'七彩球衣',`打開衣櫃，${n} 件不同的球衣掛在眼前——${RB[lg][0]}的球隊你快穿過一輪了。球迷笑稱你是「<b class="hl">七彩球衣</b>」：去到哪裡都能活下來，這也是一種本事。`); board(1); break; }
+      }
+    } }
   const path=PATHS[S.org], idx=path.indexOf(S.lv);
   let minReq=LV[S.lv].min;
   if(S.org==='NPB'&&S.npbYears>=8){ minReq-=4; }
@@ -1905,6 +2325,7 @@ function movement(){
       if(idx<path.length-2){ const nx2=path[idx+2];
         if(o>=LV[nx2].min+2&&(S.lastD||0)>=4)to=nx2; }
       S.lv=to; card('good','升級通知',`表現獲得肯定，${to!==nx?'<b class="hl">連跳兩級</b>':'晉升'} <b class="hl">${LV[to].n}</b>！`); board(2);
+      if(LV[to].top)tlNote(2,'升上'+LV[to].n);
       if(S.traits.yips){ removeTrait('yips','失憶症'); card('good','走出陰影','重回上一層舞台，你終於找回了節奏——<b class="hl">失憶症痊癒</b>。'); } } }
   if(!S.ct)S.ct={yrs:2,mult:1};
   S.ct.yrs--;
@@ -1922,16 +2343,18 @@ function movement(){
   }
   crossOffers(o);
 }
-function buyoutRemaining(){ /* 合約還有剩餘年數 → 球團買斷,剩餘年薪以七成計 */
-  if(!S.ct||!(S.ct.yrs>1)||!LV[S.lv].top)return 0;
+function buyoutRemaining(rate){ /* 合約剩餘年數給付:玩家自請提前結束=七成(預設);球團主動終止=十成全額 */
+  rate=rate||0.7;
+  if(!S.ct||!(S.ct.yrs>1)||(!LV[S.lv].top&&rate<1))return 0; /* 球團主動終止不受二軍守衛限制 */
   const remain=S.ct.yrs-1; /* 當年已算過,剩餘為 yrs-1 */
   if(remain<=0)return 0;
   const yearly=Math.round(salaryFor(S.lv,S.lastD||0)*(S.ct.mult||1));
   const full=yearly*remain;                 /* 剩餘合約總額 */
-  const total=Math.round(full*0.7);          /* 買斷金:七成 */
+  const total=Math.round(full*rate);
   if(total>0){ S.salary+=total;
-    card('gold','合約買斷',`你仍在合約中，球團依約買斷剩餘 <b class="hl">${remain} 年</b>合約——雙方談定以 <b class="hl">七成</b> 價碼結清，<b class="hl">${fmtMoney(total)}</b> 一次入帳。合約精神，該給的一毛不少。`); }
-  S.ct={yrs:1,mult:S.ct.mult}; /* 買斷後合約結清 */
+    if(rate>=1) card('gold','合約全額給付',`合約還有 <b class="hl">${remain} 年</b>，但這次不是你要走——球團主動終止合約，依約剩餘薪資<b class="hl">十成全額</b>給付，<b class="hl">${fmtMoney(total)}</b> 一次入帳。白紙黑字的長約，在此刻護住了你。`);
+    else card('gold','合約買斷',`你仍在合約中，球團依約買斷剩餘 <b class="hl">${remain} 年</b>合約——雙方談定以 <b class="hl">七成</b> 價碼結清，<b class="hl">${fmtMoney(total)}</b> 一次入帳。合約精神，該給的一毛不少。`); }
+  S.ct={yrs:1,mult:S.ct.mult}; /* 給付後合約結清 */
   return total;
 }
 /* 引退時若沒回中職,補一場大巨蛋開球告別 */
@@ -1985,12 +2408,12 @@ function handleDemotion(o,path,idx){
 function outOfOrg(o){
   /* 遭原聯盟釋出，尋找重疊層級合約 */
   const offers=[];
-  if(S.org!=='NPB'&&o>=44)offers.push({t:'日職二軍（支配下）合約',f:()=>{buyoutRemaining();signTo('NPB','NPB2');}});
-  if(S.org!=='CPBL'){ if(o>=41)offers.push({t:'中職一軍合約',f:()=>{buyoutRemaining();signTo('CPBL','CPBL1');}});
-    else if(o>=30)offers.push({t:'中職二軍合約',f:()=>{buyoutRemaining();signTo('CPBL','CPBL2');}}); }
-  if(!offers.length){ buyoutRemaining(); daibaFarewell(()=>endGame('遭球團釋出且無人問津，'+S.year+' 年黯然引退。')); return; }
+  if(S.org!=='NPB'&&o>=44)offers.push({t:'日職二軍（支配下）合約',f:()=>{buyoutRemaining(1);signTo('NPB','NPB2');}});
+  if(S.org!=='CPBL'){ if(o>=41)offers.push({t:'中職一軍合約',f:()=>{buyoutRemaining(1);signTo('CPBL','CPBL1');}});
+    else if(o>=30)offers.push({t:'中職二軍合約',f:()=>{buyoutRemaining(1);signTo('CPBL','CPBL2');}}); }
+  if(!offers.length){ buyoutRemaining(1); daibaFarewell(()=>endGame('遭球團釋出且無人問津，'+S.year+' 年黯然引退。')); return; }
   card('bad','戰力外通告',`未達 ${S.org==='NPB'?'日職':'原聯盟'}留用門檻，遭到釋出。所幸還有球隊捎來邀請——`);
-  if(S.age>=33){ offers.push({t:'就此引退',warn:true,f:()=>{buyoutRemaining();daibaFarewell(()=>endGame('收到戰力外通告後，'+S.year+' 年選擇引退。'));}}); }
+  if(S.age>=33){ offers.push({t:'就此引退',warn:true,f:()=>{buyoutRemaining(1);daibaFarewell(()=>endGame('收到戰力外通告後，'+S.year+' 年選擇引退。'));}}); }
   choose('新東家的邀請',offers.map(x=>({...x,f:()=>{x.f();advance();}})));
 }
 function teamListOf(org){ return org==='CPBL'?CPBL_TEAMS:org==='NPB'?NPB_TEAMS:MLB_TEAMS; }
@@ -1998,7 +2421,7 @@ function signTo(org,lv,team,yrs,mult){
   S.org=org; S.lv=lv;
   /* 【修正】先決定新球隊是誰，比對不一樣才把年資歸零，最後再蓋掉 S.orgTeam */
   const newTeam = team || pick(teamListOf(org));
-  if(newTeam !== S.orgTeam){ S.teamYears=0; S.champThisTeam=false; S.champTeam=null; S.champStreak=0; }
+  if(newTeam !== S.orgTeam){ S.teamYears=0; S.champThisTeam=false; S.champTeam=null; S.champStreak=0; tlNote(2,'加盟 '+newTeam); }
   S.orgTeam = newTeam;
   S.ct={yrs:yrs||2,mult:mult||1};
   if(org!=='NPB')S.npbYears=0;
@@ -2029,7 +2452,7 @@ function termParams(d,lv){ /* 長約 >2 年、短約 1-2 年;年齡大或成績�
   const shortY=Math.min(2,Math.max(1,maxY)); /* 短約 1-2 年 */
   let baseM=d>=3?1.2:d>=0?1:0.8;
   if(S.traits.franchise)baseM=Math.max(baseM,1.2);
-  if(S.tradeRefuse>0)baseM*=0.67;
+  if(S.tradeRefuse>0)baseM*=0.85;
   return {longEligible,longY,shortY,longM:+(baseM*0.92).toFixed(2),shortM:+(baseM*1.12).toFixed(2)};
 }
 function termChoice(o,d,baseTitle,onPick,onReject){
@@ -2069,7 +2492,7 @@ function faFlow(o){
   const injHist=(S.bigInj||0)+(S.tjCount||0);
   if(injHist>=2&&stayY<=3)stayM+=0.15; /* 傷病史多但短約:補高薪 */
   if(S.traits.franchise)stayM=Math.max(stayM,1.2); /* 神主牌 */
-  if(S.tradeRefuse>0)stayM*=0.67; /* 否決交易:下約 -1/3 */
+  if(S.tradeRefuse>0)stayM*=0.85; /* 否決交易:下約 -15%(成本已降) */
   if(S.traits.cancer){ stayM=Math.min(stayM,0.95); /* 毒瘤:續約惡化 */
     if(!S.traits.franchise&&chance(45)){
       card('bad','球團冷處理','母球團明確表示無意續約——你的新聞比你的成績更出名。');
@@ -2187,6 +2610,7 @@ function runDraft(fromSchool,cb){
     S.stage='PRO'; S.team=''; S.salary+=bonus; S.svc=0; S.faElig=false;
     signTo('CPBL',lv,team,ri(2,3),1); /* 菜鳥分段短約(2~3年) */
     card('gold','中華職棒選秀會',`第 <b class="hl">${rd}</b> 輪獲 <b class="hl">${team}</b> 指名！簽約金依順位為 <b class="hl">${fmtMoney(bonus)}</b>。${lv==='CPBL1'?'即戰力評價，直接放入一軍名單。':'先從二軍出發。'}`);
+    tlNote(4,'選秀第'+rd+'輪');
     board(0); cb();
   };
   /* 輪次不滿意(第 3 輪以後)可選擇重返業餘再拚一年;年齡太大(24+)則不給這選項,避免拖太久 */
@@ -2245,16 +2669,14 @@ function pathChoiceU4(){
     pickOfferUI('大聯盟球團報價','MiLB',makeOffers('MiLB',2,bonusMiLB,3,4,o>=55?'A1':'R',null),advance);}});
   choose(`大學畢業 · 綜合能力 ${o}`,opts);
 }
-if(typeof document!=='undefined'&&document.getElementById('btn-restart')){
-  document.getElementById('btn-restart').onclick=function(){
-    if(confirm('確定要放棄這段人生，從頭開始嗎？'))location.href=location.pathname;
-  };
+if(typeof document!=='undefined'&&document.getElementById('btn-menu')){
+  document.getElementById('btn-menu').onclick=menuModal;
 }
 function advance(){
   S.age++; S.year++; S.stageYr++; startYear();
 }
 /* ================= 生涯終章 ================= */
-const TIER_TH={CPBL:[8000,5900,4300,2900],NPB:[6400,4900,3600,2500],MLB:[5000,3900,2900,2200]};
+const TIER_TH={CPBL:[12000,7000,4300,2100],NPB:[8500,6200,3000,1900],MLB:[7500,6200,3500,1900]}; /* M2:五帶金字塔校準(擬真玩家尺)——成功稀有化、浮沉為大宗、失敗有感 */
 const LG_N={CPBL:'中職',NPB:'日職',MLB:'大聯盟',MINOR:'小聯盟／二軍'};
 /* ================= 個人獎項圖鑑 ================= */
 const AWARD_KEY='yakyulife.award.v1';
@@ -2475,6 +2897,7 @@ function endGame(reason){
   S.done=true; actClear();
   divider('生涯終幕');
   card('info','引退',reason);
+  tlNote(5,'引退'); careerTimelineCard();
   /* 各聯盟數據與評價 */
   let tables='',evals=[],best=99; const tiersByLg={};
   ['MLB','NPB','CPBL','MINOR'].forEach(b=>{ if(S.stats[b]){ tables+=statTable(b);
@@ -2557,6 +2980,7 @@ function endGame(reason){
   card('','生涯累積數據',(tables||'<p>（無職業層級出賽紀錄）</p>')+intlTable);
   if(evals.length)card('gold','生涯評價',evals.join('<br>'));
   /* 獎項與大賽成績（群組化） */
+  /* 獎項與大賽成績（群組化） */
   let honorsHTML = '（生涯未獲得任何獎項）';
   if(S.honors.length) {
     const awardMap = {};
@@ -2570,18 +2994,33 @@ function endGame(reason){
     const honorsList = [];
     for(const awd in awardMap) {
        const yrs = awardMap[awd];
-       if(yrs.length > 1 && yrs[0] !== '') honorsList.push(`· ${awd} *${yrs.length} (${yrs.join('、')})`);
-       else honorsList.push(`· ${awd} ${yrs[0]?`(${yrs[0]})`:''}`);
+       if(yrs[0] !== '') {
+         let nums = yrs.map(Number).sort((a,b)=>a-b);
+         let res=[], st=nums[0], ed=nums[0];
+         for(let i=1; i<=nums.length; i++){
+           if(i<nums.length && nums[i]===ed+1){ ed=nums[i]; }
+           else {
+             if(ed-st>=2) res.push(`${st}~${ed}`); // 三年或以上連號，用 ~
+             else if(ed-st===1) res.push(`${st}、${ed}`); // 兩年連號，維持頓號
+             else res.push(`${st}`); // 單一年份
+             if(i<nums.length){ st=nums[i]; ed=nums[i]; }
+           }
+         }
+         if(yrs.length > 1) honorsList.push(`· ${awd} *${yrs.length} (${res.join('、')})`);
+         else honorsList.push(`· ${awd} (${res[0]})`);
+       } else {
+         honorsList.push(`· ${awd}`);
+       }
     }
     honorsHTML = honorsList.join('<br>');
   }
   card(S.honors.length?'gold':'','獎項與大賽成績', honorsHTML);
   /* 特質與薪資 */
   const tr=[];
-  const TN={genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',goldcloth:'黃金聖衣',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',legend:(S.legendLeague||'')+'歷史級球星',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',combo:'無巧不工'};
-  const posT={pos:['legend','goldcloth','mrteam','confidante','genius','late','disc','academy','intlace','franchise','clutch','phoenix','rubber','onetool','smallschool','grinder','combo'],neg:['glass','scum','yips','distract','cancer','ambience','thief']};
+  const TN={genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',goldcloth:'黃金聖衣',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',legend:(S.legendLeague||'')+'歷史級球星',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',combo:'大巧不工',rainbow:(S.rainbowLg||'')+'七彩球衣',taiwan:'Team Taiwan'};
+  const posT={pos:['legend','taiwan','goldcloth','mrteam','confidante','genius','late','disc','academy','intlace','franchise','clutch','phoenix','rubber','onetool','smallschool','grinder','combo','rainbow'],neg:['glass','scum','yips','distract','cancer','ambience','thief']};
   const tagStyle=k=>{
-    if(k==='legend')return 'background:#3a2c05;border-color:#ffc95c;color:#ffe08a'; /* 歷史級:金 */
+    if(k==='legend'||k==='taiwan')return 'background:#3a2c05;border-color:#ffc95c;color:#ffe08a'; /* 歷史級/挺台灣:金 */
     if(k==='goldcloth')return 'background:#3a3505;border-color:#e8d43a;color:#fff35a'; /* 黃金聖衣:黃 */
     if(k==='mrteam'){ const tc=TEAM_COLOR[S.mrTeamName]||'#ffc95c'; return 'background:#1a1a1a;border-color:'+tc+';color:'+tc; }
     if(k==='genius')return 'background:#232733;border-color:#c8d0e0;color:#e8eef7';        /* 天才:銀 */
@@ -2615,6 +3054,7 @@ function endGame(reason){
   if(S.traits.franchise)picks.push('一隊一人，退休號碼準備掛上去了。謝謝你留下來');
   if(S.traits.legend)picks.push('這輩子能看到你打球，是我們這代球迷的福氣。歷史級的');
   if(S.traits.intlace)picks.push('穿上國家隊球衣的那個男人，永遠的國家英雄');
+  if(S.traits.taiwan)picks.push('六度披上國家隊戰袍，從不推辭。他比劃胸口的那一幕，我手機桌布放到現在');
   if(S.traits.disc)picks.push('自律到可怕，凌晨四點的球場都認得他');
   if(S.traits.cancer)picks.push('球是打得好啦，但那個態度……更衣室少了他反而清靜');
   if(S.traits.thief)picks.push('當年拒絕下放又打不出來，薪水小倫這名號是自己掙來的');
@@ -2656,13 +3096,18 @@ function endGame(reason){
   choose('',[
     {t:'⚾ 開啟新的人生（新種子）',main:true,f:()=>{location.href=location.pathname;}},
     {t:'用同一個種子重來',s:'seed: '+SEED,f:()=>{location.href=location.pathname+'?seed='+SEED;}}]);
+  /* 結算定錨:蓋過預設的捲到底,改捲到「生涯終幕」開頭,玩家從結算第一行開始看 */
+  setTimeout(()=>{ try{
+    const heads=document.querySelectorAll('.yr-head');
+    for(const h of heads){ if(h.textContent==='生涯終幕'){ h.scrollIntoView({behavior:'auto',block:'start'}); break; } }
+  }catch(e){} }, 250);
 }
 /* 結算圖（Canvas 產生 PNG，可長按儲存或自動下載） */
 function shareImage(evals,out){
   const isP=S.pos==='P';
   const tiers=evals.map(t=>t.replace(/<[^>]+>/g,''));
   /* 特性(保留 + 刪除線標記) */
-  const TN2={legend:(S.legendLeague||'')+'歷史級球星',goldcloth:'黃金聖衣',genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',combo:'無巧不工'};
+  const TN2={legend:(S.legendLeague||'')+'歷史級球星',taiwan:'Team Taiwan',goldcloth:'黃金聖衣',genius:'天才',iron:'鐵人',glass:'玻璃人',scum:'渣男',late:'大器晚成',disc:'自律狂',academy:'學院派',intlace:'國際賽之鬼',franchise:'神主牌',clutch:'大心臟',phoenix:'浴火重生',onetool:'只會這個',rubber:'橡膠手臂',mrteam:(teamNick(S.mrTeamName||'')||'')+'先生',confidante:'閨中密友',smallschool:'小學校之光',grinder:'努力仔',yips:'失憶症',distract:'外務纏身',cancer:'更衣室毒瘤',ambience:'氣氛大師',thief:'薪水小倫',combo:'大巧不工',rainbow:(S.rainbowLg||'')+'七彩球衣'};
   const negK=['glass','scum','yips','distract','cancer','ambience','thief'];
   const keepTr=Object.keys(TN2).filter(k=>S.traits[k]).map(k=>({label:TN2[k],key:k,neg:negK.includes(k)}));
   const remTr=(S.removed||[]).map(l=>({label:l,key:'',neg:false,rem:true}));
@@ -2696,8 +3141,23 @@ function shareImage(evals,out){
   });
   for(const awd in aMap) {
      const yrs = aMap[awd];
-     if(yrs.length > 1 && yrs[0] !== '') honors.push(`${awd} *${yrs.length} (${yrs.join(',')})`);
-     else honors.push(`${awd} ${yrs[0]?`(${yrs[0]})`:''}`);
+     if(yrs[0] !== '') {
+       let nums = yrs.map(Number).sort((a,b)=>a-b);
+       let res=[], st=nums[0], ed=nums[0];
+       for(let i=1; i<=nums.length; i++){
+         if(i<nums.length && nums[i]===ed+1){ ed=nums[i]; }
+         else {
+           if(ed-st>=2) res.push(`${st}~${ed}`);
+           else if(ed-st===1) res.push(`${st}、${ed}`);
+           else res.push(`${st}`);
+           if(i<nums.length){ st=nums[i]; ed=nums[i]; }
+         }
+       }
+       if(yrs.length > 1) honors.push(`${awd} *${yrs.length} (${res.join('、')})`);
+       else honors.push(`${awd} (${res[0]})`);
+     } else {
+       honors.push(`${awd}`);
+     }
   }
   /* 歷年成績 */
   const hist=S.log.slice();
@@ -2708,6 +3168,11 @@ function shareImage(evals,out){
   const cv=document.createElement('canvas');
   const c=cv.getContext('2d');
   c.font='13px sans-serif';
+  /* Canvas colors follow the active theme tokens (read from computed style) */
+  const _css=getComputedStyle(document.body), _tk=(n,fb)=>((_css.getPropertyValue(n)||'').trim()||fb);
+  const C_BG=_tk('--bg','#0b1a12'), C_EDGE=_tk('--edge','#2b4a38'), C_DIM=_tk('--dim','#8fae9c'),
+        C_ACC=_tk('--accent','#ffc95c'), C_TX=_tk('--text','#e8efe9'), C_GOOD=_tk('--good','#9fd8a8'),
+        C_BAD=_tk('--bad','#ff8b7a'), C_P2=_tk('--panel2','#173524');
 
   /* 處理榮譽雙欄換行 */
   const colW=(W-PAD*2)/2, maxTextW=colW-20;
@@ -2745,26 +3210,26 @@ function shareImage(evals,out){
   H+=70;
   cv.width=W*scale; cv.height=H*scale;
   c.scale(scale,scale);
-  c.fillStyle='#0b1a12'; c.fillRect(0,0,W,H);
-  c.strokeStyle='#2b4a38'; c.lineWidth=3; c.strokeRect(10,10,W-20,H-20);
+  c.fillStyle=C_BG; c.fillRect(0,0,W,H);
+  c.strokeStyle=C_EDGE; c.lineWidth=3; c.strokeRect(10,10,W-20,H-20);
   c.textBaseline='top';
   const posN={P:roleN(S.role)+'投手',C:'捕手',IF:'內野手',OF:'外野手'}[S.pos];
 
   // Header
-  c.fillStyle='#8fae9c'; c.font='13px sans-serif'; c.fillText('Y a K y o L i f e ・ 引 退 紀 念',PAD,30);
-  c.fillStyle='#ffc95c'; c.font='bold 36px sans-serif'; c.fillText(S.name,PAD,52);
-  c.fillStyle='#e8efe9'; c.font='15px sans-serif';
+  c.fillStyle=C_DIM; c.font='13px sans-serif'; c.fillText('Y a K y o L i f e ・ 引 退 紀 念',PAD,30);
+  c.fillStyle=C_ACC; c.font='bold 36px sans-serif'; c.fillText(S.name,PAD,52);
+  c.fillStyle=C_TX; c.font='15px sans-serif';
   c.fillText(`${primaryPos()}｜${playerType()}｜${hist.length?hist[0].y:'?'}–${S.year}｜引退時 ${S.age} 歲${S.pos==='P'&&S.tjCount?`｜TJ×${S.tjCount}`:''}`,PAD,98);
   // 特性列(header 右方)
   let y=126;
   function tagColor(o){
     if(o.rem)return {bg:'#242424',bd:'#4a4a4a',fg:'#8a8a8a'};
-    if(o.key==='legend')return {bg:'#3a2c05',bd:'#ffc95c',fg:'#ffe08a'}; /* 金 */
+    if(o.key==='legend'||o.key==='taiwan')return {bg:'#3a2c05',bd:'#ffc95c',fg:'#ffe08a'}; /* 金(歷史級/Team Taiwan) */
     if(o.key==='goldcloth')return {bg:'#3a3505',bd:'#e8d43a',fg:'#fff35a'}; /* 黃 */
     if(o.key==='mrteam'){ const tc=TEAM_COLOR[S.mrTeamName]||'#ffc95c'; return {bg:'#1a1a1a',bd:tc,fg:tc}; }
     if(o.key==='genius')return {bg:'#232733',bd:'#c8d0e0',fg:'#e8eef7'}; /* 銀 */
     if(o.neg)return {bg:'#2a0f0f',bd:'#c0392b',fg:'#ff8b7a'};             /* 紅 */
-    return {bg:'#173524',bd:'#2b4a38',fg:'#9fd8a8'};                      /* 琥珀綠 */
+    return {bg:C_P2,bd:C_EDGE,fg:C_GOOD};                                 /* 主題色 */
   }
   function drawTags(items){ items.forEach(function(o){ const t=o.label, col=tagColor(o);
     c.font='12px sans-serif'; const w=c.measureText(t).width+16;
@@ -2777,19 +3242,19 @@ function shareImage(evals,out){
   var tagx=PAD;
   if(keepTr.length||remTr.length){ drawTags(keepTr.concat(remTr)); y+=30; }
 
-  function hr(){ c.strokeStyle='#2b4a38'; c.lineWidth=1; c.beginPath(); c.moveTo(PAD,y); c.lineTo(W-PAD,y); c.stroke(); y+=12; }
-  function sectionTitle(t){ c.fillStyle='#8fae9c'; c.font='bold 13px sans-serif'; c.fillText(t,PAD,y); y+=22; }
+  function hr(){ c.strokeStyle=C_EDGE; c.lineWidth=1; c.beginPath(); c.moveTo(PAD,y); c.lineTo(W-PAD,y); c.stroke(); y+=12; }
+  function sectionTitle(t){ c.fillStyle=C_DIM; c.font='bold 13px sans-serif'; c.fillText(t,PAD,y); y+=22; }
 
   // 評價
   hr(); sectionTitle('生涯評價');
-  c.font='bold 16px sans-serif'; c.fillStyle='#ffc95c';
+  c.font='bold 16px sans-serif'; c.fillStyle=C_ACC;
   tiers.forEach(function(t){ c.fillText('★ '+t,PAD,y); y+=24; }); y+=6;
 
   // 生涯數據表
   hr(); sectionTitle('生涯累積數據');
   const cols=isP?[['League',90],['Yrs',36],['G',48],['IP',54],['W',36],['L',36],['SV',48],['HLD',48],['SO',52],['BB',48],['ERA',52],['WHIP',54]]
                 :[['League',80],['Yrs',34],['G',40],['PA',46],['AVG',48],['OBP',48],['SLG',48],['OPS',48],['H',44],['HR',38],['RBI',44],['SB',40],['DEF',40]];
-  function row(cells,head){ let x=PAD; c.font=(head?'bold ':'')+'13px monospace'; c.fillStyle=head?'#8fae9c':'#e8efe9';
+  function row(cells,head){ let x=PAD; c.font=(head?'bold ':'')+'13px monospace'; c.fillStyle=head?C_DIM:C_TX;
     cells.forEach(function(cell,i){ c.fillText(String(cell),x,y); x+=cols[i][1]; }); y+=head?24:26; }
   row(cols.map(cc=>cc[0]),true);
   leagues.forEach(function(b){ const st=S.stats[b];
@@ -2808,7 +3273,7 @@ function shareImage(evals,out){
   // 國際賽生涯成績
   if(S.intlCount>0){ const IS=S.intlStat;
     hr(); sectionTitle('國際賽生涯（中華隊 '+S.intlCount+' 屆）');
-    const rowIntl=(cells,head)=>{ let x=PAD; c.font=(head?'bold ':'')+'13px monospace'; c.fillStyle=head?'#8fae9c':'#e8efe9';
+    const rowIntl=(cells,head)=>{ let x=PAD; c.font=(head?'bold ':'')+'13px monospace'; c.fillStyle=head?C_DIM:C_TX;
       cells.forEach(function(cell,i){ c.fillText(String(cell),x,y); x+=ic[i][1]; }); y+=head?24:28; };
     var ic;
     if(isP){ const era=IS.IP>0?(IS.ER*9/IS.IP).toFixed(2):'-';
@@ -2825,7 +3290,7 @@ function shareImage(evals,out){
 
   // 榮譽(雙欄橫式,過長自動換行)
   hr(); sectionTitle('生涯榮譽（'+honors.length+' 項）');
-  c.font='13px sans-serif'; c.fillStyle='#9fd8a8';
+  c.font='13px sans-serif'; c.fillStyle=C_GOOD;
   let startY = y;
   let currY = startY;
   honorBlocks.forEach(function(b, i){
@@ -2840,10 +3305,10 @@ function shareImage(evals,out){
   if(amaLogs.length > 0){
     hr(); sectionTitle('生涯年表（業餘成績）');
     const hc=[['年',48],['齡',40],['球隊',150],['成績',W-PAD*2-238]];
-    let x=PAD; c.font='bold 12px monospace'; c.fillStyle='#8fae9c';
+    let x=PAD; c.font='bold 12px monospace'; c.fillStyle=C_DIM;
     hc.forEach(function(h){ c.fillText(h[0],x,y); x+=h[1]; }); y+=20;
     c.font='11px monospace';
-    amaLogs.forEach(function(r){ x=PAD; c.fillStyle=r.inj?'#ff8b7a':'#cfe0d4';
+    amaLogs.forEach(function(r){ x=PAD; c.fillStyle=r.inj?C_BAD:C_TX;
       const cells=[String(r.y),String(r.age),r.tm,r.line];
       cells.forEach(function(cell,i){
         let t=String(cell); const maxw=hc[i][1]-8;
@@ -2856,10 +3321,10 @@ function shareImage(evals,out){
     const hc = isP
       ? [['年',46],['齡',36],['球隊',124],['G',45],['IP',55],['W',36],['L',36],['SV',42],['HLD',42],['SO',46],['BB',46],['ERA',52],['WHIP',54]]
       : [['年',46],['齡',34],['球隊',120],['G',36],['PA',42],['AVG',46],['OBP',46],['SLG',46],['OPS',46],['H',40],['HR',36],['RBI',40],['SB',36],['DEF',40]];
-    let x=PAD; c.font='bold 12px monospace'; c.fillStyle='#8fae9c';
+    let x=PAD; c.font='bold 12px monospace'; c.fillStyle=C_DIM;
     hc.forEach(function(h){ c.fillText(h[0],x,y); x+=h[1]; }); y+=20;
     c.font='12px monospace';
-    proLogs.forEach(function(r){ x=PAD; c.fillStyle=r.inj?'#ff8b7a':'#cfe0d4';
+    proLogs.forEach(function(r){ x=PAD; c.fillStyle=r.inj?C_BAD:C_TX;
       const tmS=r.tm;
       const s = r.st || {G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,IP:0,SO:0,ER:0,avg:0,era:0,WHIP:0,DEF:0};
       let cells = [];
@@ -2885,9 +3350,9 @@ function shareImage(evals,out){
     y+=4;
   }
 
-  c.fillStyle='#ffc95c'; c.font='bold 16px sans-serif';
+  c.fillStyle=C_ACC; c.font='bold 16px sans-serif';
   c.fillText('生涯總薪資 '+fmtMoney(Math.round(S.salary))+' 台幣',PAD,y); y+=26;
-  c.fillStyle='#8fae9c'; c.font='11px monospace'; c.fillText('seed: '+SEED,PAD,H-40);
+  c.fillStyle=C_DIM; c.font='11px monospace'; c.fillText('seed: '+SEED,PAD,H-40);
   c.textAlign='right'; c.fillText(APP_VER,W-PAD,H-40); c.textAlign='left';
 
   const url=cv.toDataURL('image/png');
@@ -3099,6 +3564,17 @@ document.querySelectorAll('.achv-tab').forEach(b=>b.onclick=()=>{
   if(t)t.onclick=()=>{ document.getElementById('act').classList.toggle('collapsed');
     t.textContent=document.getElementById('act').classList.contains('collapsed')?'⌃ 展開選項':'⌄ 收合選項'; };
 })();
+(function(){ /* theme init + timeline click delegation */
+  try{ applyMobileUI(localStorage.getItem('yakyu-mobile-ui')==='1'); }catch(e){}
+  document.querySelectorAll('#seg-ui button').forEach(b=>b.onclick=()=>applyMobileUI(b.dataset.u==='1'));
+  let t='a'; try{t=localStorage.getItem(THEME_KEY)||'a';}catch(e){}
+  document.querySelectorAll('#seg-theme button').forEach(b=>b.onclick=()=>applyTheme(b.dataset.t));
+  applyTheme(t);
+  ['tl-list','tl-strip'].forEach(id=>{ const el=$(id);
+    if(el)el.onclick=ev=>{ const n=ev.target.closest('[data-i]'); if(n)tlScrollTo(TL[+n.dataset.i]); }; });
+  const md=$('modal'); if(md)md.onclick=ev=>{ if(ev.target===md)modalClose(); };
+  document.addEventListener('keydown',ev=>{ if(ev.key==='Escape')modalClose(); });
+})();
 let selPos='P';
 $('seed-show').value=SEED;
 $('seed-re').onclick=e=>{e.preventDefault();SEED=Math.random().toString(36).slice(2,10);$('seed-show').value=SEED;};
@@ -3122,10 +3598,32 @@ $('btn-start').onclick=()=>{
   };
   $('start').style.display='none';
   $('board').style.display=''; $('act').style.display='';
+  TL=[]; renderTimeline();
+  const ts=$('tl-seed'); if(ts)ts.textContent=SEED;
   card('info','球員誕生',`${S.year} 年春天，${POSN[S.pos]} <b class="hl">${S.name}</b> 加入 <b class="hl">${S.team}</b> 棒球隊。三年後的路，要自己選。<br><span style="color:var(--dim);font-size:12px">提示：22 歲前累積擲出 5 次「6」可覺醒隱藏素質。</span>`);
   startYear();
 };
-(function(){ const vb=document.getElementById('ver-badge'); if(vb)vb.textContent=APP_VER; })();
+/* ================= PWA installability(單檔限制:manifest 於執行期以 Blob 產生) ================= */
+const PWA_ICON_192='data:image/png;base64,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';
+const PWA_ICON_512='data:image/png;base64,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';
+(function(){
+  if(!/^https?:$/.test(location.protocol))return; /* keep file:// double-click usage untouched */
+  try{
+    const dir=location.origin+location.pathname.replace(/[^/]*$/,'');
+    const mf={id:dir,name:document.title||'YaKyoLife - 棒球人生模擬器',short_name:'YaKyoLife',
+      description:'從高中三大賽到名人堂，一場種子化的台灣棒球員生涯模擬。',
+      lang:'zh-Hant',start_url:dir,scope:dir,display:'standalone',
+      background_color:'#081510',theme_color:'#081510',
+      icons:[{src:PWA_ICON_192,sizes:'192x192',type:'image/png',purpose:'any'},
+        {src:PWA_ICON_512,sizes:'512x512',type:'image/png',purpose:'any'},
+        {src:PWA_ICON_512,sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+    const l=document.createElement('link'); l.rel='manifest';
+    l.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));
+    document.head.appendChild(l);
+  }catch(e){}
+})();
+(function(){ const vb=document.getElementById('ver-badge'); if(vb)vb.textContent=APP_VER;
+  const tv=document.getElementById('tl-ver'); if(tv)tv.textContent=APP_VER; })();
 </script>
 </body>
 </html>
