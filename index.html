@@ -156,10 +156,11 @@ table.fin td:first-child,table.fin th:first-child,table.st td:first-child,table.
 .btn.warn{border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
 #act .row2{display:flex;gap:8px}#act .row2 .btn{flex:1;text-align:center}
 /* 骰子與加點 */
-#dice{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+/* single row always: dice shrink evenly (44px cap) when the container is narrow */
+#dice{display:flex;align-items:flex-start;gap:8px;flex-wrap:nowrap;margin-bottom:10px}
 /* dice as baseballs: light ball face + dashed stitch ring (per-theme tint), depth per theme */
-.die{width:44px;height:44px;border-radius:var(--r);background:#ece7d6;border:2px solid rgba(0,0,0,.16);
-  color:#13291c;font-family:var(--disp);font-size:22px;font-weight:700;
+.die{flex:1 1 0;max-width:44px;min-width:0;aspect-ratio:1;height:auto;border-radius:var(--r);background:#ece7d6;border:2px solid rgba(0,0,0,.16);
+  color:#13291c;font-family:var(--disp);font-size:22px;font-weight:700;line-height:1; /* inherited 1.6 would floor the auto height above the aspect-ratio square */
   display:flex;align-items:center;justify-content:center;transition:.15s;position:relative;
   --stitch:rgba(179,64,47,.5);
   background-image:linear-gradient(rgba(255,255,255,.25),rgba(0,0,0,.08));
@@ -281,7 +282,8 @@ body[data-theme='b'] .stitch::before,body[data-theme='b'] .stitch::after{content
 /* ---------- 桌面三欄(>920px) ---------- */
 @media(min-width:921px){
   /* body.mobile-ui opts out of the desktop layout (user toggle in the menu) */
-  body:not(.mobile-ui) #app{display:grid;grid-template-columns:250px minmax(0,1fr) 340px;align-items:stretch;
+  /* right column widens on large screens so 7 dice (max roll) fit at full size */
+  body:not(.mobile-ui) #app{display:grid;grid-template-columns:250px minmax(0,1fr) clamp(340px,31vw,400px);align-items:stretch;
     max-width:1360px;margin:0 auto;border-left:1px solid var(--edge);border-right:1px solid var(--edge)}
   body:not(.mobile-ui) #tl-side{display:block}
   body:not(.mobile-ui) #tl-in{position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto}
@@ -1282,19 +1284,38 @@ function careerTimelineCard(){ /* two-layer horizontal timeline for the career s
   const y0=TL[0].year, span=Math.max(1,TL.length-1);
   let ms=TL.filter(e=>e.note);
   if(ms.length>7)ms=ms.slice().sort((a,b)=>b.pri-a.pri||a.year-b.year).slice(0,7).sort((a,b)=>a.year-b.year);
-  /* milestone labels alternate between two rows so neighbouring years cannot collide */
-  const dots=ms.map((e,j)=>`<div style="position:absolute;left:${((e.year-y0)/span*100).toFixed(2)}%;top:0;transform:translateX(-50%);text-align:center">`+
+  /* width-aware greedy lanes: each label takes the first of 3 rows where it
+     clears that row's previous label (widths estimated from char count at the
+     guaranteed min-width, so wider containers only add slack); if 3 rows are
+     not enough, the per-year pixel width grows until everything fits */
+  const estW=s=>{let w=0;for(const c of s)w+=c.codePointAt(0)>0x2E7F?10.5:7.5;return w;};
+  const labW=e=>Math.max(estW(String(e.year)),estW(e.note))+10;
+  let pxY=32,placed=null;
+  while(!placed&&pxY<=320){
+    const axisW=TL.length*pxY-52,right=[],out=[];
+    for(const e of ms){
+      const x=(e.year-y0)/span*axisW,w=labW(e);
+      let r=0;
+      while(r<right.length&&x-w/2<right[r])r++;
+      if(r>2){out.length=0;break;}
+      right[r]=x+w/2;out.push({e,r});
+    }
+    if(out.length===ms.length)placed=out;else pxY+=8;
+  }
+  if(!placed)placed=ms.map((e,j)=>({e,r:j%3})); /* same-year duplicates can never separate; degrade gracefully */
+  const maxR=placed.reduce((m,p)=>Math.max(m,p.r),0);
+  const dots=placed.map(({e,r})=>`<div style="position:absolute;left:${((e.year-y0)/span*100).toFixed(2)}%;top:0;transform:translateX(-50%);text-align:center">`+
       `<span style="width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:var(--glow);display:block;margin:4px auto 0"></span>`+
-      `<div style="margin-top:${j%2?26:4}px">`+
+      `<div style="margin-top:${4+r*38}px">`+ /* row step 38px: the 2-line label block is ~33px tall at the inherited 1.6 line-height */
       `<span style="font-family:var(--mono);font-size:10px;color:var(--dim);display:block;white-space:nowrap">${e.year}</span>`+
       `<span style="font-size:10.5px;font-weight:700;display:block;white-space:nowrap">${e.note}</span></div></div>`).join('');
   /* guaranteed width per year; long careers scroll horizontally inside the card */
-  const minW=TL.length*32;
+  const minW=TL.length*pxY;
   card('','生涯時間軸',
     `<div style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;margin-top:4px;padding-bottom:4px">`+
     `<div style="min-width:${minW}px">`+
     `<div style="display:flex;gap:3px;margin-bottom:6px">${bands}</div>`+
-    `<div style="margin:0 26px"><div style="position:relative;height:${ms.some((_,j)=>j%2)?'96px':'62px'}">`+
+    `<div style="margin:0 26px"><div style="position:relative;height:${62+38*maxR}px">`+
     `<i style="position:absolute;left:0;right:0;top:8px;height:2px;background:var(--edge)"></i>${dots}</div></div>`+
     `</div></div>`);
 }
@@ -1492,7 +1513,7 @@ function phasePre(){
     if(S.org!=='CPBL'&&ovr()>=LV.CPBL2.min){
       oldOpts.push({t:'放棄合約，落葉歸根',s:'狀態不再，仍想把最後的球打給家鄉看',f:()=>{
         card('good','落葉歸根',`狀態早已不在巔峰。但家鄉球隊仍然向你招手——他們要的不是現在的數據，是你這個名字陪著大家走過的那些年。你決定放棄合約，回家，把最後的球打給臺灣的球迷看。`);
-        signTo('CPBL','CPBL1'); advance();
+        signTo('CPBL','CPBL1'); afterAsk();
       }});
     }
     oldOpts.push({t:'召開引退記者會',warn:true,s:'結束選手生涯',f:()=>{buyoutRemaining();daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}});
@@ -2195,11 +2216,22 @@ function maybeIntl(done){
       /* 累積國際賽個人成績(一屆約 6-8 場),依能力 d 值決定表現 */
       { const a=S.ab, par=52; const IS=S.intlStat;
         if(S.pos==='P'){ const dd=(a.vel+a.ctl+a.brk)/3-par;
-          const ip=+(ri(4,9)+R()*3).toFixed(1); IS.IP=+(IS.IP+ip).toFixed(1);
+          /* 【修正】區分先發與後援，並將局數與出賽場次連動，符合國際賽球數限制 */
+          let g, ip;
+          if(isSP()){
+            g = ri(1, 2); /* 先發王牌一屆大約扛 1~2 場 */
+            ip = +(g * (4.5 + R() * 2.5)).toFixed(1); /* 配合球數限制，單場大約吃 4.5~7 局 */
+          } else {
+            g = ri(3, 6); /* 牛棚一屆大約頻繁上陣 3~6 場 */
+            ip = +(g * (0.8 + R() * 0.8)).toFixed(1); /* 每次上場大約拆彈或投 0.8~1.6 局 */
+          }
+          
+          IS.IP=+(IS.IP+ip).toFixed(1);
+          IS.G+=g;
+          
           const k9=clamp(7.5+dd*0.12,4,14); IS.SO+=Math.round(ip/9*k9);
           const era=clamp(3.6-dd*0.16,0.8,8); IS.ER+=Math.round(era*ip/9);
           if(i<=2&&chance(45))IS.W++; if(!isSP()&&chance(30))IS.SV++;
-          IS.G+=ri(1,3);
         } else { const dd=(a.con*0.5+a.pow*0.2+a.eye*0.18+a.spd*0.12)-par-0.5; /* 同步賽季 d 公式(含 pow) */
           const g=ri(5,8), pa=g*ri(3,4); IS.G+=g; IS.PA+=pa;
           const ab=Math.round(pa*0.86); IS.AB+=ab;
