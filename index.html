@@ -608,9 +608,13 @@ const ACHV_DB={
   distract:    {cat:'trait', tone:'bad',  name:'外務纏身',     desc:'宵夜/緋聞/代言過多，季初擲骰永久 −1 顆。'},
   onetool:     {cat:'trait', tone:'bad',  name:'只會這個',     desc:'工具突出但不夠格當主力的負面標籤。'},
   confidante:  {cat:'title', tone:'good', name:'閨中密友',     desc:'第三段戀情仍走向好姊妹的結局。'},
+  taiwan:      {cat:'title', tone:'good', name:'Team Taiwan', desc:'國際賽出賽次數超過 5 次，永遠把國家榮耀放在比職涯更高的位子。'},
   legend_CPBL: {cat:'title', tone:'good', name:'中職歷史級球星', desc:'中職名人堂首輪即入選，定義了一個時代。'},
   legend_NPB:  {cat:'title', tone:'good', name:'日職歷史級球星', desc:'日職名人堂首輪即入選，定義了一個時代。'},
   legend_MLB:  {cat:'title', tone:'good', name:'大聯盟歷史級球星', desc:'大聯盟名人堂首輪即入選，定義了一個時代。'},
+  rainbow_CPBL:{cat:'title', tone:'good', name:'中職七彩球衣', desc:'中職生涯效力過的球隊數超過 3 隊，去到哪裡都能活下來。'},
+  rainbow_NPB: {cat:'title', tone:'good', name:'日職七彩球衣', desc:'日職生涯效力過的球隊數超過 5 隊，去到哪裡都能活下來。'},
+  rainbow_MLB: {cat:'title', tone:'good', name:'大聯盟七彩球衣', desc:'大聯盟生涯效力過的球隊數超過 5 隊，去到哪裡都能活下來。'},
   earlyretire: {cat:'trait', tone:'good', name:'急流勇退',     desc:'生涯站上過中職/日職/大聯盟，且最終一季表現仍在聯盟平均以上就主動掛靴。'},
   oldman:      {cat:'trait', tone:'good', name:'老屁股',       desc:'45 歲以後才退休，用歲月證明自己還能打。'},
   neverold:    {cat:'trait', tone:'good', name:'老不休',       desc:'40 歲以後仍拿下聯盟個人獎項（明星賽入選不算）。'},
@@ -2186,7 +2190,7 @@ function maybeIntl(done){
       let gpts=pts; if(S.traits.intlace)gpts=Math.max(pts,2);
       S.pool+=gpts; S.injNext=S.traits.intlace?0:10; S.intlCount++;
       /* Team Taiwan(挺台灣):國際賽出賽超過 5 次 */
-      if(!S.traits.taiwan&&S.intlCount>5){ S.traits.taiwan=true;
+      if(!S.traits.taiwan&&S.intlCount>5){ S.traits.taiwan=true; note('taiwan');
         card('gold','隱藏稱號：Team Taiwan',`永遠把國家榮耀放在比職涯更高的位子，台灣球迷的心中永遠有一幅畫：你在球場上向全場比劃著胸口，那是你心中最榮耀的地方。`); board(1); }
       /* 累積國際賽個人成績(一屆約 6-8 場),依能力 d 值決定表現 */
       { const a=S.ab, par=52; const IS=S.intlStat;
@@ -2284,7 +2288,7 @@ function movement(){
       const RB={CPBL:['中職',3],NPB:['日職',5],MLB:['大聯盟',5]};
       for(const lg in RB){
         const n=Object.keys((S.teamTally&&S.teamTally[lg])||{}).length;
-        if(n>RB[lg][1]){ S.traits.rainbow=true; S.rainbowLg=RB[lg][0];
+        if(n>RB[lg][1]){ S.traits.rainbow=true; S.rainbowLg=RB[lg][0]; note('rainbow_'+lg, RB[lg][0]+'七彩球衣');
           card('info','隱藏稱號：'+RB[lg][0]+'七彩球衣',`打開衣櫃，${n} 件不同的球衣掛在眼前——${RB[lg][0]}的球隊你快穿過一輪了。球迷笑稱你是「<b class="hl">七彩球衣</b>」：去到哪裡都能活下來，這也是一種本事。`); board(1); break; }
       }
     } }
@@ -3401,16 +3405,16 @@ function renderAchvBody(){
       return got
         ? `<div class="achv-item ${def.tone}"><div class="achv-name">${got.name}</div><div class="achv-desc">${def.desc}</div><div class="achv-date">首次發現：${got.firstAt}</div></div>`
         : `<div class="achv-item locked"><div class="achv-name">？？？</div><div class="achv-desc">尚未發現</div></div>`; };
-    const leagues=[['CPBL','中職','legend_CPBL',CPBL_TEAMS],['NPB','日職','legend_NPB',NPB_TEAMS],['MLB','大聯盟','legend_MLB',MLB_TEAMS]];
-    let total=1+leagues.length, found=(AchvStore.confidante?1:0);
-    leagues.forEach(([,,key])=>{ if(AchvStore[key])found++; });
-    leagues.forEach(([org,,,list])=>{ const mrOrg=org==='MLB'?'MiLB':org;
+    const leagues=[['CPBL','中職','legend_CPBL','rainbow_CPBL',CPBL_TEAMS],['NPB','日職','legend_NPB','rainbow_NPB',NPB_TEAMS],['MLB','大聯盟','legend_MLB','rainbow_MLB',MLB_TEAMS]];
+    let total=2+leagues.length*2, found=(AchvStore.confidante?1:0)+(AchvStore.taiwan?1:0);
+    leagues.forEach(([,,legendKey,rainbowKey])=>{ if(AchvStore[legendKey])found++; if(AchvStore[rainbowKey])found++; });
+    leagues.forEach(([org,,,,list])=>{ const mrOrg=org==='MLB'?'MiLB':org;
       total+=list.length; list.forEach(team=>{ if(MrTeamStore[mrOrg+'|'+team])found++; }); });
     let html=`<div class="achv-head">隱藏稱號　${found} / ${total}</div>`;
-    html+='<div class="achv-cat">特殊稱號</div>'+itemHtml('confidante');
-    leagues.forEach(([org,label,key,list])=>{
+    html+='<div class="achv-cat">特殊稱號</div>'+itemHtml('confidante')+itemHtml('taiwan');
+    leagues.forEach(([org,label,legendKey,rainbowKey,list])=>{
       const mrOrg=org==='MLB'?'MiLB':org;
-      html+=`<div class="achv-cat">${label}</div>${itemHtml(key)}<div class="team-grid" style="margin-top:8px">`;
+      html+=`<div class="achv-cat">${label}</div>${itemHtml(legendKey)}${itemHtml(rainbowKey)}<div class="team-grid" style="margin-top:8px">`;
       list.forEach(team=>{
         const rec=MrTeamStore[mrOrg+'|'+team];
         html+= rec
