@@ -10,12 +10,21 @@
 <meta name="apple-mobile-web-app-title" content="YaKyoLife - 棒球人生模擬器">
 <title>YaKyoLife - 棒球人生模擬器</title>
 <meta name="description" content="從高中三大賽到名人堂，一場種子化的台灣棒球員生涯模擬。選秀、旅外、國際賽、傷病、感情、引退——每一個決定都算數。">
+<link rel="canonical" href="https://leoggcat.github.io/yakyulife/">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="YaKyoLife">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:url" content="https://leoggcat.github.io/yakyulife/">
 <meta property="og:title" content="YaKyoLife - 棒球人生模擬器">
 <meta property="og:description" content="從高中三大賽到名人堂，一場種子化的台灣棒球員生涯模擬。選秀、旅外、國際賽、傷病、感情、引退——每一個決定都算數。">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://leoggcat.github.io/yakyulife/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="YaKyoLife 棒球人生模擬器">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="YaKyoLife - 棒球人生模擬器">
 <meta name="twitter:description" content="從高中三大賽到名人堂，一場種子化的台灣棒球員生涯模擬。選秀、旅外、國際賽、傷病、感情、引退——每一個決定都算數。">
+<meta name="twitter:image" content="https://leoggcat.github.io/yakyulife/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Ccircle cx=%2216%22 cy=%2216%22 r=%2214%22 fill=%22%23fff%22 stroke=%22%23d0d0d0%22/%3E%3Cpath d=%22M8 6 Q13 16 8 26 M24 6 Q19 16 24 26%22 stroke=%22%23c0392b%22 stroke-width=%221.5%22 fill=%22none%22/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/png;base64,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">
 
@@ -561,6 +570,11 @@ function dposReview(cont){
   choose(`守位會議：教練團認為你的守備已撐不住 ${DPN[S.dpos]}（${LV[S.lv].n}標準）`,opts);
 }
 const APP_VER='v1.4.1';
+/* Canonical home of the game. Replay links and the retirement card always point
+   back here, so a seed shared from a mirror still routes players to the official
+   build instead of promoting the mirror. */
+const OFFICIAL_URL='https://leoggcat.github.io/yakyulife/';
+const OFFICIAL_HOST=OFFICIAL_URL.replace(/^https?:\/\//,'').replace(/\/$/,'');
 const TEAM_COLOR={
   /* 中職 */
   '台中猛瑪':'#ffd800','府城雄獅':'#ff7f00','桃園金剛':'#8b1a1a','新北騎士':'#003f87','台北恐龍':'#c8102e','高雄神鵰':'#1a7a3a',
@@ -2986,7 +3000,7 @@ function endGame(reason){
   $('log').appendChild(sh);
   sh.querySelector('#sh-img').onclick=()=>shareImage(evals,sh.querySelector('#sh-out'));
   sh.querySelector('#sh-url').onclick=e=>{
-    const url=location.origin.startsWith('http')?location.origin+location.pathname+'?seed='+SEED:location.href.split('?')[0]+'?seed='+SEED;
+    const url=OFFICIAL_URL+'?seed='+SEED;
     const okmsg=()=>{e.target.textContent='✅ 已複製';setTimeout(()=>e.target.textContent='🔗 複製重播連結',1600);};
     if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(okmsg,()=>prompt('手動複製連結：',url));
     else prompt('手動複製連結：',url);
@@ -3249,7 +3263,10 @@ function shareImage(evals,out){
   c.fillStyle=C_ACC; c.font='bold 16px sans-serif';
   c.fillText('生涯總薪資 '+fmtMoney(Math.round(S.salary))+' 台幣',PAD,y); y+=26;
   c.fillStyle=C_DIM; c.font='11px monospace'; c.fillText('seed: '+SEED,PAD,H-40);
-  c.textAlign='right'; c.fillText(APP_VER,W-PAD,H-40); c.textAlign='left';
+  c.textAlign='right'; c.fillText(APP_VER,W-PAD,H-40);
+  /* Canonical link rides along with every shared screenshot */
+  c.fillStyle=C_ACC; c.textAlign='center'; c.fillText(OFFICIAL_HOST,W/2,H-40);
+  c.textAlign='left';
 
   const url=cv.toDataURL('image/png');
   const fileName='棒球生涯結算_'+S.name+'.png';
