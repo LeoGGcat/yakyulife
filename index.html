@@ -2065,7 +2065,7 @@ function awards(bucket,st){
 
   /* 3. 投手個人獎項 */
   if(S.pos==='P'){
-    const aw='年度最佳投手';
+    const aw=lgN+'年度最佳投手';
     if(isSP() && st.era <= th.era[0] && st.IP >= th.g){ 
       const god = st.era <= th.era[1] && st.IP >= 150;
       const p = god ? 100 : clamp(30 + Math.round((th.era[0] - st.era) * 35 + (st.IP - th.g) * 0.4), 30, 95);
@@ -2720,8 +2720,8 @@ function honorScore(bucket){
   let sc=0,mvp=0,aceN=0,king=0;
   S.honors.forEach(h=>{
     if(h.includes(champ)){sc+=90;return;}
-    if(h.includes(ace)){sc+=460;aceN++;return;}
     if(!h.includes(lg))return;
+    if(h.includes(ace)){sc+=460;aceN++;return;}
     if(h.includes('年度MVP')){sc+=420;mvp++;}
     else if(h.includes('新人王'))sc+=140;
     else if(h.includes('金手套')){sc+=300;king++;}
