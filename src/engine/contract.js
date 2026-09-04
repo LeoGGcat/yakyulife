@@ -259,7 +259,7 @@ export function doTradeExec(){
   /* 季末交易只更換下季球隊，當季成績仍完整歸屬原隊。 */
   S.teamSeasons=0; S.teamYears=0; S.teamStarYears=0; S.franchiseActive=false; S.champThisTeam=false; S.champTeam=null;
   const list=S.org==='CPBL'?CPBL_TEAMS:S.org==='NPB'?NPB_TEAMS:MLB_TEAMS;
-  const nt=pick(list.filter(t=>t!==S.orgTeam)); S.orgTeam=nt; tlNote(2,'轉隊 '+nt); board(1);
+  const nt=pick(list.filter(t=>t!==S.orgTeam)); S.orgTeam=nt; rememberLeagueTeam(S.org,nt); tlNote(2,'轉隊 '+nt); board(1);
 }
 export function buyoutRemaining(rate,includeCurrent){ /* 合約剩餘年數給付:季前需包含尚未支付的當年度；季末則扣除已入帳年度。 */
   rate=rate||0.7;
@@ -338,14 +338,23 @@ export function outOfOrg(o){
   choose('新東家的邀請',offers.map(x=>({...x,f:()=>{x.f();advance();}})));
 }
 export function teamListOf(org){ return org==='CPBL'?CPBL_TEAMS:org==='NPB'?NPB_TEAMS:MLB_TEAMS; }
+function leagueKeyOf(org){ return org==='CPBL'?'CPBL':org==='NPB'?'NPB':org==='MiLB'||org==='MLB'?'MLB':null; }
+function rememberLeagueTeam(org,team){
+  const key=leagueKeyOf(org); if(!key||!team||!teamListOf(org).includes(team))return;
+  const last=S.lastLeagueTeam||(S.lastLeagueTeam={CPBL:null,NPB:null,MLB:null});
+  last[key]=team;
+  if(key==='CPBL')S.lastCpblTeam=team; /* 保留舊欄位，讓既有流程與舊資料仍能相容。 */
+}
 export function signTo(org,lv,team,yrs,mult,annual,quiet){
   const sourceLv=S.lastLv||S.lv,contractD=ratingAtLevel(currentSalaryRating(S.lastD||0),sourceLv,lv);
+  /* 跨國前先記住離開當下的最後一隊；同聯盟轉隊則會在簽約後改記新東家。 */
+  rememberLeagueTeam(S.org,S.orgTeam);
   S.org=org; S.lv=lv;
   /* 【修正】先決定新球隊是誰，比對不一樣才把年資歸零，最後再蓋掉 S.orgTeam */
   const newTeam = team || pick(teamListOf(org));
   if(newTeam !== S.orgTeam){ S.teamSeasons=0; S.teamYears=0; S.teamStarYears=0; S.franchiseActive=false; S.champThisTeam=false; S.champTeam=null; tlNote(2,'加盟 '+newTeam); }
   S.orgTeam = newTeam;
-  if(org==='CPBL')S.lastCpblTeam=newTeam;
+  rememberLeagueTeam(org,newTeam);
   S.ct=makeContract(yrs||2,mult||1,lv,contractD,annual,null,'簽約');
   if(org!=='NPB')S.npbYears=0;
   /* quiet：呼叫端自己會寫一張更完整的卡（旅外回歸），這裡就不要再印一張制式簽約卡。 */
@@ -353,11 +362,24 @@ export function signTo(org,lv,team,yrs,mult,annual,quiet){
   board(2);
 }
 /* ---------- 旅外回歸：母隊優先 ---------- */
-/* 「母隊」＝在那個聯盟待最久的球隊。回得去不代表回得成——合約金額與角色定位談不攏
+/* 「母隊」＝離開該聯盟、前往更高階海外聯盟前效力的最後一隊，不是第一隊或待最久的隊。
+   回得去不代表回得成——合約金額與角色定位談不攏
    在現實裡本來就常見，所以只有 90% 談成，另外 10% 會輾轉加盟同聯盟的其他球隊。
    沒有母隊（第一次到那個聯盟）就不套這條規則，照舊隨機找東家。 */
+function lastLoggedTeam(org){
+  const wanted=org==='CPBL'?'CPBL':org==='NPB'?'NPB':'MiLB', teams=teamListOf(org), rows=S.log||[];
+  for(let i=rows.length-1;i>=0;i--){
+    const row=rows[i]||{}, info=LV[row.lv];
+    if(!info||info.org!==wanted)continue;
+    const name=String(row.tm||''), team=teams.find(t=>name.startsWith(t));
+    if(team)return team;
+  }
+  return null;
+}
 export function homeTeamOf(org){
-  const t=capTeam(org==='CPBL'?'CPBL':org==='NPB'?'NPB':'MLB')||(org==='CPBL'?S.lastCpblTeam:null);
+  const key=leagueKeyOf(org), remembered=S.lastLeagueTeam&&S.lastLeagueTeam[key];
+  /* lastLoggedTeam 讓更新前已在旅外途中的資料，也能由逐年紀錄找回真正的最後一隊。 */
+  const t=remembered||lastLoggedTeam(org)||(org==='CPBL'?S.lastCpblTeam:null)||capTeam(key);
   return (t&&teamListOf(org).includes(t))?t:null;
 }
 export function returnTeam(org){

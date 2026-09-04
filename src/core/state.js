@@ -25,7 +25,7 @@ export function newState(name,jersey,pos,role){
   const myTeam=schools[Math.floor(R()*schools.length)];
   return {name,jersey,pos,role:pos==='P'?null:null,age:16,year:2026,stage:'HS',stageYr:1,pot,
     hsMap,hsTier:hsMap[myTeam],team:myTeam,potSum0:Object.values(pot).reduce((a,b)=>a+b,0),
-    league:null,org:null,orgTeam:null,lastCpblTeam:null,teamTally:{CPBL:{},NPB:{},MLB:{}},
+    league:null,org:null,orgTeam:null,lastCpblTeam:null,lastLeagueTeam:{CPBL:null,NPB:null,MLB:null},teamTally:{CPBL:{},NPB:{},MLB:{}},
     ab,traits:{genius:false,glass:false,iron:false,scum:false,
       late:false,disc:false,academy:false,intlace:false,franchise:false,clutch:false,favorite:false,phoenix:false,combo:false,onetool:false,rubber:false,legend:false,
       oldghost:false,adking:false,miraclegen:false,strongpitch:false,stronghit:false,championmaker:false,
