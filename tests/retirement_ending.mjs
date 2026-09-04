@@ -46,16 +46,16 @@ try{
     const glassKeys=retire.postCareerEndingKeys(tiers,0,0);
     const glassSelected=retire.postCareerEnding(tiers,.7);
     const tjPitcher=state.newState('手術投手',0,'P',null);
-    tjPitcher.tjCount=3;
+    tjPitcher.tjCount=2;
     state.setS(tjPitcher);
+    const tjTwoKeys=retire.postCareerEndingKeys(tiers,0,0);
+    tjPitcher.tjCount=3;
     const tjThreeKeys=retire.postCareerEndingKeys(tiers,0,0);
-    tjPitcher.tjCount=4;
-    const tjFourKeys=retire.postCareerEndingKeys(tiers,0,0);
     return {
       pitcher,hitter,pitcherCoach,hitterCoach,latePitcher,lateHitter,
       withCurrentChild,withFormerChild,selected,
       withInternational,nationalSelected,
-      withoutConditions,glassKeys,glassSelected,tjThreeKeys,tjFourKeys,
+      withoutConditions,glassKeys,glassSelected,tjTwoKeys,tjThreeKeys,
       oldGhostPitcher:retire.oldGhostLongCareerComment('P'),
       oldGhostHitter:retire.oldGhostLongCareerComment('IF'),
       adkingComment:retire.ADKING_FAN_COMMENT,
@@ -99,8 +99,8 @@ try{
   assert.equal(result.glassKeys.filter(k=>k==='lateAnswer').length,2);
   assert.equal(result.glassKeys.length,result.withoutConditions.length+2);
   assert.equal(result.glassSelected.title,'遲到的答案');
-  assert.equal(result.tjThreeKeys.filter(k=>k==='lateAnswer').length,0);
-  assert.equal(result.tjFourKeys.filter(k=>k==='lateAnswer').length,2);
+  assert.equal(result.tjTwoKeys.filter(k=>k==='lateAnswer').length,0);
+  assert.equal(result.tjThreeKeys.filter(k=>k==='lateAnswer').length,2);
   assert.equal(result.oldGhostPitcher,'今年新人大物引退時，先發投手{n}');
   assert.equal(result.oldGhostHitter,'今年新人大物引退時，第四棒{n}');
   assert.equal(result.adkingComment,'打開電視每幾分鐘就要看到他一次，去超商也會看到他的臉，退休之後會不會更常出現呢？');

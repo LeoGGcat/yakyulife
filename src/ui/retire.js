@@ -472,7 +472,7 @@ export function postCareerEndingKeys(tiers,kids,internationalAppearances){
   if(childCount>0)keys.push('nextBase');
   if(internationalCount>0)keys.push('jerseyWeight');
   /* 符合傷病條件時放入兩份，讓本結局相對每個其他結局具有兩倍抽選權重。 */
-  if((S.traits&&S.traits.glass)||Number(S.tjCount||0)>3)keys.push('lateAnswer','lateAnswer');
+  if((S.traits&&S.traits.glass)||Number(S.tjCount||0)>=3)keys.push('lateAnswer','lateAnswer');
   return keys;
 }
 export function postCareerEnding(tiers,roll){
