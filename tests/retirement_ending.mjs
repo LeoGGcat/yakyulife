@@ -20,6 +20,8 @@ try{
     const hitter=retire.nextBaseEnding('SS');
     const pitcherCoach=retire.jerseyWeightEnding('P');
     const hitterCoach=retire.jerseyWeightEnding('CF');
+    const latePitcher=retire.lateAnswerEnding('P');
+    const lateHitter=retire.lateAnswerEnding('IF');
     const tiers={CPBL:{i:0,sc:9000}};
     const currentFamily=state.newState('親子測試',0,'P',null);
     currentFamily.love.kids=1;
@@ -35,11 +37,28 @@ try{
     state.setS(nationalPlayer);
     const withInternational=retire.postCareerEndingKeys(tiers);
     const nationalSelected=retire.postCareerEnding(tiers,.999);
+    const healthy=state.newState('一般球員',0,'IF',null);
+    state.setS(healthy);
+    const withoutConditions=retire.postCareerEndingKeys(tiers,0,0);
+    const glass=state.newState('玻璃球員',0,'IF',null);
+    glass.traits.glass=true;
+    state.setS(glass);
+    const glassKeys=retire.postCareerEndingKeys(tiers,0,0);
+    const glassSelected=retire.postCareerEnding(tiers,.7);
+    const tjPitcher=state.newState('手術投手',0,'P',null);
+    tjPitcher.tjCount=3;
+    state.setS(tjPitcher);
+    const tjThreeKeys=retire.postCareerEndingKeys(tiers,0,0);
+    tjPitcher.tjCount=4;
+    const tjFourKeys=retire.postCareerEndingKeys(tiers,0,0);
     return {
-      pitcher,hitter,pitcherCoach,hitterCoach,
+      pitcher,hitter,pitcherCoach,hitterCoach,latePitcher,lateHitter,
       withCurrentChild,withFormerChild,selected,
       withInternational,nationalSelected,
-      withoutConditions:retire.postCareerEndingKeys(tiers,0,0),
+      withoutConditions,glassKeys,glassSelected,tjThreeKeys,tjFourKeys,
+      oldGhostPitcher:retire.oldGhostLongCareerComment('P'),
+      oldGhostHitter:retire.oldGhostLongCareerComment('IF'),
+      adkingComment:retire.ADKING_FAN_COMMENT,
       age24:retire.usesSecondCareerEnding(24),
       age25:retire.usesSecondCareerEnding(25),
     };
@@ -54,6 +73,15 @@ try{
   assert(!result.pitcherCoach.body.includes('漏接一顆平飛球'));
   assert(result.hitterCoach.body.includes('漏接一顆平飛球'));
   assert(!result.hitterCoach.body.includes('被一發全壘打超前'));
+  assert.equal(result.latePitcher.title,'遲到的答案');
+  assert(result.latePitcher.body.includes('二十二歲那年，你的手肘開始痛'));
+  assert(result.latePitcher.body.includes('大聯盟的三號先發投手'));
+  assert(!result.latePitcher.body.includes('右腳踝'));
+  assert.equal(result.lateHitter.title,'遲到的答案');
+  assert(result.lateHitter.body.includes('右腳踝'));
+  assert(result.lateHitter.body.includes('你沒有變差，你只是還在受傷'));
+  assert(!result.lateHitter.body.includes('二十二歲那年，你的手肘開始痛'));
+  assert(result.latePitcher.body.includes('<br><br>'));
   assert(result.withCurrentChild.includes('nextBase'));
   assert(result.withFormerChild.includes('nextBase'));
   assert(result.withCurrentChild.includes('coach'));
@@ -67,6 +95,15 @@ try{
   assert.equal(result.nationalSelected.title,'球衣的重量');
   assert(!result.withoutConditions.includes('nextBase'));
   assert(!result.withoutConditions.includes('jerseyWeight'));
+  assert.equal(result.withoutConditions.filter(k=>k==='lateAnswer').length,0);
+  assert.equal(result.glassKeys.filter(k=>k==='lateAnswer').length,2);
+  assert.equal(result.glassKeys.length,result.withoutConditions.length+2);
+  assert.equal(result.glassSelected.title,'遲到的答案');
+  assert.equal(result.tjThreeKeys.filter(k=>k==='lateAnswer').length,0);
+  assert.equal(result.tjFourKeys.filter(k=>k==='lateAnswer').length,2);
+  assert.equal(result.oldGhostPitcher,'今年新人大物引退時，先發投手{n}');
+  assert.equal(result.oldGhostHitter,'今年新人大物引退時，第四棒{n}');
+  assert.equal(result.adkingComment,'打開電視每幾分鐘就要看到他一次，去超商也會看到他的臉，退休之後會不會更常出現呢？');
   assert.equal(result.age24,true);
   assert.equal(result.age25,false);
   assert.equal(errors.length,0,errors.join('\n'));
