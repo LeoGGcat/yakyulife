@@ -10,8 +10,7 @@ import {demotionAudit} from './contract.js?v=1.5.11';
 import {awards} from './awards.js?v=1.5.11';
 import {maybeIntl} from './intl.js?v=1.5.11';
 import {traitCard, removeTrait} from '../flow/events.js?v=1.5.11';
-export function pitcherRole(){ /* 體力 >=52 先發;否則牛棚,牛棚內看表現升終結者 */
-  if(S.ab.sta>=52)return 'SP';
+export function bullpenRole(){ /* 牛棚內依上季表現判定中繼／終結者，與先發體力門檻分開。 */
   /* 牛棚:讀「上一季」的 d(prevD,因為 lastD 已被 phasePre 清空);頂尖 → 終結者 */
   const pd=(S.prevD!==undefined?S.prevD:(S.lastD||0));
   /* 只有上一季已在相同頂級聯盟投牛棚，該季成績才可用於終結者升降。
@@ -21,6 +20,10 @@ export function pitcherRole(){ /* 體力 >=52 先發;否則牛棚,牛棚內看�
   const d=(sameTopLeague&&S.role&&S.role!=='SP')?pd:-99;
   if(S.role==='CL')return d>=1?'CL':'MR';   /* 終結者崩盤才降中繼 */
   return d>=3?'CL':'MR';                     /* 中繼打出頂尖成績升終結者 */
+}
+export function pitcherRole(){ /* 體力 >=52 先發;否則牛棚,牛棚內看表現升終結者 */
+  if(S.ab.sta>=52)return 'SP';
+  return bullpenRole();
 }
 export function outsFromIP(ip){ /* 模擬用十進位局數統一量化為實際出局數 */
   return Math.max(0,Math.round((Number(ip)||0)*3));
