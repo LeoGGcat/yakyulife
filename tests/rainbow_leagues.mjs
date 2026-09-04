@@ -14,10 +14,10 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=rainbow-leagues`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=1.5.11');
-    const phases=await import('./src/flow/phases.js?v=1.5.11');
-    const traits=await import('./src/ui/traits.js?v=1.5.11');
-    const dom=await import('./src/ui/dom.js?v=1.5.11');
+    const state=await import('./src/core/state.js?v=1.5.12');
+    const phases=await import('./src/flow/phases.js?v=1.5.12');
+    const traits=await import('./src/ui/traits.js?v=1.5.12');
+    const dom=await import('./src/ui/dom.js?v=1.5.12');
     const teams=n=>Object.fromEntries(Array.from({length:n},(_,i)=>[`球隊${i+1}`,1]));
 
     const s=state.newState('七彩測試',7,'IF',null);

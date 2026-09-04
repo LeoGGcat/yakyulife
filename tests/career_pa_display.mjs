@@ -14,10 +14,10 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=career-pa-display`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=1.5.11');
-    const career=await import('./src/engine/career.js?v=1.5.11');
-    const retire=await import('./src/ui/retire.js?v=1.5.11');
-    const share=await import('./src/ui/share-image.js?v=1.5.11');
+    const state=await import('./src/core/state.js?v=1.5.12');
+    const career=await import('./src/engine/career.js?v=1.5.12');
+    const retire=await import('./src/ui/retire.js?v=1.5.12');
+    const share=await import('./src/ui/share-image.js?v=1.5.12');
     const s=state.newState('萬打席測試',1,'IF',null);
     s.stage='PRO';
     s.dpos='3B';

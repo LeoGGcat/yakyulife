@@ -14,8 +14,8 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=practice-late-trait`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=1.5.11');
-    const events=await import('./src/flow/events.js?v=1.5.11');
+    const state=await import('./src/core/state.js?v=1.5.12');
+    const events=await import('./src/flow/events.js?v=1.5.12');
     const s=state.newState('遲到測試',0,'P',null);
     state.setS(s);
     const before=events.evOdds();

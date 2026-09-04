@@ -8,8 +8,8 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=share-image-modes`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=1.5.11');
-    const share=await import('./src/ui/share-image.js?v=1.5.11');
+    const state=await import('./src/core/state.js?v=1.5.12');
+    const share=await import('./src/ui/share-image.js?v=1.5.12');
     const s=state.newState('三版結算測試',11,'IF',null);
     s.stage='PRO'; s.year=2040; s.age=30; s.dpos='SS'; s.salary=8888;
     s.stats.CPBL={yr:1,G:120,PA:510,AB:450,H:150,HR:20,RBI:80,SB:10,BB:60,W:0,L:0,SV:0,HLD:0,IP:0,SO:0,ER:0,AS:1,DEF:8,DPG:{SS:120}};

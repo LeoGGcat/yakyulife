@@ -1,14 +1,14 @@
-import {S} from '../core/state.js?v=1.5.11';
-import {SEED} from '../core/rng.js?v=1.5.11';
-import {APP_VER, OFFICIAL_HOST} from '../config.js?v=1.5.11';
-import {TEAM_COLOR, LG_N} from '../data/teams.js?v=1.5.11';
-import {RP_TICKS} from '../data/economy.js?v=1.5.11';
-import {TRAIT_KEYS} from '../data/traits.js?v=1.5.11';
-import {$, teamChip, modalOpen, modalClose} from './dom.js?v=1.5.11';
-import {THEME_NAMES} from './prefs.js?v=1.5.11';
-import {traitNames, traitColorRank} from './traits.js?v=1.5.11';
-import {fmtMoney} from '../engine/contract.js?v=1.5.11';
-import {rpTagline, rpFamily, RP_F3, RP_F2, rpCumData, rpIntlData, rpHonorItems, rpOrgOf, rpProData, rpSalaryData, championshipYear} from './retire.js?v=1.5.11';
+import {S} from '../core/state.js?v=1.5.12';
+import {SEED} from '../core/rng.js?v=1.5.12';
+import {APP_VER, OFFICIAL_HOST} from '../config.js?v=1.5.12';
+import {TEAM_COLOR, LG_N} from '../data/teams.js?v=1.5.12';
+import {RP_TICKS} from '../data/economy.js?v=1.5.12';
+import {TRAIT_KEYS} from '../data/traits.js?v=1.5.12';
+import {$, teamChip, modalOpen, modalClose} from './dom.js?v=1.5.12';
+import {THEME_NAMES} from './prefs.js?v=1.5.12';
+import {traitNames, traitColorRank} from './traits.js?v=1.5.12';
+import {fmtMoney} from '../engine/contract.js?v=1.5.12';
+import {rpTagline, rpFamily, RP_F3, RP_F2, rpCumData, rpIntlData, rpHonorItems, rpOrgOf, rpProData, rpSalaryData, championshipYear} from './retire.js?v=1.5.12';
 /* 結算圖（Canvas 產生 PNG，回傳 data URL 供面板顯示與儲存）
    Single-sheet settlement layout from the design handoff, drawn 1:1 at the
    design's 820px width. The layout is rendered twice: a measure pass on a
