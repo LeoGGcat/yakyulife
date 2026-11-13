@@ -48,6 +48,29 @@ export function rookieWorkloadEligible(bucket,st,pos,role){
   if(pos==='P')return pitchOK;
   return batOK;
 }
+/* 年度MVP：資格旁門（全壘打／打擊率＋打點）至少要有 MVP 線 92% 的 OPS；
+   得獎機率看「成績÷MVP 線」，從 MVP_SCORE[0] 的 8% 爬到 MVP_SCORE[1] 必得。 */
+export const MVP_SIDE_OPS=0.92;
+export const MVP_SCORE=[0.95,1.25];
+/* 先發的比較基準取「MVP 資格線」與「聯盟 ERA×0.80（ERA+ 125）」較嚴的一個：
+   日職的資格線鬆到 ERA+ 102，直接拿來當分母會讓平均水準的先發也有 8% 以上的 MVP 機率。 */
+export const MVP_PIT_ERA=0.80;
+/* 新人王：成績相對聯盟平均（100＝平均），未達 ROOKIE_PLUS[0] 不得獎，達 [1] 必得。 */
+export const ROOKIE_PLUS=[100,140];
+/* 新人的實際成績（OPS+ 或 ERA+）。二刀流只看工作量達到新人王門檻的那一側，取較高者。 */
+export function rookiePerfPlus(bucket,st,pos,role){
+  const L=LV[({CPBL:'CPBL1',NPB:'NPB1',MLB:'MLB'})[bucket]]||LV.CPBL1;
+  let best=0;
+  if(pos!=='P'&&(pos!=='TW'||rookieWorkloadEligible(bucket,st,'IF',role))&&st.PA>0){
+    const lo=envLeagueOps(L.env);
+    if(lo>0)best=Math.max(best,((st.H+st.BB)/st.PA+slgOf(st))/lo*100);
+  }
+  if((pos==='P'||pos==='TW')&&(pos!=='TW'||rookieWorkloadEligible(bucket,st,'P',role))){
+    const e=baseballERA(st);
+    if(e!=null)best=Math.max(best,e>0?L.env.era/e*100:ROOKIE_PLUS[1]);
+  }
+  return best;
+}
 export function canUnlockPhoenix(added,state=S){
   if(!state.traits.glass||state.traits.phoenix||state.glassYear===state.year)return false;
   return (added||[]).some(x=>isCareerScoringAward(String(x).replace(/^\d{4}\s+/,'')));
@@ -282,20 +305,32 @@ export function awards(bucket,st){
     }
   }
 
-  /* 4. 年度 MVP（最高榮譽）：先通過真實成績門檻，再與聯盟其他球員競爭。 */
+  /* 4. 年度 MVP（最高榮譽）：先通過真實成績門檻，再與聯盟其他球員競爭。
+     ── 2026-11 修正 ──
+     玩家回報：.228／OPS .795／28 轟（OPS+ 113）拿年度MVP＋新人王；
+     另一季 .212／OPS .679／21 轟（OPS+ 96），而且是「巨大的低潮」那一年，照樣拿年度MVP＋新人王。
+     兩個洞疊在一起：
+       ① 打者資格是三選一的 OR：OPS 達 MVP 線、或全壘打摸到全壘打王的下限（中職 21 轟）、
+          或打擊率＋打點。後兩條完全不看整體產出，.212 的打者只要湊滿 21 轟就算有資格。
+       ② 有資格之後的機率看 st.d——那是「能力相對聯盟」的值，不是成績。能力高的球員
+          就算整季打不出來（低潮只扣 4），d 依然輕鬆超過 16，機率直接 100%。
+     現在資格的旁門（全壘打／打擊率＋打點）也要 OPS 達到 MVP 線的 92%，
+     得獎機率改看「實際成績相對 MVP 線」：打者 OPS÷MVP線、先發 基準ERA÷ERA（基準見 MVP_PIT_ERA）。
+     二刀流各側分開算，取有達到資格那一側的較高者——不能拿投球的成績去替打擊那一側背書。 */
   const MV=starTh(S.lv);
-  const isReliever=S.pos==='P'&&!isSP();
+  const batOps=st.PA>0?(st.H+st.BB)/st.PA+slgOf(st):0;
   const pitchMvpQual=()=>isSP()
     ? st.IP>=140&&st.era<=MV.mvpEra&&(st.W>=12||st.SO>=th.so[0])
     : pitG(st)>=50&&st.era<=MV.clEra&&((st.SV||0)>=35||(st.HLD||0)>=30);
-  const batMvpQual=()=>{
-    const obp=st.PA>0?(st.H+st.BB)/st.PA:0, ops=obp+slgOf(st);
-    return st.PA>=LV[S.lv].g*3.6&&(ops>=MV.mvpOps||st.HR>=th.hr[0]||(st.avg>=th.avg[0]&&st.RBI>=th.rbi[0]));
-  };
+  const batMvpQual=()=>st.PA>=LV[S.lv].g*3.6&&(batOps>=MV.mvpOps||
+      ((st.HR>=th.hr[0]||(st.avg>=th.avg[0]&&st.RBI>=th.rbi[0]))&&batOps>=MV.mvpOps*MVP_SIDE_OPS));
   /* 二刀流:任一側達到 MVP 門檻就有資格。單側就夠格已經是聯盟最頂的成績，
      再要求兩側同時達標等於把 MVP 從二刀流手上拿掉。 */
-  let mvpQual=S.pos==='TW'?(pitchMvpQual()||batMvpQual())
-            :S.pos==='P'?pitchMvpQual():batMvpQual();
+  const pitQ=(S.pos==='P'||S.pos==='TW')&&pitchMvpQual();
+  const batQ=S.pos!=='P'&&batMvpQual();
+  const mvpQual=pitQ||batQ;
+  /* 後援走另一條極低機率的路；二刀流的投球側是後援、而打擊側沒達標時也一樣。 */
+  const isReliever=!isSP()&&(S.pos==='P'||(S.pos==='TW'&&!batQ));
   /* 同一年拿下年度最佳投手＋年度最佳打者，等於聯盟同時認定你是最強的投手與最強的打者，
      那已經沒有比他更有資格拿 MVP 的人了。實務上只有二刀流碰得到：單刀球員不可能
      同時滿足規定投球局數與規定打席。門檻比「二天一流」（投打雙三冠、一季六個王）低，
@@ -314,19 +349,24 @@ export function awards(bucket,st){
       );
       if(chance(pMVP))h.push(`${y} ${lgN}年度MVP`);
     }else{
-      const pMVP=awardP(st.d,8,16,8);
+      const batScore=batQ?batOps/MV.mvpOps:0;
+      const pitScore=pitQ&&isSP()?(st.era>0?Math.min(MV.mvpEra,LV[S.lv].env.era*MVP_PIT_ERA)/st.era:MVP_SCORE[1]):0;
+      const score=Math.max(batScore,pitScore);
+      const pMVP=awardP(score,MVP_SCORE[0],MVP_SCORE[1],8);
       if(chance(pMVP))h.push(`${y} ${lgN}年度MVP`);
     }
   }
 
-  /* 5. 新人王：先通過聯盟資歷與實際工作量，再判定獲獎；年度 MVP 只在合格後保底。 */
+  /* 5. 新人王：先通過聯盟資歷與實際工作量，再判定獲獎；年度 MVP 只在合格後保底。
+     機率原本也看 st.d（能力），低潮年 OPS+ 70 幾的新人一樣八成以上拿獎。
+     改看實際成績相對聯盟平均（OPS+／ERA+），二刀流取工作量達標那一側的較高者。 */
   const leagueRookie=S.stats[bucket].yr===1, rookieAward=`${y} ${lgN}新人王`;
   const annualMvpAwarded=h.some(x=>x===`${y} ${lgN}年度MVP`);
   const rookieOK=rookieLeagueEligible(bucket,S.stats)&&rookieWorkloadEligible(bucket,st,S.pos,S.role);
   if(leagueRookie&&rookieOK&&annualMvpAwarded&&!h.includes(rookieAward)){
     h.push(rookieAward);
   }else if(leagueRookie&&rookieOK){
-    const rkP=rookieAwardGuaranteed(h,y,lgN)?100:awardP(st.d,4,10,30);
+    const rkP=rookieAwardGuaranteed(h,y,lgN)?100:awardP(rookiePerfPlus(bucket,st,S.pos,S.role),ROOKIE_PLUS[0],ROOKIE_PLUS[1],30);
     if(chance(rkP)) h.push(rookieAward);
   }
 
