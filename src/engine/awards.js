@@ -1,13 +1,13 @@
-import {S} from '../core/state.js?v=2.0.12';
-import {chance, clamp} from '../core/rng.js?v=2.0.12';
-import {DPN, GLOVE_TH, GLOVE_K} from '../data/abilities.js?v=2.0.12';
-import {LV, envLeagueOps} from '../data/teams.js?v=2.0.12';
-import {AWARD_TH, starTh} from '../data/thresholds.js?v=2.0.12';
-import {card} from '../ui/dom.js?v=2.0.12';
-import {tlNote} from '../ui/timeline.js?v=2.0.12';
-import {isSP, slgOf, baseballERA, pitG} from './season.js?v=2.0.12';
-import {isCareerScoringAward, splitBySide} from './award-rules.js?v=2.0.12';
-import {traitCard, removeTrait} from '../flow/events.js?v=2.0.12';
+import {S} from '../core/state.js?v=2.1.0';
+import {chance, clamp} from '../core/rng.js?v=2.1.0';
+import {DPN, GLOVE_TH, GLOVE_K} from '../data/abilities.js?v=2.1.0';
+import {LV, envLeagueOps} from '../data/teams.js?v=2.1.0';
+import {AWARD_TH, starTh} from '../data/thresholds.js?v=2.1.0';
+import {card} from '../ui/dom.js?v=2.1.0';
+import {tlNote} from '../ui/timeline.js?v=2.1.0';
+import {isSP, slgOf, baseballERA, pitG} from './season.js?v=2.1.0';
+import {isCareerScoringAward, splitBySide} from './award-rules.js?v=2.1.0';
+import {traitCard, removeTrait} from '../flow/events.js?v=2.1.0';
 /* 明星賽的成績地板（說明見 awards() 裡的 floorOK）。
    成績路線＝聯盟平均；人氣路線放寬，但不到「打不出東西也能進」的程度。 */
 export const AS_FLOOR_OPS=100, AS_FLOOR_OPS_POP=85;

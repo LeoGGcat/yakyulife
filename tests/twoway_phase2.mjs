@@ -16,10 +16,10 @@ try{
   await page.goto(`${url}?seed=twoway-phase2`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
-    const injury=await import('./src/engine/injury.js?v=2.0.12');
-    const phases=await import('./src/flow/phases.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
+    const injury=await import('./src/engine/injury.js?v=2.1.0');
+    const phases=await import('./src/flow/phases.js?v=2.1.0');
 
     const mk=(abv,over={})=>{
       const s=state.newState('二刀',1,'TW',null);

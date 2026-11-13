@@ -17,11 +17,11 @@ try{
   await page.goto(`${url}?seed=twoway-phase4`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const phases=await import('./src/flow/phases.js?v=2.0.12');
-    const ability=await import('./src/engine/ability.js?v=2.0.12');
-    const events=await import('./src/flow/events.js?v=2.0.12');
-    const {POS_AB}=await import('./src/data/abilities.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const phases=await import('./src/flow/phases.js?v=2.1.0');
+    const ability=await import('./src/engine/ability.js?v=2.1.0');
+    const events=await import('./src/flow/events.js?v=2.1.0');
+    const {POS_AB}=await import('./src/data/abilities.js?v=2.1.0');
 
     /* ① 轉入：新增的那一側從「現有平均 × TW_CONVERT_RATIO」起步，不是從 20 起步。
        從頭擲會讓這個邀請變成陷阱（實測 18.8% → 6.6%）。 */
@@ -67,7 +67,7 @@ try{
     /* ⑤ 被強制收斂之後，牌庫要跟著切換回單刀——TW 專屬卡一張都不該再出現。
        eventEligible() 靠 S.pos 判斷，而 twoWayAudit() 會把 S.pos 改成 'P' 或 'OF'，
        且它跑在 phasePre 的擲骰與抽牌之前，所以同一季就會生效。這裡跑真的 audit。 */
-    const EV=await import('./src/data/events.js?v=2.0.12');
+    const EV=await import('./src/data/events.js?v=2.1.0');
     const audit=(ab)=>{ const t=state.newState('收斂',0,'TW',null); state.setS(t);
       Object.assign(state.S,{stage:'PRO',lv:'NPB1',org:'NPB',orgTeam:'X',pos:'TW',role:'SP',dpos:'DH',age:24,
         twAuditLv:'NPB1'});   /* 已在日職一軍站過一季，這裡要量的是收斂本身 */

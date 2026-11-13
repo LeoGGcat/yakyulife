@@ -32,11 +32,11 @@ try{
   await page.goto(`${url}?seed=league-env`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const rng=await import('./src/core/rng.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
-    const {LV,envWhip,envLeagueOps,hrCapRate}=await import('./src/data/teams.js?v=2.0.12');
-    const th=await import('./src/data/thresholds.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const rng=await import('./src/core/rng.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
+    const {LV,envWhip,envLeagueOps,hrCapRate}=await import('./src/data/teams.js?v=2.1.0');
+    const th=await import('./src/data/thresholds.js?v=2.1.0');
     const med=a=>{a=a.slice().sort((x,y)=>x-y);return a[a.length>>1];};
 
     const pit=(lv,ab,n)=>{ const o=[];

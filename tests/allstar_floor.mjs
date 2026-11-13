@@ -32,10 +32,10 @@ try{
   await page.goto(`${url}?seed=as-floor`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.0.12');
-    const rng   =await import('./src/core/rng.js?v=2.0.12');
-    const awards=await import('./src/engine/awards.js?v=2.0.12');
-    const {LV,envLeagueOps}=await import('./src/data/teams.js?v=2.0.12');
+    const state =await import('./src/core/state.js?v=2.1.0');
+    const rng   =await import('./src/core/rng.js?v=2.1.0');
+    const awards=await import('./src/engine/awards.js?v=2.1.0');
+    const {LV,envLeagueOps}=await import('./src/data/teams.js?v=2.1.0');
 
     /* 入選是機率事件（asP），所以跑 N 次數有沒有人中，而不是賭單一次結果。
        地板擋掉的情況 asP 會是 0 → 必定 0/N。 */

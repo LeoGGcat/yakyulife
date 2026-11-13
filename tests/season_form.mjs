@@ -32,9 +32,9 @@ try{
   await page.goto(`${url}?seed=season-form`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const rng=await import('./src/core/rng.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const rng=await import('./src/core/rng.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
     const med=a=>{a=a.slice().sort((x,y)=>x-y);return a[a.length>>1];};
 
     /* 回報案例的能力值：大聯盟 par 59，三項全部低於聯盟平均。 */
