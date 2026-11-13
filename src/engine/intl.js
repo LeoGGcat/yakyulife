@@ -20,7 +20,7 @@ export function intlWalks(st){
 export function intlStatLine(st){
   if(twIntl(st)){
     const era=baseballERA(st);
-    return `投 ${st.GP} 場｜${fmtIP(st.IP)} 局｜${st.W} 勝｜${st.SO} 三振｜ERA ${era==null?'-':era.toFixed(2)}`+
+    return `投 ${st.GP} 場｜${fmtIP(st.IP)} 局｜${st.W} 勝${st.SV?`｜${st.SV} 救援`:''}｜${st.SO} 三振｜ERA ${era==null?'-':era.toFixed(2)}`+
       `　／　打 ${st.G} 場｜${st.PA} 打席｜打擊率 ${st.AB>0?(st.H/st.AB).toFixed(3).replace(/^0/,''):'-'}｜${st.HR} 轟｜${st.RBI} 打點`;
   }
   if(S.pos==='P'){
@@ -91,12 +91,12 @@ export function maybeIntl(done){
       let intlSt;
       { const a=S.ab, par=intlFmt.par, clutch=S.traits.clutch?1:0;
         const TW=S.pos==='TW';
-        /* 二刀流在國際賽兩邊都上：投球走先發線(短期賽最多一到兩場先發)，打擊照樣每場先發。
+        /* 二刀流在國際賽兩邊都上：投球沿用他在球隊的定位(先發就先發、牛棚就牛棚)，打擊照樣每場先發。
            被安打／保送存在 pH/pBB，跟職業球季同一個約定——共用 H/BB 會被打擊側蓋掉。 */
         if(S.pos==='P'||TW){ const dd=(a.vel+a.ctl+a.brk)/3-par;
           /* 【修正】區分先發與後援，並將局數與出賽場次連動，符合國際賽球數限制 */
           let g, ip;
-          if(isSP()||TW){
+          if(isSP()){ /* 二刀流也看 S.role：中繼／終結的二刀流不會到了國家隊就被改成先發 */
             g = teamGames>=6?ri(1,2):1; /* 預賽／八強最多一場先發，進四強或 12 強複賽後才可能二度先發 */
             ip = normalizeIP(g * (4.5 + R() * 2.5)); /* 配合球數限制，單場大約吃 4.5~7 局；量化為完整出局數 */
           } else {
@@ -116,7 +116,7 @@ export function maybeIntl(done){
           const pit={IP:ip,SO:Math.round(ip/9*k9),pHR:Math.round(ip/9*hr9),ER:Math.round(era*ip/9),
             W:i<=2&&chance(45+clutch*8)?1:0};
           intlSt=TW
-            ?{GP:g,...pit,pH:Math.round(ip/9*h9),pBB:Math.round(ip/9*bb9),SV:0}
+            ?{GP:g,...pit,pH:Math.round(ip/9*h9),pBB:Math.round(ip/9*bb9),SV:!isSP()&&chance(30+clutch*6)?1:0}
             :{G:g,...pit,H:Math.round(ip/9*h9),BB:Math.round(ip/9*bb9),SV:!isSP()&&chance(30+clutch*6)?1:0};
         }
         if(S.pos!=='P'){ const E=LV[intlFmt.lv].env;
