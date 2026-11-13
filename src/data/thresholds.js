@@ -1,4 +1,4 @@
-import {LV, envWhip, envLeagueOps} from './teams.js?v=2.0.12';
+import {LV, envWhip, envLeagueOps} from './teams.js?v=2.1.0';
 /* ================= 「怎樣算一個好球季」的門檻 =================
 
    這些數字原本散在 awards.js（TH 表）、season.js（pitchGrade／batGrade）與

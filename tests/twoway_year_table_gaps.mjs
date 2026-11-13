@@ -31,9 +31,9 @@ try{
   await page.goto(`${url}?seed=tw-year-gaps`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.0.12');
-    const retire=await import('./src/ui/retire.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
+    const state =await import('./src/core/state.js?v=2.1.0');
+    const retire=await import('./src/ui/retire.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
 
     const s=state.newState('測',1,'TW',null); state.setS(s);
     Object.assign(s,{stage:'PRO',lv:'MLB',org:'MiLB',orgTeam:'X',pos:'TW',twSeasons:5});
