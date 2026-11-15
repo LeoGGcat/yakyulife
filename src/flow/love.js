@@ -54,8 +54,11 @@ export function affairPool(){
 }
 export function affairChance(bond){ return clamp(Math.round(5+(100-bond)*0.3),5,35); }
 /* 求婚值：交往期間她的章節選項成功就累積（同好感度：保守 +25、一般 +50、放手一搏直接滿，放手一搏失敗 −25）。
-   滿 100 就能求婚，必定成功；還沒走完的章節在婚後繼續。 */
+   滿 100 就能求婚；還沒走完的章節在婚後繼續。 */
 export const PROP_GAIN=AFF_GAIN, PROP_BOLD_FAIL=AFF_BOLD_FAIL;
+/* 求婚值滿了才能求婚，但她還是可能拒絕：成功率看感情值（起始 70 → 75%），被拒時感情值 −5、求婚值退回 50。 */
+export const PROP_NO_BOND=5, PROP_NO_BACK=50;
+export function proposalChance(bond){ return clamp(Math.round(bond)+5,30,95); }
 const addProp=d=>{ const L=S.love; L.prop=clamp((L.prop||0)+d,0,100); return L.prop; };
 
 /* 三選一的選項：好感事件、章節、旅外路線共用 */
@@ -197,8 +200,11 @@ function chapter(g,done){
 export function proposalAsk(next){
   const L=S.love, g=GIRL[L.pid];
   if(L.st!=='dating'||!g||L.apart||(L.prop||0)<100){ next(); return; }
+  const rate=proposalChance(L.bond);
   choose(`<span class="ev-h">求婚｜${g.n}</span><small>求婚值已滿。交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。</small>`,[
-    {t:'求婚',main:true,s:'求婚值已滿，她會答應｜體力提升、本季受傷機率 −5%',f:()=>{
+    {t:'求婚',main:true,s:`成功率 ${rate}%（依感情值）｜成功：體力提升、本季受傷機率 −5%｜失敗：感情值 −${PROP_NO_BOND}、求婚值退回 ${PROP_NO_BACK}`,f:()=>{
+      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=PROP_NO_BACK; board(1);
+        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值退回 ${PROP_NO_BACK}／100。${L.ch<3?'她的故事還在往下走。':''}`); next(); return; }
       /* 與前妻復合後再婚：共同孩子回到目前家庭，前妻紀錄不再重複顯示。 */
       const fi=L.exes.findIndex(e=>e.id===g.id||e.name===g.n);
       const reunitedKids=fi>=0?(L.exes[fi].kids||0):0;
