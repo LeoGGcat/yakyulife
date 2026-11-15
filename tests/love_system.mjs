@@ -15,10 +15,10 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-system`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const rng=await import('./src/core/rng.js?v=2.1.0');
-    const state=await import('./src/core/state.js?v=2.1.0');
-    const love=await import('./src/flow/love.js?v=2.1.0');
-    const girls=await import('./src/data/girls.js?v=2.1.0');
+    const rng=await import('./src/core/rng.js?v=2.1.1');
+    const state=await import('./src/core/state.js?v=2.1.1');
+    const love=await import('./src/flow/love.js?v=2.1.1');
+    const girls=await import('./src/data/girls.js?v=2.1.1');
     const casts=[];
     for(let i=0;i<400;i++){ rng.seedInit('cast'+i); casts.push(love.drawCast()); }
     rng.seedInit('pool'); const S=state.newState('測試',1,'P',null); state.setS(S);
@@ -36,7 +36,7 @@ try{
     return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
       aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],
-      prop:love.PROP_GAIN, pc:[love.proposalChance(70),love.proposalChance(0),love.proposalChance(100)],
+      prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
       jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
   });
   assert.deepEqual(r.counts,[6,5,5],'台灣 6 人（含馮海莎）、日本 5、美國 5');
@@ -56,7 +56,7 @@ try{
   assert.equal(r.country,'US');
   assert.deepEqual(r.odds,{safe:80,norm:65,bold:50});
   assert.deepEqual(r.gain,{safe:25,norm:50,bold:100});
-  assert.deepEqual(r.pc,[75,30,95]); assert.equal(r.conf,75); assert.equal(r.fire,80);
+  assert.deepEqual(r.pc,[75,5,95,38]); assert.equal(r.conf,75); assert.equal(r.fire,80);
   assert.deepEqual(r.aff,[5,35,14]);
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
   assert.deepEqual(errors,[]);
