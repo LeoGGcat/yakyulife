@@ -1105,6 +1105,7 @@ export function endGame(reason){
   if(S.traits.thief)picks.push('被這個小倫倫了好幾年，打不好還是有高薪，真的有夠爽');
   if(S.traits.mrteam)picks.push('十五年只為一隊，'+(teamNick(S.mrTeamName||'')||'')+'先生這個稱號，他當之無愧');
   if(S.traits.confidante)picks.push('場上叱吒風雲，感情跟我一樣，55555');
+  if(S.traits.jiejiri)picks.push('打擊區裡什麼球都打得到，求婚倒是被三振兩次');
   if(S.traits.smallschool)picks.push('從那種小學校打到職業，這故事夠拍一部電影了');
   if(S.traits.grinder)picks.push('沒什麼天分卻拼到這種成就，這種球員最讓人尊敬');
   if(S.traits.goldcloth)picks.push('我愛台中猛獁，不離不棄，( ￣□￣)/喔~~喔喔~~喔喔~~喔喔~猛瑪');

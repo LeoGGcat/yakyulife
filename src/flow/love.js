@@ -156,8 +156,8 @@ function coupleYear(next){
   if(L.st==='dating'){
     if(L.ch<3&&chance(PRE_MARRIAGE_FIRE)){ chapter(g,ask); return; }
     if(chance(affairChance(L.bond))&&temptation(g,ask))return;
-    /* 三章都走完了，求婚值還沒滿：日常相處每年 +25；章節還在進行時，偶發的日常 +10 */
-    if(L.ch>=3||chance(30)){ const gt=loveGainTxt('sta',1); addBond(5); const pv=addProp(L.ch>=3?25:10); board(1);
+    /* 日常相處：三章都走完後每年出現，章節還在進行時偶發；每次求婚值 +25 */
+    if(L.ch>=3||chance(30)){ const gt=loveGainTxt('sta',1); addBond(5); const pv=addProp(25); board(1);
       if(chance(50))card('good','明星賽放閃',`明星賽的轉播鏡頭掃過看台，拍到了 ${hl(g.n)}。她正低頭回著工作訊息，發現自己上了大螢幕，愣了一下，笑著對鏡頭揮了揮手機。那個畫面隔天甜上熱搜——${gt}，求婚值 ${pv}／100。`);
       else card('good','日常',`這一年沒有什麼大新聞。只是每次客場回來的那個晚上，你們會窩在沙發上，各自說這一週發生的事——你的比賽，她的${g.work}。說著說著，常常就聊到天亮——${gt}，求婚值 ${pv}／100。`); }
     ask(); return;
@@ -203,8 +203,11 @@ export function proposalAsk(next){
   const rate=proposalChance(L.bond);
   choose(`<span class="ev-h">求婚｜${g.n}</span><small>求婚值已滿。交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。</small>`,[
     {t:'求婚',main:true,s:`成功率 ${rate}%（依感情值）｜成功：體力提升、本季受傷機率 −5%｜失敗：感情值 −${PROP_NO_BOND}、求婚值退回 ${PROP_NO_BACK}`,f:()=>{
-      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=PROP_NO_BACK; board(1);
-        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值退回 ${PROP_NO_BACK}／100。${L.ch<3?'她的故事還在往下走。':''}`); next(); return; }
+      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=PROP_NO_BACK; L.refused=(L.refused||0)+1; board(1);
+        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值退回 ${PROP_NO_BACK}／100。${L.ch<3?'她的故事還在往下走。':''}`);
+        if(L.refused>=2&&!S.traits.jiejiri){ S.traits.jiejiri=true;
+          card('gold','隱藏稱號：街尻','職業球員求婚都會成功。對吧？'); board(1); }
+        next(); return; }
       /* 與前妻復合後再婚：共同孩子回到目前家庭，前妻紀錄不再重複顯示。 */
       const fi=L.exes.findIndex(e=>e.id===g.id||e.name===g.n);
       const reunitedKids=fi>=0?(L.exes[fi].kids||0):0;
