@@ -28,8 +28,10 @@ try{
     const poolTW=love.affairPool();
     S.org='NPB'; const poolJP=love.affairPool();
     S.org='MiLB'; const country=love.playerCountry();
-    const shapeOk=girls.GIRLS.every(g=>g.sc.length===3&&g.ch.length===3&&g.sc.every(s=>s.o.length===3&&s.g&&s.b)
-      &&g.ch.every(c=>c.o.length===3&&c.g&&c.b&&c.end)&&g.conf.ok&&g.conf.no&&g.propNo&&g.go&&g.stay&&g.goP>0);
+    /* 每個選項都要有自己的成功與失敗文本，避免「選 A 卻看到 B 的結果」。 */
+    const optOk=o=>o.length===3&&o.every(x=>x.t&&x.g&&x.b);
+    const shapeOk=girls.GIRLS.every(g=>g.work&&g.sc.length===3&&g.ch.length===3&&g.sc.every(s=>s.i&&optOk(s.o))
+      &&g.ch.every(c=>c.i&&optOk(c.o)&&c.end)&&g.conf.ok&&g.conf.no&&g.propNo&&g.go&&g.stay&&g.goP>0);
     const byC=c=>girls.GIRLS.filter(g=>g.c===c).length;
     return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
