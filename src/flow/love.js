@@ -32,7 +32,7 @@ const hl=t=>`<b class="hl">${t}</b>`;
    第一次需要時才抽（20 歲的第一個戀愛事件），讓高中到選秀的亂數流保持原樣。 */
 export function drawCast(){
   const shuffled=a=>{ const o=a.slice(); for(let i=o.length-1;i>0;i--){ const j=Math.floor(R()*(i+1)); [o[i],o[j]]=[o[j],o[i]]; } return o; };
-  const twId={cheer:null,reporter:'ruotong',teacher:'peici',wbb:'yongen',lawyer:'yunxi'};
+  const twId={cheer:null,reporter:'ruotong',teacher:'peici',wbb:'yongen',pilot:'yunxi'};
   const TW=shuffled(TW_JOBS).slice(0,3).map(j=>j==='cheer'?(chance(50)?'haisha':'xiaoqing'):twId[j]);
   const of=c=>shuffled(GIRLS.filter(g=>g.c===c).map(g=>g.id)).slice(0,3);
   return {TW,JP:of('JP'),US:of('US')};
@@ -53,7 +53,10 @@ export function affairPool(){
   return (L.cast[playerCountry()]||[]).filter(id=>id!==L.pid&&!GIRL[id].safe);
 }
 export function affairChance(bond){ return clamp(Math.round(5+(100-bond)*0.3),5,35); }
-export function proposalChance(ch,bond){ return clamp(40+15*ch+Math.round((bond-BOND_START)/2),20,95); }
+/* 求婚值：交往期間她的章節選項成功就累積（同好感度：保守 +25、一般 +50、放手一搏直接滿，放手一搏失敗 −25）。
+   滿 100 就能求婚，必定成功；還沒走完的章節在婚後繼續。 */
+export const PROP_GAIN=AFF_GAIN, PROP_BOLD_FAIL=AFF_BOLD_FAIL;
+const addProp=d=>{ const L=S.love; L.prop=clamp((L.prop||0)+d,0,100); return L.prop; };
 
 /* 三選一的選項：好感事件、章節、旅外路線共用 */
 /* opts 依 [保守, 一般, 放手一搏] 排列；可以是字串，或 {t 選項, g 成功文本, b 失敗文本}。畫面上由放手一搏排到保守。 */
@@ -116,7 +119,7 @@ function confess(g,next){
     {t:'告白',main:true,s:`成功率 ${CONFESS_RATE}%｜失敗不扣好感，下次遇到她可以再說`,f:()=>{
       if(chance(CONFESS_RATE)){
         L.st='dating'; L.pid=g.id; L.partner=g.n; L.dyrs=0; L.datedTimes=(L.datedTimes||0)+1;
-        L.ch=0; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0;
+        L.ch=0; L.prop=0; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0;
         const gt=loveGainTxt('sta',2); board(1);
         card('gold',former?'重新開始':'交往',`${g.conf.ok}<br><br>你們開始交往了——${gt}。`);
         const hasAnyKids=L.kids+L.exes.reduce((s,e)=>s+(e.kids||0),0)>0;
@@ -150,9 +153,10 @@ function coupleYear(next){
   if(L.st==='dating'){
     if(L.ch<3&&chance(PRE_MARRIAGE_FIRE)){ chapter(g,ask); return; }
     if(chance(affairChance(L.bond))&&temptation(g,ask))return;
-    if(chance(30)){ const gt=loveGainTxt('sta',1); addBond(5); board(1);
-      if(chance(50))card('good','明星賽放閃',`明星賽的轉播鏡頭掃過看台，拍到了 ${hl(g.n)}。她正低頭回著工作訊息，發現自己上了大螢幕，愣了一下，笑著對鏡頭揮了揮手機。那個畫面隔天甜上熱搜——${gt}。`);
-      else card('good','日常',`這一年沒有什麼大新聞。只是每次客場回來的那個晚上，你們會窩在沙發上，各自說這一週發生的事——你的比賽，她的${g.work}。說著說著，常常就聊到天亮——${gt}。`); }
+    /* 三章都走完了，求婚值還沒滿：日常相處每年 +25；章節還在進行時，偶發的日常 +10 */
+    if(L.ch>=3||chance(30)){ const gt=loveGainTxt('sta',1); addBond(5); const pv=addProp(L.ch>=3?25:10); board(1);
+      if(chance(50))card('good','明星賽放閃',`明星賽的轉播鏡頭掃過看台，拍到了 ${hl(g.n)}。她正低頭回著工作訊息，發現自己上了大螢幕，愣了一下，笑著對鏡頭揮了揮手機。那個畫面隔天甜上熱搜——${gt}，求婚值 ${pv}／100。`);
+      else card('good','日常',`這一年沒有什麼大新聞。只是每次客場回來的那個晚上，你們會窩在沙發上，各自說這一週發生的事——你的比賽，她的${g.work}。說著說著，常常就聊到天亮——${gt}，求婚值 ${pv}／100。`); }
     ask(); return;
   }
   /* 已婚：剩下的章節在婚內走完 */
@@ -170,28 +174,31 @@ function coupleYear(next){
   card('good','結婚紀念日',`結婚紀念日，你們各自推掉了工作，回到當年辦婚禮的那個地方。${hl(g.n)} 牽著你的手走了一圈，說：「明年換我挑地方，你不准偷看行程。」——${gt}。`); next();
 }
 
-/* 她的故事：三章，交往或婚後都會走。你的選項只影響感情值；她的結果（end）一定會發生。 */
+/* 她的故事：三章，交往或婚後都會走。交往中的選項累積求婚值與感情值，婚後只影響感情值；
+   她的結果（end）一定會發生。 */
 function chapter(g,done){
-  const L=S.love, i=L.ch, c=g.ch[i];
-  choose(`<span class="ev-h">${g.n}的故事｜第 ${i+1} 章　${c.t}</span><small>${c.i}<br>感情值 ${L.bond}／100</small>`,
-    modeOpts(c.o,m=>`成功率 ${LOVE_ODDS[m]}%｜感情值 +${BOND_GAIN[m]}${BOND_FAIL[m]?`｜失敗 −${BOND_FAIL[m]}`:''}`,(m,good,o)=>{
-      const b0=L.bond; addBond(good?BOND_GAIN[m]:-BOND_FAIL[m]);
+  const L=S.love, i=L.ch, c=g.ch[i], dating=L.st==='dating';
+  const sFor=m=>dating
+    ?`成功率 ${LOVE_ODDS[m]}%｜求婚值 ${m==='bold'?'直接滿':'+'+PROP_GAIN[m]}、感情值 +${BOND_GAIN[m]}${m==='bold'?`｜失敗 求婚值 −${PROP_BOLD_FAIL}、感情值 −${BOND_FAIL.bold}`:''}`
+    :`成功率 ${LOVE_ODDS[m]}%｜感情值 +${BOND_GAIN[m]}${BOND_FAIL[m]?`｜失敗 −${BOND_FAIL[m]}`:''}`;
+  choose(`<span class="ev-h">${g.n}的故事｜第 ${i+1} 章　${c.t}</span><small>${c.i}<br>${dating?`求婚值 ${L.prop||0}／100｜`:''}感情值 ${L.bond}／100</small>`,
+    modeOpts(c.o,sFor,(m,good,o)=>{
+      const b0=L.bond, p0=L.prop||0; addBond(good?BOND_GAIN[m]:-BOND_FAIL[m]);
+      if(dating)addProp(good?PROP_GAIN[m]:(m==='bold'?-PROP_BOLD_FAIL:0));
       const gt=good?modeGain(m):''; if(good)board(1);
       L.ch=i+1;
+      const propTxt=dating?`求婚值 ${p0} → <b class="${L.prop>=p0?'up':'dn'}">${L.prop}</b>｜`:'';
       card(good?'good':'bad',`${g.n}的故事｜第 ${i+1} 章　${c.t}`,
-        `${good?o.g:o.b}<br><br>${c.end}<br>感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
+        `${good?o.g:o.b}<br><br>${c.end}<br>${propTxt}感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
       if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。`);
       done();
     }));
 }
 export function proposalAsk(next){
   const L=S.love, g=GIRL[L.pid];
-  if(L.st!=='dating'||!g||L.apart||L.ch<1){ next(); return; }
-  const rate=proposalChance(L.ch,L.bond);
-  choose(`交往第 ${L.dyrs} 年——要向 ${g.n} 求婚嗎？`,[
-    {t:'求婚',warn:true,s:`成功率 ${rate}%｜成功：體力提升、本季受傷機率 −5%｜失敗：感情值 −5`,f:()=>{
-      if(!chance(rate)){ addBond(-5);
-        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −5。${L.ch<3?'她的故事還在往下走。':''}`); next(); return; }
+  if(L.st!=='dating'||!g||L.apart||(L.prop||0)<100){ next(); return; }
+  choose(`<span class="ev-h">求婚｜${g.n}</span><small>求婚值已滿。交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。</small>`,[
+    {t:'求婚',main:true,s:'求婚值已滿，她會答應｜體力提升、本季受傷機率 −5%',f:()=>{
       /* 與前妻復合後再婚：共同孩子回到目前家庭，前妻紀錄不再重複顯示。 */
       const fi=L.exes.findIndex(e=>e.id===g.id||e.name===g.n);
       const reunitedKids=fi>=0?(L.exes[fi].kids||0):0;
@@ -199,7 +206,7 @@ export function proposalAsk(next){
       L.st='married'; L.kids=reunitedKids; L.dyrs=0;
       const gTxt=loveGainTxt('sta',2)+'、'; S.tmpInj-=5; board(1);
       card('gold','婚禮',`你沒有用球場的大螢幕，也沒有找任何鏡頭。你在你們第一次約會的那家店，把戒指放在她面前。${hl(g.n)} 看著戒指，又看著你，眼淚掉下來之前先笑了：「好。不過婚禮要在哪裡辦，要由我來決定。」休賽季完婚——${gTxt}本季受傷機率 <b class="up">−5%</b>。${L.ch<3?'<br>婚後，她的故事還會繼續。':''}`); next(); }},
-    {t:'再等等',main:true,s:'交往越久，分手風險越高',f:()=>{
+    {t:'再等等',s:'求婚值保留｜交往越久，分手風險越高',f:()=>{
       card('info','再等等',`你把戒指放回抽屜。${hl(g.n)} 什麼都沒有問，只是說她明天一早還有${g.work}要忙，先去睡了。`); next(); }}]);
 }
 
@@ -312,7 +319,7 @@ export function endRelation(){
   if(L.st==='married'){ L.exes.push({id,name:L.partner,kids:L.kids}); L.st='divorced'; L.kids=0; }
   else L.st=L.exes.length?'divorced':'single';
   if(id){ L.aff[id]=0; if((L.hurt[id]||0)>=2&&!L.burned.includes(id))L.burned.push(id); }
-  L.partner=null; L.pid=null; L.dyrs=0; L.ch=0; L.bond=0; L.apart=false; L.withYrs=0; L.apartYrs=0;
+  L.partner=null; L.pid=null; L.dyrs=0; L.ch=0; L.prop=0; L.bond=0; L.apart=false; L.withYrs=0; L.apartYrs=0;
 }
 export function divorceRec(){ endRelation(); }
 export function loveCaught(next){
