@@ -13,10 +13,10 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=homecoming-last-team`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const rng=await import('./src/core/rng.js?v=2.0.12');
-    const contract=await import('./src/engine/contract.js?v=2.0.12');
-    const phases=await import('./src/flow/phases.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const rng=await import('./src/core/rng.js?v=2.1.0');
+    const contract=await import('./src/engine/contract.js?v=2.1.0');
+    const phases=await import('./src/flow/phases.js?v=2.1.0');
 
     const teamName=function(){
       if(!this.orgTeam)return '';

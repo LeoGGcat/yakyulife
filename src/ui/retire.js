@@ -1,18 +1,18 @@
-import {S, blankStat, bucketOf} from '../core/state.js?v=2.0.12';
-import {R, ri, SEED} from '../core/rng.js?v=2.0.12';
-import {OFFICIAL_URL} from '../config.js?v=2.0.12';
-import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.0.12';
-import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.0.12';
-import {TRAIT_KEYS} from '../data/traits.js?v=2.0.12';
-import {$, card, choose, divider, board, actClear} from './dom.js?v=2.0.12';
-import {careerTimelineCard, tlNote} from './timeline.js?v=2.0.12';
-import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.0.12';
-import {roleN, fmtIP, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.0.12';
-import {fmtMoney} from '../engine/contract.js?v=2.0.12';
-import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.0.12';
+import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.0';
+import {R, ri, SEED} from '../core/rng.js?v=2.1.0';
+import {OFFICIAL_URL} from '../config.js?v=2.1.0';
+import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.0';
+import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.0';
+import {TRAIT_KEYS} from '../data/traits.js?v=2.1.0';
+import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.0';
+import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.0';
+import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.0';
+import {roleN, fmtIP, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.0';
+import {fmtMoney} from '../engine/contract.js?v=2.1.0';
+import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.0';
 import {capTeam, careerMilestones, honorGroups, honorSections, posLegendPhrase, primaryPos, statTable, tierOf, yearRanges, honorText,
-  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.0.12';
-import {shareImageSheet} from './share-image.js?v=2.0.12';
+  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.0';
+import {shareImageSheet} from './share-image.js?v=2.1.0';
 /* ================= 結算圖資料建構 =================
    Data builders for shareImage()'s canvas layout (design handoff 2026-08-14).
    All values come from S.*; the in-game settlement cards are untouched. */
@@ -1105,6 +1105,7 @@ export function endGame(reason){
   if(S.traits.thief)picks.push('被這個小倫倫了好幾年，打不好還是有高薪，真的有夠爽');
   if(S.traits.mrteam)picks.push('十五年只為一隊，'+(teamNick(S.mrTeamName||'')||'')+'先生這個稱號，他當之無愧');
   if(S.traits.confidante)picks.push('場上叱吒風雲，感情跟我一樣，55555');
+  if(S.traits.jiejiri)picks.push('打擊區裡什麼球都打得到，求婚倒是被三振兩次');
   if(S.traits.smallschool)picks.push('從那種小學校打到職業，這故事夠拍一部電影了');
   if(S.traits.grinder)picks.push('沒什麼天分卻拼到這種成就，這種球員最讓人尊敬');
   if(S.traits.goldcloth)picks.push('我愛台中猛獁，不離不棄，( ￣□￣)/喔~~喔喔~~喔喔~~喔喔~猛瑪');

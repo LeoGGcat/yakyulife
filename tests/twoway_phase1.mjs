@@ -17,10 +17,10 @@ try{
 
   /* ── ① 模組層：資料形狀、成本曲線、ovr、事件卡資格 ── */
   const unit=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const ability=await import('./src/engine/ability.js?v=2.0.12');
-    const events=await import('./src/flow/events.js?v=2.0.12');
-    const {POS_AB,POSN}=await import('./src/data/abilities.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const ability=await import('./src/engine/ability.js?v=2.1.0');
+    const events=await import('./src/flow/events.js?v=2.1.0');
+    const {POS_AB,POSN}=await import('./src/data/abilities.js?v=2.1.0');
 
     /* 成本曲線由「依守位」改成「依能力鍵」，對投手與野手必須是恆等變換。 */
     const oldCost=(pos,k,cur,pk)=>{ const isP=pos==='P';
@@ -113,8 +113,8 @@ try{
   await page2.click('#btn-start');
 
   const walk=await page2.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const {TW_SIX_GUARANTEED}=await import('./src/flow/phases.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const {TW_SIX_GUARANTEED}=await import('./src/flow/phases.js?v=2.1.0');
     const sleep=ms=>new Promise(r=>setTimeout(r,ms));
     const vis=x=>x&&x.offsetParent!==null&&!x.disabled;
     const S=state.S, years=[]; let seen=null, dice=[];

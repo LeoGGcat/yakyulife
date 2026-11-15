@@ -13,9 +13,9 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=award-recovery-rules`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const rules=await import('./src/engine/award-rules.js?v=2.0.12');
-    const awards=await import('./src/engine/awards.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const rules=await import('./src/engine/award-rules.js?v=2.1.0');
+    const awards=await import('./src/engine/awards.js?v=2.1.0');
     const s=state.newState('獎項測試',1,'IF',null);
     s.year=2035; s.traits.glass=true; s.glassYear=2035;
     state.setS(s);

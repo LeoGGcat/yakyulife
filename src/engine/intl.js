@@ -1,12 +1,12 @@
-import {S} from '../core/state.js?v=2.0.12';
-import {R, ri, chance, clamp, N0} from '../core/rng.js?v=2.0.12';
-import {LV, envRate, envAvg, envHR9, ENV_K} from '../data/teams.js?v=2.0.12';
-import {card, choose, board} from '../ui/dom.js?v=2.0.12';
-import {tlNote} from '../ui/timeline.js?v=2.0.12';
-import {isSP, fmtIP, outsFromIP, ipFromOuts, normalizeIP, baseballERA} from './season.js?v=2.0.12';
-import {ovr} from './ability.js?v=2.0.12';
-import {intlFinishIndex} from './championship.js?v=2.0.12';
-import {checkChampionTrait} from '../flow/events.js?v=2.0.12';
+import {S} from '../core/state.js?v=2.1.0';
+import {R, ri, chance, clamp, N0} from '../core/rng.js?v=2.1.0';
+import {LV, envRate, envAvg, envHR9, ENV_K} from '../data/teams.js?v=2.1.0';
+import {card, choose, board} from '../ui/dom.js?v=2.1.0';
+import {tlNote} from '../ui/timeline.js?v=2.1.0';
+import {isSP, fmtIP, outsFromIP, ipFromOuts, normalizeIP, baseballERA} from './season.js?v=2.1.0';
+import {ovr} from './ability.js?v=2.1.0';
+import {intlFinishIndex} from './championship.js?v=2.1.0';
+import {checkChampionTrait} from '../flow/events.js?v=2.1.0';
 /* 這一屆算不算二刀流：同一屆裡既有登板也有打席。二刀流在退休前多半已被強制轉回，
    所以跟 career.isTwoWayCareer() 一樣，看的是實績而不是當下的 S.pos。 */
 export const twIntl=st=>!!(st&&(st.GP||0)>0&&(st.PA||0)>0&&(st.IP||0)>0);

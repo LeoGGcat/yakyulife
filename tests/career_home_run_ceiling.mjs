@@ -30,10 +30,10 @@ try{
   await page.goto(`${url}?seed=career-hr-ceiling`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.0.12');
-    const rng   =await import('./src/core/rng.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
-    const {LV}  =await import('./src/data/teams.js?v=2.0.12');
+    const state =await import('./src/core/state.js?v=2.1.0');
+    const rng   =await import('./src/core/rng.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
+    const {LV}  =await import('./src/data/teams.js?v=2.1.0');
     const med=a=>{a=a.slice().sort((x,y)=>x-y);return a[a.length>>1];};
 
     /* 遊戲自己的衰退曲線（flow/phases.js）：32 歲起每年 −2，35 歲起 −(5+age−35)。

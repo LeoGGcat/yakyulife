@@ -16,10 +16,10 @@ try{
   await page.goto(`${url}?seed=twoway-phase3`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const career=await import('./src/engine/career.js?v=2.0.12');
-    const phases=await import('./src/flow/phases.js?v=2.0.12');
-    const {LEAGUE_K,HOF_TH_K}=await import('./src/data/economy.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const career=await import('./src/engine/career.js?v=2.1.0');
+    const phases=await import('./src/flow/phases.js?v=2.1.0');
+    const {LEAGUE_K,HOF_TH_K}=await import('./src/data/economy.js?v=2.1.0');
 
     /* 十九年的二刀流履歷。GP/IP 是投球側、PA/G 是打擊側，兩者並存 → 這才是判斷依據。 */
     const twoWayStat=()=>({yr:19,GP:360,G:2100,PA:8800,AB:7700,H:2200,HR:330,RBI:1200,SB:80,BB:900,

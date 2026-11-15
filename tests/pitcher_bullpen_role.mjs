@@ -13,9 +13,9 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=pitcher-bullpen-role`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
-    const ability=await import('./src/engine/ability.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
+    const ability=await import('./src/engine/ability.js?v=2.1.0');
     const s=state.newState('牛棚定位測試',1,'P',null);
     s.stage='PRO'; s.lv='NPB1'; s.lastLv='NPB1'; s.role='MR';
     s.ab.sta=60; s.prevD=5;

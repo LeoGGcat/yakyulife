@@ -32,8 +32,8 @@ try{
   await page.goto(`${url}?seed=alloc-undo`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.0.12');
-    const alloc=await import('./src/ui/alloc.js?v=2.0.12');
+    const state=await import('./src/core/state.js?v=2.1.0');
+    const alloc=await import('./src/ui/alloc.js?v=2.1.0');
 
     /* 一次配點：clicks 是要按的能力鍵，undo 標示那一次按完要按復原。 */
     const run=(dice,clicks)=>{

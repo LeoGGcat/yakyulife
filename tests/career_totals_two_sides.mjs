@@ -36,9 +36,9 @@ try{
   await page.goto(`${url}?seed=career-totals`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.0.12');
-    const season=await import('./src/engine/season.js?v=2.0.12');
-    const career=await import('./src/engine/career.js?v=2.0.12');
+    const state =await import('./src/core/state.js?v=2.1.0');
+    const season=await import('./src/engine/season.js?v=2.1.0');
+    const career=await import('./src/engine/career.js?v=2.1.0');
 
     /* 一個二刀流球季：投球寫 GP／pH／pBB，打擊寫 G／H／BB。 */
     const twSeason=()=>({GP:28,IP:170.0,W:12,L:8,SV:0,HLD:0,SO:190,ER:60,pH:140,pBB:45,pHR:18,

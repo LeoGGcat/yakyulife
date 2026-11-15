@@ -35,10 +35,10 @@ try{
   await page.goto(`${url}?seed=twoway-audit-grace`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.0.12');
-    const phases=await import('./src/flow/phases.js?v=2.0.12');
-    const ability=await import('./src/engine/ability.js?v=2.0.12');
-    const {LV}  =await import('./src/data/teams.js?v=2.0.12');
+    const state =await import('./src/core/state.js?v=2.1.0');
+    const phases=await import('./src/flow/phases.js?v=2.1.0');
+    const ability=await import('./src/engine/ability.js?v=2.1.0');
+    const {LV}  =await import('./src/data/teams.js?v=2.1.0');
 
     /* 回報案例的能力側寫：投球側撐得住大聯盟，打擊側只到 2A 的水準。
        打擊四圍在 TW_BAR 收到 min+1.2 之後往上抬了兩點——測資要的是
