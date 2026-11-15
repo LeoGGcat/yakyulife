@@ -31,9 +31,9 @@ try{
   await page.goto(`${url}?seed=cpbl-hof`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.0.12');
-    const career=await import('./src/engine/career.js?v=2.0.12');
-    const ECON  =await import('./src/data/economy.js?v=2.0.12');
+    const state =await import('./src/core/state.js?v=2.1.0');
+    const career=await import('./src/engine/career.js?v=2.1.0');
+    const ECON  =await import('./src/data/economy.js?v=2.1.0');
 
     const yrs=(a,n)=>{const o=[];for(let i=0;i<n;i++)o.push(a+i);return o;};
     const pitH=(nAll,nTitle,nBest)=>{const h=[];
