@@ -1,9 +1,9 @@
-import {S} from '../core/state.js?v=2.1.0';
-import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.0';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.0';
-import {card, choose, board} from '../ui/dom.js?v=2.1.0';
-import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.0';
-import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.0';
+import {S} from '../core/state.js?v=2.1.1';
+import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.1';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.1';
+import {card, choose, board} from '../ui/dom.js?v=2.1.1';
+import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.1';
+import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.1';
 
 /* ================= 戀愛系統（v2.1.0 重置） =================
    流程：好感事件（三選一）→ 好感滿 100 → 告白 75% → 交往（她的三章故事，任一章後可求婚）
@@ -54,11 +54,12 @@ export function affairPool(){
 }
 export function affairChance(bond){ return clamp(Math.round(5+(100-bond)*0.3),5,35); }
 /* 求婚值：交往期間她的章節選項成功就累積（同好感度：保守 +25、一般 +50、放手一搏直接滿，放手一搏失敗 −25）。
-   滿 100 就能求婚；還沒走完的章節在婚後繼續。 */
+   求婚值多少都能求婚，求婚值越高越容易成功；還沒走完的章節在婚後繼續。 */
 export const PROP_GAIN=AFF_GAIN, PROP_BOLD_FAIL=AFF_BOLD_FAIL;
-/* 求婚值滿了才能求婚，但她還是可能拒絕：成功率看感情值（起始 70 → 75%），被拒時感情值 −5、求婚值退回 50。 */
+/* 交往中每年都能求婚。成功率 = 求婚值 × 0.75 + (感情值 − 70)，5%～95%（求婚值滿、感情值 70 → 75%）。
+   被拒時感情值 −5、求婚值最多保留 50。只要求過一次婚，就不再有「交往太久不求婚」的分手風險。 */
 export const PROP_NO_BOND=5, PROP_NO_BACK=50;
-export function proposalChance(bond){ return clamp(Math.round(bond)+5,30,95); }
+export function proposalChance(prop,bond){ return clamp(Math.round(prop*0.75+(bond-BOND_START)),5,95); }
 const addProp=d=>{ const L=S.love; L.prop=clamp((L.prop||0)+d,0,100); return L.prop; };
 
 /* 三選一的選項：好感事件、章節、旅外路線共用 */
@@ -122,7 +123,7 @@ function confess(g,next){
     {t:'告白',main:true,s:`成功率 ${CONFESS_RATE}%｜失敗不扣好感，下次遇到她可以再說`,f:()=>{
       if(chance(CONFESS_RATE)){
         L.st='dating'; L.pid=g.id; L.partner=g.n; L.dyrs=0; L.datedTimes=(L.datedTimes||0)+1;
-        L.ch=0; L.prop=0; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0;
+        L.ch=0; L.prop=0; L.proposed=false; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0;
         const gt=loveGainTxt('sta',2); board(1);
         card('gold',former?'重新開始':'交往',`${g.conf.ok}<br><br>你們開始交往了——${gt}。`);
         const hasAnyKids=L.kids+L.exes.reduce((s,e)=>s+(e.kids||0),0)>0;
@@ -142,12 +143,13 @@ function coupleYear(next){
     const y=L.dyrs;
     /* 交往太久不結婚 → 分手風險逐年升高；劈腿被抓的那年 +30% */
     const cheatPen=(L.cheatYr===S.year-1||L.cheatYr===S.year)?30:0;
-    const bkP=(y>=4?20+(y-4)*15:0)+cheatPen;
+    const bkP=(!L.proposed&&y>=4?20+(y-4)*15:0)+cheatPen;
     if(bkP>0&&chance(bkP)){
       const k1=pick(POS_AB[S.pos]),k2=pick(POS_AB[S.pos]);
       const g1=addAb(k1,-3),g2=addAb(k2,-3); board(1);
       endRelation();
-      card('bad','分手',`${cheatPen?'那晚的事她其實都知道。':''}交往第 ${y} 年，你始終沒有給她一個答案。${hl(g.n)} 沒有哭，也沒有吵，只是平靜地說：「我的人生不會停在原地等任何人。」她搬走那天，把你家的鑰匙放在玄關的鞋櫃上。整個休賽季你魂不守舍——${abGainTxt(k1,-1,g1)}、${abGainTxt(k2,-1,g2)}。`);
+      if(L.proposed)card('bad','分手',`那晚的事她其實都知道。${hl(g.n)} 沒有哭，也沒有吵，只是把你送過的那個戒指盒放回你手裡：「我可以等你，但我沒辦法跟一個我不能相信的人過一輩子。」她搬走那天，把你家的鑰匙放在玄關的鞋櫃上。整個休賽季你魂不守舍——${abGainTxt(k1,-1,g1)}、${abGainTxt(k2,-1,g2)}。`);
+      else card('bad','分手',`${cheatPen?'那晚的事她其實都知道。':''}交往第 ${y} 年，你始終沒有給她一個答案。${hl(g.n)} 沒有哭，也沒有吵，只是平靜地說：「我的人生不會停在原地等任何人。」她搬走那天，把你家的鑰匙放在玄關的鞋櫃上。整個休賽季你魂不守舍——${abGainTxt(k1,-1,g1)}、${abGainTxt(k2,-1,g2)}。`);
       next(); return; }
   }
   if(L.apart){ longDistance(g,next); return; }
@@ -199,12 +201,14 @@ function chapter(g,done){
 }
 export function proposalAsk(next){
   const L=S.love, g=GIRL[L.pid];
-  if(L.st!=='dating'||!g||L.apart||(L.prop||0)<100){ next(); return; }
-  const rate=proposalChance(L.bond);
-  choose(`<span class="ev-h">求婚｜${g.n}</span><small>求婚值已滿。交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。</small>`,[
-    {t:'求婚',main:true,s:`成功率 ${rate}%（依感情值）｜成功：體力提升、本季受傷機率 −5%｜失敗：感情值 −${PROP_NO_BOND}、求婚值退回 ${PROP_NO_BACK}`,f:()=>{
-      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=PROP_NO_BACK; L.refused=(L.refused||0)+1; board(1);
-        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值退回 ${PROP_NO_BACK}／100。${L.ch<3?'她的故事還在往下走。':''}`);
+  if(L.st!=='dating'||!g||L.apart){ next(); return; }
+  const p=L.prop||0, rate=proposalChance(p,L.bond);
+  const lead=p>=100?'求婚值已滿。':`求婚值 ${p}／100，感情值 ${L.bond}／100。`;
+  choose(`<span class="ev-h">求婚｜${g.n}</span><small>${lead}交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。</small>`,[
+    {t:'求婚',main:p>=100,s:`成功率 ${rate}%（看求婚值與感情值）｜成功：體力提升、本季受傷機率 −5%｜失敗：感情值 −${PROP_NO_BOND}${p>PROP_NO_BACK?`、求婚值退回 ${PROP_NO_BACK}`:''}`,f:()=>{
+      L.proposed=true;
+      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=Math.min(p,PROP_NO_BACK); L.refused=(L.refused||0)+1; board(1);
+        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值 ${L.prop}／100。${L.ch<3?'她的故事還在往下走。':''}`);
         if(L.refused>=2&&!S.traits.jiejiri){ S.traits.jiejiri=true;
           card('gold','隱藏稱號：街尻','職業球員求婚都會成功。對吧？'); board(1); }
         next(); return; }
@@ -215,7 +219,7 @@ export function proposalAsk(next){
       L.st='married'; L.kids=reunitedKids; L.dyrs=0;
       const gTxt=loveGainTxt('sta',2)+'、'; S.tmpInj-=5; board(1);
       card('gold','婚禮',`你沒有用球場的大螢幕，也沒有找任何鏡頭。你在你們第一次約會的那家店，把戒指放在她面前。${hl(g.n)} 看著戒指，又看著你，眼淚掉下來之前先笑了：「好。不過婚禮要在哪裡辦，要由我來決定。」休賽季完婚——${gTxt}本季受傷機率 <b class="up">−5%</b>。${L.ch<3?'<br>婚後，她的故事還會繼續。':''}`); next(); }},
-    {t:'再等等',s:'求婚值保留｜交往越久，分手風險越高',f:()=>{
+    {t:'再等等',main:p<100,s:L.proposed?'求婚值保留':'求婚值保留｜交往第 4 年起，一直沒求過婚會有分手風險',f:()=>{
       card('info','再等等',`你把戒指放回抽屜。${hl(g.n)} 什麼都沒有問，只是說她明天一早還有${g.work}要忙，先去睡了。`); next(); }}]);
 }
 
@@ -328,7 +332,7 @@ export function endRelation(){
   if(L.st==='married'){ L.exes.push({id,name:L.partner,kids:L.kids}); L.st='divorced'; L.kids=0; }
   else L.st=L.exes.length?'divorced':'single';
   if(id){ L.aff[id]=0; if((L.hurt[id]||0)>=2&&!L.burned.includes(id))L.burned.push(id); }
-  L.partner=null; L.pid=null; L.dyrs=0; L.ch=0; L.prop=0; L.bond=0; L.apart=false; L.withYrs=0; L.apartYrs=0;
+  L.partner=null; L.pid=null; L.dyrs=0; L.ch=0; L.prop=0; L.proposed=false; L.bond=0; L.apart=false; L.withYrs=0; L.apartYrs=0;
 }
 export function divorceRec(){ endRelation(); }
 export function loveCaught(next){
