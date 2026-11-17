@@ -205,6 +205,7 @@ function chapter(g,done){
       card(good?'good':'bad',`${g.n}的故事｜第 ${i+1} 章　${c.t}`,
         `${good?o.g:o.b}<br><br>${c.end}<br>${propTxt}感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
       if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。<br><br>${g.fin||'這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。'}`);
+      if(L.ch===3)comeToYou(g);
       done();
     }));
 }
@@ -386,6 +387,16 @@ function abroadEvent(next){
 export function mayFollow(g,from,to){
   if(S.love.ch>=3)return true;
   return g.id==='misaki'&&from==='JP'&&to==='US';
+}
+/* 圓夢後她來找你：遠距中走完三章，她搬到你所在的國家，接著走同行路線。
+   張沛慈例外（孩子們在山上）；早瀨美咲的目標就是派駐美國，只有你在美國時才會過來。 */
+function comeToYou(g){
+  const L=S.love, pc=playerCountry();
+  if(!L.apart||pc===L.herC||g.id==='peici'||(g.id==='misaki'&&pc!=='US'))return;
+  const yrs=L.apartYrs||1, home=pc===g.c;
+  L.herC=pc; L.apart=false; L.apartYrs=0; L.withYrs=1; addBond(10);
+  const gt=loveGainTxt('sta',1); board(1);
+  card('gold','她來找你了',`慶功的那天晚上，${hl(g.n)} 打電話給你。那頭很吵，有人在唱歌、有人在開香檳，她躲到走廊上，聲音有點喘：「我做到了。」停了一下，她又說：「所以，現在換我去找你。」<br><br>一個月後，你在 ${COUNTRY_N[pc]} 的機場等她。她拖著兩個行李箱走出入境大廳，頭髮比你上次見到時長了一些，看到你的時候，先是笑，然後才哭。${home?'「回家了。」她說，「這次是跟你一起。」':`「我查好了，這裡也有${g.work}可以做。」她說，「不過那是下個月的事。這個月，我只想待在你旁邊。」`}<br><br>遠距 ${yrs} 年，你們終於又在同一個時區了——${gt}，感情值 +10。`);
 }
 function goWith(g,home){
   const L=S.love; L.herC=playerCountry(); L.withYrs=1; L.apart=false;
