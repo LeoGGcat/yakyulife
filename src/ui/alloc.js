@@ -1,9 +1,9 @@
-import {$, actClear, actToggleSync, board, scrollBottom} from './dom.js?v=2.1.3';
-import {S} from '../core/state.js?v=2.1.3';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.3';
-import {abCost, normalizeAbCarry, addAb} from '../engine/ability.js?v=2.1.3';
-import {allocDone} from '../flow/events.js?v=2.1.3';
-import {isMobileLayout} from './prefs.js?v=2.1.3';
+import {$, actClear, actToggleSync, board, scrollBottom} from './dom.js?v=2.1.4';
+import {S} from '../core/state.js?v=2.1.4';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.4';
+import {abCost, normalizeAbCarry, addAb} from '../engine/ability.js?v=2.1.4';
+import {allocDone} from '../flow/events.js?v=2.1.4';
+import {isMobileLayout} from './prefs.js?v=2.1.4';
 
 export function allocFullOpen(){ const f=$('alloc-full'); if(f)f.classList.add('show'); }
 export function allocFullClose(){ const f=$('alloc-full'); if(f)f.classList.remove('show'); }

@@ -26,11 +26,11 @@ try{
   await page.goto(`${url}?seed=nitenichi`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.3');
-    const aw=await import('./src/engine/awards.js?v=2.1.3');
-    const cr=await import('./src/engine/career.js?v=2.1.3');
-    const tr=await import('./src/ui/traits.js?v=2.1.3');
-    const dom=await import('./src/ui/dom.js?v=2.1.3');
+    const state=await import('./src/core/state.js?v=2.1.4');
+    const aw=await import('./src/engine/awards.js?v=2.1.4');
+    const cr=await import('./src/engine/career.js?v=2.1.4');
+    const tr=await import('./src/ui/traits.js?v=2.1.4');
+    const dom=await import('./src/ui/dom.js?v=2.1.4');
 
     /* ── ① 六個王一次拿滿 ── */
     const monster=()=>{

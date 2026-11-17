@@ -1,17 +1,17 @@
-import {S} from '../core/state.js?v=2.1.3';
-import {APP_VER, SPONSOR_URL} from '../config.js?v=2.1.3';
-import {renderTraits, traitNames} from './traits.js?v=2.1.3';
-import {clearAlloc, allocFullClose} from './alloc.js?v=2.1.3';
-import {themeModal, applyBigText, applyMobileUI} from './prefs.js?v=2.1.3';
-import {DPN, POSN} from '../data/abilities.js?v=2.1.3';
-import {TEAM_COLOR, LV} from '../data/teams.js?v=2.1.3';
-import {TRAIT_KEYS, TRAIT_FX} from '../data/traits.js?v=2.1.3';
-import {playerName, stageLabel} from '../core/state.js?v=2.1.3';
-import {salParts, fmtMoney} from '../engine/contract.js?v=2.1.3';
-import {roleN, fmtIP, slgOf, baseballERA, baseballWHIP, pitG} from '../engine/season.js?v=2.1.3';
-import {honorGroups, honorSections, yearRanges, twoWayView, twHasPit, twHasBat} from '../engine/career.js?v=2.1.3';
-import {isChampionshipYear} from '../engine/championship.js?v=2.1.3';
-import {playerType, ovr} from '../engine/ability.js?v=2.1.3';
+import {S} from '../core/state.js?v=2.1.4';
+import {APP_VER, SPONSOR_URL} from '../config.js?v=2.1.4';
+import {renderTraits, traitNames} from './traits.js?v=2.1.4';
+import {clearAlloc, allocFullClose} from './alloc.js?v=2.1.4';
+import {themeModal, applyBigText, applyMobileUI} from './prefs.js?v=2.1.4';
+import {DPN, POSN} from '../data/abilities.js?v=2.1.4';
+import {TEAM_COLOR, LV} from '../data/teams.js?v=2.1.4';
+import {TRAIT_KEYS, TRAIT_FX} from '../data/traits.js?v=2.1.4';
+import {playerName, stageLabel} from '../core/state.js?v=2.1.4';
+import {salParts, fmtMoney} from '../engine/contract.js?v=2.1.4';
+import {roleN, fmtIP, slgOf, baseballERA, baseballWHIP, pitG} from '../engine/season.js?v=2.1.4';
+import {honorGroups, honorSections, yearRanges, twoWayView, twHasPit, twHasBat} from '../engine/career.js?v=2.1.4';
+import {isChampionshipYear} from '../engine/championship.js?v=2.1.4';
+import {playerType, ovr} from '../engine/ability.js?v=2.1.4';
 
 export const $=id=>document.getElementById(id);
 export let _curYearBody=null; /* 當前年度的內容容器 */
