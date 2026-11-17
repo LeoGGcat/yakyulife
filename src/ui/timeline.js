@@ -1,5 +1,5 @@
-import {S, stageLabel} from '../core/state.js?v=2.1.1';
-import {$, card, _curYearBody} from './dom.js?v=2.1.1';
+import {S, stageLabel} from '../core/state.js?v=2.1.2';
+import {$, card, _curYearBody} from './dom.js?v=2.1.2';
 
 /* ================= 生涯時間軸(純呈現層,不觸碰 RNG) ================= */
 export let TL=[];

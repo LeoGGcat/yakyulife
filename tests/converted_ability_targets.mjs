@@ -31,11 +31,11 @@ try{
   await page.goto(`${url}?seed=converted-targets`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.1.1');
-    const phases=await import('./src/flow/phases.js?v=2.1.1');
-    const events=await import('./src/flow/events.js?v=2.1.1');
-    const EV    =await import('./src/data/events.js?v=2.1.1');
-    const {POS_AB}=await import('./src/data/abilities.js?v=2.1.1');
+    const state =await import('./src/core/state.js?v=2.1.2');
+    const phases=await import('./src/flow/phases.js?v=2.1.2');
+    const events=await import('./src/flow/events.js?v=2.1.2');
+    const EV    =await import('./src/data/events.js?v=2.1.2');
+    const {POS_AB}=await import('./src/data/abilities.js?v=2.1.2');
 
     /* ① 資料層：role:'*' 但 target 寫死在單側的卡有哪些。 */
     const PIT=['vel','ctl','brk'], BAT=['con','pow','spd','eye','rng','fld','arm','cat'];
