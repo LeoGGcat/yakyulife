@@ -33,11 +33,17 @@ try{
     const shapeOk=girls.GIRLS.every(g=>g.work&&g.fin&&g.sc.length===3&&g.ch.length===3&&g.sc.every(s=>s.i&&optOk(s.o))
       &&g.ch.every(c=>c.i&&optOk(c.o)&&c.end)&&g.conf.ok&&g.conf.no&&g.propNo&&g.go&&g.stay&&g.goP>0);
     const byC=c=>girls.GIRLS.filter(g=>g.c===c).length;
+    /* 夢想達成前不跟著出國；早瀨美咲只保留日本→美國 */
+    const G=girls.GIRL, mf=(id,f,t,ch)=>{ S.love.ch=ch; return love.mayFollow(G[id],f,t); };
+    const follow=[mf('xiaoqing','TW','JP',0),mf('xiaoqing','TW','US',2),mf('xiaoqing','TW','JP',3),
+      mf('misaki','JP','US',0),mf('misaki','JP','TW',0),mf('misaki','US','JP',2),mf('misaki','JP','TW',3),
+      mf('maya','US','JP',1),mf('rin','JP','US',2),mf('rin','JP','US',3)];
+    S.love.ch=0;
     return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
       aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],
       prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
-      jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
+      follow,jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
   });
   assert.deepEqual(r.counts,[6,5,5],'台灣 6 人（含馮海莎）、日本 5、美國 5');
   assert.ok(r.shapeOk,'每位角色都有三幕好感事件、三章故事與旅外文本');
@@ -59,6 +65,7 @@ try{
   assert.deepEqual(r.pc,[75,5,95,38]); assert.equal(r.conf,75); assert.equal(r.fire,80);
   assert.deepEqual(r.aff,[5,35,14]);
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
+  assert.deepEqual(r.follow,[false,false,true,true,false,false,true,false,false,true],'夢想達成前不跟著出國，美咲只走日本→美國');
   assert.deepEqual(errors,[]);
   console.log('love system ok');
 }finally{ await browser.close(); }

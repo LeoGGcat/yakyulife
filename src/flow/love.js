@@ -156,7 +156,11 @@ function coupleYear(next){
   }
   const ask=()=>L.st==='dating'?proposalAsk(next):next();
   /* 遠距也能求婚；被拒後的心結、十字路口接在遠距事件後面 */
-  if(L.apart){ longDistance(g,()=>datingTurn(g,ask)||ask()); return; }
+  /* 遠距期間她的故事照樣往下走：夢想是她自己在原本的國家追的，不需要你在身邊 */
+  if(L.apart){ longDistance(g,()=>{
+    if(datingTurn(g,ask))return;
+    if(L.pid===g.id&&L.apart&&L.ch<3&&chance(L.st==='dating'?PRE_MARRIAGE_FIRE:60)){ chapter(g,ask); return; }
+    ask(); }); return; }
   if(L.withYrs===1||L.withYrs===2){ withRoute(g,ask); return; }
   if(L.st==='dating'){
     if(datingTurn(g,ask))return;
@@ -364,6 +368,10 @@ function abroadEvent(next){
     card('info','更遠了',`你轉往 ${COUNTRY_N[pc]}，${hl(g.n)} 還在 ${COUNTRY_N[L.herC]}。你們打開手機的世界時鐘，重新加了一個時區。感情值 −5。`);
     next(); return; }
   const home=pc===g.c; /* 這次是回她的家鄉 */
+  if(!mayFollow(g,L.herC,pc)){ /* 夢想還沒達成：她不會離開原本的國家 */
+    L.apart=true; L.apartYrs=0;
+    card('info','各自的戰場',`你要去 ${COUNTRY_N[pc]} 打球了。${hl(g.n)} 聽完，沉默了很久，最後握住你的手：「我還沒做到。」她說過，她要${g.goal}——那條路在 ${COUNTRY_N[L.herC]}，現在還不能放下。「你去吧。我在這裡，把我的事做完。」你們決定，試試看遠距離。`);
+    next(); return; }
   const p=clamp(Math.round(g.goP+(L.bond-60)/2+(home?30:0)),5,90);
   const rel=L.st==='married'?'你的妻子':'女友';
   choose(`<span class="ev-h">旅外｜${g.n}</span><small>你要去 ${COUNTRY_N[pc]} 打球了。可是${rel} ${g.n} 的${g.work}在 ${COUNTRY_N[L.herC]}，那是她一點一滴打下來的。</small>`,[
@@ -372,6 +380,12 @@ function abroadEvent(next){
       next(); }},
     {t:'告訴她：你的人生在這裡，留下來沒關係',main:true,s:'直接走遠距路線｜感情值 +5',f:()=>{
       addBond(5); stayApart(g,home,false); next(); }}]);
+}
+/* 她願不願意跟著出國：夢想（三章）達成前不離開原本的國家。
+   唯一例外是早瀨美咲（體育主播，目標是派駐大聯盟），她只會從日本跟到美國。 */
+export function mayFollow(g,from,to){
+  if(S.love.ch>=3)return true;
+  return g.id==='misaki'&&from==='JP'&&to==='US';
 }
 function goWith(g,home){
   const L=S.love; L.herC=playerCountry(); L.withYrs=1; L.apart=false;
