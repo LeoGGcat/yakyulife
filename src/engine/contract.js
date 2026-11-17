@@ -1,18 +1,18 @@
-import {S} from '../core/state.js?v=2.1.2';
-import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.2';
-import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.2';
-import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.2';
-import {card, choose, board} from '../ui/dom.js?v=2.1.2';
-import {tlNote} from '../ui/timeline.js?v=2.1.2';
-import {ovr} from './ability.js?v=2.1.2';
-import {injuryMarketStatus} from './injury.js?v=2.1.2';
-import {hasActiveFranchise} from './tenure.js?v=2.1.2';
-import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.2';
-import {capTeam} from './career.js?v=2.1.2';
-import {traitCard, removeTrait} from '../flow/events.js?v=2.1.2';
-import {advance} from './draft.js?v=2.1.2';
-import {finishContractYear} from '../flow/phases.js?v=2.1.2';
-import {endGame} from '../ui/retire.js?v=2.1.2';
+import {S} from '../core/state.js?v=2.1.3';
+import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.3';
+import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.3';
+import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.3';
+import {card, choose, board} from '../ui/dom.js?v=2.1.3';
+import {tlNote} from '../ui/timeline.js?v=2.1.3';
+import {ovr} from './ability.js?v=2.1.3';
+import {injuryMarketStatus} from './injury.js?v=2.1.3';
+import {hasActiveFranchise} from './tenure.js?v=2.1.3';
+import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.3';
+import {capTeam} from './career.js?v=2.1.3';
+import {traitCard, removeTrait} from '../flow/events.js?v=2.1.3';
+import {advance} from './draft.js?v=2.1.3';
+import {finishContractYear} from '../flow/phases.js?v=2.1.3';
+import {endGame} from '../ui/retire.js?v=2.1.3';
 export function pitcherContractCap(){ return ({SP:7,CL:5,MR:4})[S.role]||7; }
 /* 年薪（萬台幣）。頂級聯盟採漸進曲線：底薪貼近聯盟現況，明星價值才逐步拉開。 */
 export function hasMlbService(){
@@ -327,13 +327,15 @@ export function handleDemotion(o,path,idx){
     if(t>=0){
       /* 旅外體系下放時,亞洲球團同步遞約 */
       /* 跨聯盟的去處一律走母隊優先（returnTeam）：待過的聯盟 90% 是老東家把你接回去。 */
-      const alts=[];
+      const alts=[], from=S.org;
+      /* 下放時跳槽回中職也是旅外回歸：走 returnHomeSign 才會有母隊判定與「回歸母隊」文案。 */
+      const demoteHome=`球團的下放通知還壓在置物櫃裡，家鄉球隊的電話就先打來了。與其在${LV[path[t]].n}重新證明自己，你決定把行李收一收，回到熟悉的紅土，在家鄉球迷面前繼續打球。`;
       if(S.org==='MiLB'){
-        if(o>=LV.NPB1.min&&chance(Math.round(60*ageGateJP())))alts.push({t:'跳槽日職一軍',s:'旅日合約',f:()=>{buyoutRemaining();signTo('NPB','NPB1',returnTeam('NPB').team);advance();}});
-        else if(o>=LV.NPB2.min&&chance(50))alts.push({t:'轉戰日職二軍（支配下）',f:()=>{buyoutRemaining();signTo('NPB','NPB2',returnTeam('NPB').team);advance();}});
-        if(o>=LV.CPBL1.min)alts.push({t:'返台加盟中職一軍',s:'落葉歸根',f:()=>{buyoutRemaining();signTo('CPBL','CPBL1',returnTeam('CPBL').team);advance();}});
+        if(o>=LV.NPB1.min&&chance(Math.round(60*ageGateJP())))alts.push({t:'跳槽日職一軍',s:'旅日合約',f:()=>{buyoutRemaining();returnHomeSign(from,'NPB','NPB1');advance();}});
+        else if(o>=LV.NPB2.min&&chance(50))alts.push({t:'轉戰日職二軍（支配下）',f:()=>{buyoutRemaining();returnHomeSign(from,'NPB','NPB2');advance();}});
+        if(o>=LV.CPBL1.min)alts.push({t:'返台加盟中職一軍',s:'落葉歸根',f:()=>{buyoutRemaining();returnHomeSign(from,'CPBL','CPBL1',demoteHome);advance();}});
       }else if(S.org==='NPB'&&o>=LV.CPBL1.min&&chance(70)){
-        alts.push({t:'返台加盟中職一軍',f:()=>{buyoutRemaining();signTo('CPBL','CPBL1',returnTeam('CPBL').team);advance();}});
+        alts.push({t:'返台加盟中職一軍',s:'落葉歸根',f:()=>{buyoutRemaining();returnHomeSign(from,'CPBL','CPBL1',demoteHome);advance();}});
       }
       if(alts.length){
         card('bad','降級通知',`成績未達標，球團打算將你下放 <b class="dn">${LV[path[t]].n}</b>——但消息一出，其他聯盟的邀請也到了。`);
@@ -362,10 +364,11 @@ export function handleDemotion(o,path,idx){
 }
 export function outOfOrg(o){
   /* 遭原聯盟釋出，尋找重疊層級合約 */
-  const offers=[];
-  if(S.org!=='NPB'&&o>=44)offers.push({t:'日職二軍（支配下）合約',f:()=>{buyoutRemaining(1);signTo('NPB','NPB2',returnTeam('NPB').team);}});
-  if(S.org!=='CPBL'){ if(o>=41)offers.push({t:'中職一軍合約',f:()=>{buyoutRemaining(1);signTo('CPBL','CPBL1',returnTeam('CPBL').team);}});
-    else if(o>=30)offers.push({t:'中職二軍合約',f:()=>{buyoutRemaining(1);signTo('CPBL','CPBL2',returnTeam('CPBL').team);}}); }
+  const offers=[], from=S.org;
+  const releasedHome=`戰力外的消息傳回台灣，家鄉的球團第一時間遞來邀請。海外這條路走到這裡，你決定回家，把剩下的棒球打給從小看你長大的球迷看。`;
+  if(S.org!=='NPB'&&o>=44)offers.push({t:'日職二軍（支配下）合約',f:()=>{buyoutRemaining(1);returnHomeSign(from,'NPB','NPB2');}});
+  if(S.org!=='CPBL'){ if(o>=41)offers.push({t:'中職一軍合約',s:'落葉歸根',f:()=>{buyoutRemaining(1);returnHomeSign(from,'CPBL','CPBL1',releasedHome);}});
+    else if(o>=30)offers.push({t:'中職二軍合約',s:'落葉歸根',f:()=>{buyoutRemaining(1);returnHomeSign(from,'CPBL','CPBL2',releasedHome);}}); }
   if(!offers.length){ buyoutRemaining(1); daibaFarewell(()=>endGame('遭球團釋出且無人問津，'+S.year+' 年黯然引退。')); return; }
   card('bad','戰力外通告',`未達 ${S.org==='NPB'?'日職':'原聯盟'}留用門檻，遭到釋出。所幸還有球隊捎來邀請——`);
   if(S.age>=33){ offers.push({t:'就此引退',warn:true,f:()=>{buyoutRemaining(1);daibaFarewell(()=>endGame('收到戰力外通告後，'+S.year+' 年選擇引退。'));}}); }
