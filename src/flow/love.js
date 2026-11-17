@@ -200,7 +200,7 @@ function chapter(g,done){
       const propTxt=dating?`求婚值 ${p0} → <b class="${L.prop>=p0?'up':'dn'}">${L.prop}</b>｜`:'';
       card(good?'good':'bad',`${g.n}的故事｜第 ${i+1} 章　${c.t}`,
         `${good?o.g:o.b}<br><br>${c.end}<br>${propTxt}感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
-      if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。`);
+      if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。<br><br>${g.fin||'這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。'}`);
       done();
     }));
 }

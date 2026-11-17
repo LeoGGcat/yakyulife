@@ -30,7 +30,7 @@ try{
     S.org='MiLB'; const country=love.playerCountry();
     /* 每個選項都要有自己的成功與失敗文本，避免「選 A 卻看到 B 的結果」。 */
     const optOk=o=>o.length===3&&o.every(x=>x.t&&x.g&&x.b);
-    const shapeOk=girls.GIRLS.every(g=>g.work&&g.sc.length===3&&g.ch.length===3&&g.sc.every(s=>s.i&&optOk(s.o))
+    const shapeOk=girls.GIRLS.every(g=>g.work&&g.fin&&g.sc.length===3&&g.ch.length===3&&g.sc.every(s=>s.i&&optOk(s.o))
       &&g.ch.every(c=>c.i&&optOk(c.o)&&c.end)&&g.conf.ok&&g.conf.no&&g.propNo&&g.go&&g.stay&&g.goP>0);
     const byC=c=>girls.GIRLS.filter(g=>g.c===c).length;
     return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
