@@ -25,8 +25,9 @@ try{
     S.stage='PRO'; S.org='CPBL';
     S.love.cast={TW:['haisha','ruotong','peici'],JP:['misaki','hiyori','sae'],US:['maya','sophia','naomi']};
     S.love.pid='ruotong';
+    love.ensureLove(); S.love.aff={ruotong:100,haisha:80,peici:0,misaki:40,maya:25,sae:50};
     const poolTW=love.affairPool();
-    S.org='NPB'; const poolJP=love.affairPool();
+    S.love.burned=['sae']; S.org='NPB'; const poolJP=love.affairPool(); S.love.burned=[];
     S.org='MiLB'; const country=love.playerCountry();
     /* 每個選項都要有自己的成功與失敗文本，避免「選 A 卻看到 B 的結果」。 */
     const optOk=o=>o.length===3&&o.every(x=>x.t&&x.g&&x.b);
@@ -57,13 +58,13 @@ try{
   /* 啦啦隊入選率 3/5＝60%，其中一半是馮海莎 → 各約 30% */
   assert.ok(haisha>80&&haisha<160,`馮海莎入選 ${haisha}/400`);
   assert.ok(xiaoqing>80&&xiaoqing<160,`林曉晴入選 ${xiaoqing}/400`);
-  assert.deepEqual(r.poolTW,['peici'],'外遇名單排除伴侶與馮海莎');
-  assert.deepEqual(r.poolJP,['misaki','hiyori','sae'],'外遇名單跟著所在聯盟的國家');
+  assert.deepEqual(r.poolTW,['misaki','maya','sae'],'外遇名單：累積過好感度的人，不限國家，排除伴侶、馮海莎與好感度 0');
+  assert.deepEqual(r.poolJP,['misaki','maya'],'外遇名單不受所在國家影響，排除不會回頭的人');
   assert.equal(r.country,'US');
   assert.deepEqual(r.odds,{safe:80,norm:65,bold:50});
   assert.deepEqual(r.gain,{safe:25,norm:50,bold:100});
   assert.deepEqual(r.pc,[75,5,95,38]); assert.equal(r.conf,75); assert.equal(r.fire,80);
-  assert.deepEqual(r.aff,[5,35,14]);
+  assert.deepEqual(r.aff,[10,40,19]);
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
   assert.deepEqual(r.follow,[false,false,true,true,false,false,true,false,false,true],'夢想達成前不跟著出國，美咲只走日本→美國');
   assert.deepEqual(errors,[]);
