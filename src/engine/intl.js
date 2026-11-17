@@ -95,13 +95,24 @@ export function maybeIntl(done){
            被安打／保送存在 pH/pBB，跟職業球季同一個約定——共用 H/BB 會被打擊側蓋掉。 */
         if(S.pos==='P'||TW){ const dd=(a.vel+a.ctl+a.brk)/3-par;
           /* 【修正】區分先發與後援，並將局數與出賽場次連動，符合國際賽球數限制 */
-          let g, ip;
+          let g, ip, w=0;
+          /* 勝投機率跟著球隊走：名次越好，代表隊贏的場次越多。預賽出局的球隊也會贏球，所以不再是 0。 */
+          const winPct=[50,45,40,30,20][i]+clutch*8;
           if(isSP()||TW){
             g = teamGames>=6?ri(1,2):1; /* 預賽／八強最多一場先發，進四強或 12 強複賽後才可能二度先發 */
-            ip = normalizeIP(g * (4.5 + R() * 2.5)); /* 配合球數限制，單場大約吃 4.5~7 局；量化為完整出局數 */
+            /* 逐場產生先發局數(配合球數限制，單場大約 4.5~7 局)，勝投逐場判定：
+               先發投手沒投滿 5 局(15 個出局數)不能拿勝投——舊版用整屆一次骰，4.2 局也會記勝。 */
+            let outs=0;
+            for(let k=0;k<g;k++){
+              const o=outsFromIP(4.5+R()*2.5); outs+=o;
+              if(o>=15&&chance(winPct))w++;
+            }
+            ip = ipFromOuts(outs);
           } else {
             g = clamp(Math.round(teamGames*(0.55+R()*0.25)),1,teamGames); /* 牛棚登板數隨球隊實際賽程增減 */
             ip = normalizeIP(g * (0.8 + R() * 0.8)); /* 每次上場大約拆彈或投 0.8~1.6 局；量化為完整出局數 */
+            /* 後援投手沒有局數門檻(由官方記錄員認定)，但一屆最多一勝、機率比先發低。 */
+            w = chance(winPct*0.6)?1:0;
           }
           
           /* 與職業球季共用同一組聯盟環境；短期賽按實際局數縮放。
@@ -113,8 +124,7 @@ export function maybeIntl(done){
           const hr9=Math.max(0.02,envRate(hrLg,q,par,ENV_K.hr9,-1)*0.85);
           const era=clamp(E.era+(h9-E.h9)*0.38+(bb9-E.bb9)*0.32+(hr9-hrLg)*1.45-(k9-E.k9)*0.04
             -clutch*.35+N0(0.25),1.0,9.0);
-          const pit={IP:ip,SO:Math.round(ip/9*k9),pHR:Math.round(ip/9*hr9),ER:Math.round(era*ip/9),
-            W:i<=2&&chance(45+clutch*8)?1:0};
+          const pit={IP:ip,SO:Math.round(ip/9*k9),pHR:Math.round(ip/9*hr9),ER:Math.round(era*ip/9),W:w};
           intlSt=TW
             ?{GP:g,...pit,pH:Math.round(ip/9*h9),pBB:Math.round(ip/9*bb9),SV:0}
             :{G:g,...pit,H:Math.round(ip/9*h9),BB:Math.round(ip/9*bb9),SV:!isSP()&&chance(30+clutch*6)?1:0};
