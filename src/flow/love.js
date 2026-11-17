@@ -89,9 +89,11 @@ export function loveEvent(next){
 
 /* ---------- 單身／離婚：好感事件 ---------- */
 function singleYear(next){
-  const L=S.love, pc=playerCountry();
-  if(!chance(PRE_MARRIAGE_FIRE)){ next(); return; }
-  const pool=(L.cast[pc]||[]).filter(id=>!L.burned.includes(id));
+  const L=S.love, pc=playerCountry(), fresh=L.fresh; L.fresh=null;
+  if(!fresh&&!chance(PRE_MARRIAGE_FIRE)){ next(); return; }
+  let pool=(L.cast[pc]||[]).filter(id=>!L.burned.includes(id));
+  /* 你主動結束一段感情的隔年：一定會有戀愛事件，而且先遇到別人 */
+  if(fresh&&pool.some(id=>id!==fresh))pool=pool.filter(id=>id!==fresh);
   if(!pool.length){ next(); return; }
   const g=GIRL[pick(pool)];
   if((L.aff[g.id]||0)>=100){ confess(g,next); return; }
@@ -123,7 +125,7 @@ function confess(g,next){
     {t:'告白',main:true,s:`成功率 ${CONFESS_RATE}%｜失敗不扣好感，下次遇到她可以再說`,f:()=>{
       if(chance(CONFESS_RATE)){
         L.st='dating'; L.pid=g.id; L.partner=g.n; L.dyrs=0; L.datedTimes=(L.datedTimes||0)+1;
-        L.ch=0; L.prop=0; L.proposed=false; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0;
+        L.ch=0; L.prop=0; L.proposed=false; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0; L.knot=false; L.xrYr=null; L.relRef=0; L.dsn=0;
         const gt=loveGainTxt('sta',2); board(1);
         card('gold',former?'重新開始':'交往',`${g.conf.ok}<br><br>你們開始交往了——${gt}。`);
         const hasAnyKids=L.kids+L.exes.reduce((s,e)=>s+(e.kids||0),0)>0;
@@ -152,13 +154,16 @@ function coupleYear(next){
       else card('bad','分手',`${cheatPen?'那晚的事她其實都知道。':''}交往第 ${y} 年，你始終沒有給她一個答案。${hl(g.n)} 沒有哭，也沒有吵，只是平靜地說：「我的人生不會停在原地等任何人。」她搬走那天，把你家的鑰匙放在玄關的鞋櫃上。整個休賽季你魂不守舍——${abGainTxt(k1,-1,g1)}、${abGainTxt(k2,-1,g2)}。`);
       next(); return; }
   }
-  if(L.apart){ longDistance(g,next); return; }
   const ask=()=>L.st==='dating'?proposalAsk(next):next();
+  /* 遠距也能求婚；被拒後的心結、十字路口接在遠距事件後面 */
+  if(L.apart){ longDistance(g,()=>datingTurn(g,ask)||ask()); return; }
   if(L.withYrs===1||L.withYrs===2){ withRoute(g,ask); return; }
   if(L.st==='dating'){
+    if(datingTurn(g,ask))return;
     if(L.ch<3&&chance(PRE_MARRIAGE_FIRE)){ chapter(g,ask); return; }
     if(chance(affairChance(L.bond))&&temptation(g,ask))return;
-    /* 日常相處：三章都走完後每年出現，章節還在進行時偶發；每次求婚值 +25 */
+    /* 日常相處：三章都走完後每年出現，章節還在進行時偶發；一半是三選一的交往事件，一半是日常（求婚值 +25） */
+    if((L.ch>=3||chance(30))&&chance(50)){ datingScene(g,ask); return; }
     if(L.ch>=3||chance(30)){ const gt=loveGainTxt('sta',1); addBond(5); const pv=addProp(25); board(1);
       if(chance(50))card('good','明星賽放閃',`明星賽的轉播鏡頭掃過看台，拍到了 ${hl(g.n)}。她正低頭回著工作訊息，發現自己上了大螢幕，愣了一下，笑著對鏡頭揮了揮手機。那個畫面隔天甜上熱搜——${gt}，求婚值 ${pv}／100。`);
       else card('good','日常',`這一年沒有什麼大新聞。只是每次客場回來的那個晚上，你們會窩在沙發上，各自說這一週發生的事——你的比賽，她的${g.work}。說著說著，常常就聊到天亮——${gt}，求婚值 ${pv}／100。`); }
@@ -201,14 +206,14 @@ function chapter(g,done){
 }
 export function proposalAsk(next){
   const L=S.love, g=GIRL[L.pid];
-  if(L.st!=='dating'||!g||L.apart){ next(); return; }
-  const p=L.prop||0, rate=proposalChance(p,L.bond);
+  if(L.st!=='dating'||!g){ next(); return; }
+  const p=L.prop||0, rate=proposalChance(p,L.bond), far=L.apart;
   const lead=p>=100?'求婚值已滿。':`求婚值 ${p}／100，感情值 ${L.bond}／100。`;
-  choose(`<span class="ev-h">求婚｜${g.n}</span><small>${lead}交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。</small>`,[
+  choose(`<span class="ev-h">求婚｜${g.n}</span><small>${lead}交往第 ${L.dyrs} 年，你口袋裡的那個小盒子，已經放了好一陣子。${far?`她在 ${COUNTRY_N[L.herC]}，要求婚，得先飛過去。`:''}</small>`,[
     {t:'求婚',main:p>=100,s:`成功率 ${rate}%（看求婚值與感情值）｜成功：體力提升、本季受傷機率 −5%｜失敗：感情值 −${PROP_NO_BOND}${p>PROP_NO_BACK?`、求婚值退回 ${PROP_NO_BACK}`:''}`,f:()=>{
       L.proposed=true;
-      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=Math.min(p,PROP_NO_BACK); L.refused=(L.refused||0)+1; board(1);
-        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值 ${L.prop}／100。${L.ch<3?'她的故事還在往下走。':''}`);
+      if(!chance(rate)){ addBond(-PROP_NO_BOND); L.prop=Math.min(p,PROP_NO_BACK); L.refused=(L.refused||0)+1; L.relRef=(L.relRef||0)+1; L.knot=true; board(1);
+        card('info','她的答案',`${hl(g.n)} 看著那枚戒指，握著你的手想了很久，才輕輕地開口：${g.propNo}<br>感情值 −${PROP_NO_BOND}，求婚值 ${L.prop}／100。${L.ch<3?'她的故事還在往下走。':''}${far?'<br>回程的飛機上，你把那個小盒子放在胸前的口袋，一路都沒有拿出來。':''}`);
         if(L.refused>=2&&!S.traits.jiejiri){ S.traits.jiejiri=true;
           card('gold','隱藏稱號：街尻','職業球員求婚都會成功。對吧？'); board(1); }
         next(); return; }
@@ -218,9 +223,134 @@ export function proposalAsk(next){
       if(fi>=0)L.exes.splice(fi,1);
       L.st='married'; L.kids=reunitedKids; L.dyrs=0;
       const gTxt=loveGainTxt('sta',2)+'、'; S.tmpInj-=5; board(1);
-      card('gold','婚禮',`你沒有用球場的大螢幕，也沒有找任何鏡頭。你在你們第一次約會的那家店，把戒指放在她面前。${hl(g.n)} 看著戒指，又看著你，眼淚掉下來之前先笑了：「好。不過婚禮要在哪裡辦，要由我來決定。」休賽季完婚——${gTxt}本季受傷機率 <b class="up">−5%</b>。${L.ch<3?'<br>婚後，她的故事還會繼續。':''}`); next(); }},
+      card('gold','婚禮',`${far?`你趁休兵日飛回 ${COUNTRY_N[L.herC]}，沒有先說，直接出現在她下班的路口。`:'你沒有用球場的大螢幕，也沒有找任何鏡頭。'}你在你們第一次約會的那家店，把戒指放在她面前。${hl(g.n)} 看著戒指，又看著你，眼淚掉下來之前先笑了：「好。不過婚禮要在哪裡辦，要由我來決定。」休賽季完婚——${gTxt}本季受傷機率 <b class="up">−5%</b>。${L.ch<3?'<br>婚後，她的故事還會繼續。':''}${far?'<br>婚後，你們暫時還是各自在兩個國家打拚。':''}`); next(); }},
     {t:'再等等',main:p<100,s:L.proposed?'求婚值保留':'求婚值保留｜交往第 4 年起，一直沒求過婚會有分手風險',f:()=>{
       card('info','再等等',`你把戒指放回抽屜。${hl(g.n)} 什麼都沒有問，只是說她明天一早還有${g.work}要忙，先去睡了。`); next(); }}]);
+}
+
+/* ---------- 交往中的轉折 ----------
+   十字路口：交往滿 2 年，且「這段感情被拒過婚／遠距中／感情值 < 50」時，每年 40%（不連續兩年）。
+   心結：求婚被婉拒的隔年，沒有遇上十字路口就一定出現，三選一，跟章節一樣累積求婚值與感情值。
+   玩家可以把話說開、主動提分手，或先不想。主動分手不扣能力，隔年一定會遇到新的人。 */
+export const CROSS_FIRE=40, CROSS_TALK=65, CROSS_TALK_BOND=15, CROSS_TALK_PROP=25, CROSS_TALK_FAIL=5, CROSS_KEEP=60, CROSS_KEEP_BOND=10;
+const datingSFor=m=>`成功率 ${LOVE_ODDS[m]}%｜求婚值 ${m==='bold'?'直接滿':'+'+PROP_GAIN[m]}、感情值 +${BOND_GAIN[m]}${m==='bold'?`｜失敗 求婚值 −${PROP_BOLD_FAIL}、感情值 −${BOND_FAIL.bold}`:''}`;
+/* 交往中三選一的共用結算 */
+function datingPick(title,done){
+  return (m,good,o)=>{
+    const L=S.love, b0=L.bond, p0=L.prop||0;
+    addBond(good?BOND_GAIN[m]:-BOND_FAIL[m]); addProp(good?PROP_GAIN[m]:(m==='bold'?-PROP_BOLD_FAIL:0));
+    const gt=good?modeGain(m):''; if(good)board(1);
+    card(good?'good':'bad',title,`${good?o.g:o.b}<br>求婚值 ${p0} → <b class="${L.prop>=p0?'up':'dn'}">${L.prop}</b>｜感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
+    done();
+  };
+}
+/* 回傳 true 表示這一年已經有事件接手 */
+function datingTurn(g,ask){
+  const L=S.love;
+  if(L.st!=='dating')return false;
+  const knot=L.knot; L.knot=false;
+  const why=(L.relRef||0)>0||L.apart||L.bond<50;
+  if(L.dyrs>=2&&why&&L.xrYr!==S.year-1&&chance(CROSS_FIRE)){ crossroads(g,ask); return true; }
+  if(knot){ knotScene(g,ask); return true; }
+  return false;
+}
+function knotScene(g,done){
+  const L=S.love, again=(L.relRef||0)>=2;
+  const opts=again?[
+    {t:'這次不急著要答案',
+     g:`你把戒指收進抽屜最深處，跟 ${hl(g.n)} 說：「我不會再把它當成考卷了。」她愣了一下，然後很久很久都沒有放開你的手。`,
+     b:`你說你不急，可是每次經過那個抽屜，你的眼神都會停一下。她看在眼裡，什麼也沒說。`},
+    {t:'問她：「我們是不是想要不一樣的東西？」',
+     g:`那一晚你們把十年後的樣子各自說了一遍。說到最後才發現，兩個版本裡都有對方，只是她的那一個，${g.work}的位置比你想的還要大。你說：「那就照妳的版本。」`,
+     b:`問題問出口，空氣就冷了下來。她說：「你是在問我，還是在找一個離開的理由？」那晚你們誰都沒睡好。`},
+    {t:'把她在意的事，一件一件做給她看',
+     g:`你沒有再多說什麼。只是她加班的晚上你一定在，她的${g.work}有重要場合你一定到。半年後她在你耳邊說：「好啦，我知道了。」`,
+     b:`你做得很用力，用力到她覺得像是在被追債：「你這樣，我會覺得我欠你一個答案。」`}
+  ]:[
+    {t:'不追問，給她時間',
+     g:`你沒有再提那天的事。某個休兵日的早上，${hl(g.n)} 一邊煮咖啡一邊自己開口：「那天我不是不想，是我還沒準備好。謝謝你沒有逼我。」`,
+     b:`你們很有默契地不提那天的事。可是有些話不說，就一直卡在那裡，連一起吃飯都變得有點安靜。`},
+    {t:'找一個晚上，聽她把理由說完',
+     g:`你沒有辯解，只是聽。她說著說著就哭了，又笑了：「原來說出來，沒有我想的那麼可怕。」那晚你們說好，下一次，由她決定什麼時候。`,
+     b:`你說好要聽，可是她才說到一半，你就忍不住開始解釋。她嘆了一口氣：「你看，你根本沒有在聽。」`},
+    {t:'把她擔心的事，一件一件做給她看',
+     g:`她擔心的是婚後自己的${g.work}會被擺到後面。你把下一季的行程攤在桌上，把她每一個重要的日子都先圈起來。她看著那張紙，看了很久。`,
+     b:`你排了滿滿的計畫，每一項都寫著她的名字。她看完只說：「這是你想給的，不是我要的。」`}
+  ];
+  choose(`<span class="ev-h">心結｜${g.n}</span><small>${again?'又一次，她沒有答應。這一次你們都知道，問題不在戒指。':'被婉拒之後，你們很有默契地不再提那件事。可是那個小盒子，一直都在抽屜裡。'}<br>求婚值 ${L.prop||0}／100｜感情值 ${L.bond}／100</small>`,
+    modeOpts(opts,datingSFor,datingPick(`心結｜${g.n}`,done)));
+}
+function crossroads(g,done){
+  const L=S.love; L.xrYr=S.year;
+  const lead=L.apart?`遠距第 ${L.apartYrs||1} 年。你們的對話，越來越常停在「晚安」。`
+    :(L.relRef||0)>0?`求婚被婉拒之後，日子照樣過，只是你們都變得小心翼翼。`
+    :`最近你們說話越來越少。她忙她的${g.work}，你忙你的球季，家裡安靜得只剩下冰箱的聲音。`;
+  choose(`<span class="ev-h">十字路口｜${g.n}</span><small>${lead}某天夜裡你忽然想：這段感情，還要不要走下去？<br>求婚值 ${L.prop||0}／100｜感情值 ${L.bond}／100</small>`,[
+    {t:'提分手',warn:true,s:`由你結束這段感情｜不扣能力，隔年一定會遇到新的人${L.bond>=CROSS_KEEP?'｜感情值還有 '+L.bond+'，她可能會想挽回':''}`,f:()=>leaveHer(g,done)},
+    {t:'把話說開，重新開始',main:true,s:`成功率 ${CROSS_TALK}%｜成功：感情值 +${CROSS_TALK_BOND}、求婚值 +${CROSS_TALK_PROP}｜失敗：感情值 −${CROSS_TALK_FAIL}`,f:()=>{
+      const b0=L.bond, p0=L.prop||0;
+      if(chance(CROSS_TALK)){ addBond(CROSS_TALK_BOND); addProp(CROSS_TALK_PROP); const gt=loveGainTxt('sta',1); board(1);
+        card('good','把話說開',`你們從晚餐一路聊到天亮，把這幾年沒說出口的話都攤在桌上。${hl(g.n)} 最後說：「我還想跟你走下去，可是我要的是一起走，不是我等你，也不是你等我。」你說好。<br>求婚值 ${p0} → <b class="up">${L.prop}</b>｜感情值 ${b0} → <b class="up">${L.bond}</b>｜${gt}`); }
+      else{ addBond(-CROSS_TALK_FAIL);
+        card('bad','把話說開',`話說到一半就變成了吵架。你們吵的不是同一件事，可是誰都停不下來。最後她說：「我們今天先到這裡。」<br>感情值 ${b0} → <b class="dn">${L.bond}</b>`); }
+      done(); }},
+    {t:'先不想這些',s:'維持現狀',f:()=>{
+      card('info','十字路口',`你把那個念頭收了起來。隔天早上，${hl(g.n)} 照常傳來一句「今天也加油」，你照常回了一個貼圖。`); done(); }}]);
+}
+function leaveHer(g,done){
+  const L=S.love, far=L.apart;
+  const end=()=>{ const id=L.pid; endRelation(); L.fresh=id; board(1);
+    card('info','分手',`${far?'你們約好了一個兩邊都還醒著的時間打電話。':'你們坐在第一次約會的那家店，點了跟當年一樣的東西。'}你說完之後，${hl(g.n)} 安靜了很久，最後點點頭：「謝謝你沒有拖到我們都恨對方。」她的${g.work}還在往前走，你的球季也是。這一次，是你們一起決定，各自往前。`);
+    done(); };
+  if(L.bond<CROSS_KEEP){ end(); return; }
+  choose(`<span class="ev-h">她的回應｜${g.n}</span><small>${hl(g.n)} 沒有馬上回答。她低著頭，手指在杯緣繞了一圈又一圈：「我知道我們最近不好。可是……可以再試一次嗎？」</small>`,[
+    {t:'再試一次',main:true,s:`感情值 +${CROSS_KEEP_BOND}`,f:()=>{
+      const b0=L.bond; addBond(CROSS_KEEP_BOND);
+      card('good','再試一次',`你握住她的手，說好。她笑了，眼眶卻紅了：「這次換我多走一步。」<br>感情值 ${b0} → <b class="up">${L.bond}</b>`);
+      done(); }},
+    {t:'還是分開吧',s:'分手｜不扣能力',f:end}]);
+}
+/* 交往中的三選一事件：三章走完後與日常輪流出現，章節進行中偶發 */
+const DATING_SC=[
+  {t:'見家長',i:g=>`${g.n} 說，這個週末她爸媽想請你吃頓飯。她特別交代：「我爸不看棒球，你不要一直聊棒球。」`,
+   o:g=>[
+    {t:'穿得整整齊齊，準時到',
+     g:`你提早半小時到，在門口站了二十分鐘才按電鈴。她爸爸整頓飯都沒說幾句話，送你出門時才說：「下次來，不用帶這麼多東西。」`,
+     b:`你一緊張就開始聊棒球，從開胃菜聊到甜點。她在桌子底下踢了你三次。`},
+    {t:'先做功課，聊她爸媽有興趣的事',
+     g:`你把她爸爸最愛的那位老歌手的專輯聽了一整個禮拜。飯桌上他越聊越開心，最後拍著你的肩膀說：「這小子不錯。」`,
+     b:`你準備得太認真，連她爸爸年輕時的事都說得出來。她媽媽笑著問：「這些是誰告訴你的？」整桌忽然安靜。`},
+    {t:'飯後主動說：「我想照顧她一輩子。」',
+     g:`她爸爸放下筷子看了你很久，轉頭問她：「妳呢？」她說：「我自己會照顧自己，不過，我也想照顧他。」她媽媽先笑了出來。`,
+     b:`她爸爸只淡淡地說：「她不需要誰照顧。」回家的路上，${g.n} 說：「我爸說得沒錯啊。」`}]},
+  {t:'第一次旅行',i:g=>`休賽季，你們終於排出一個禮拜的空檔。${g.n} 把手機遞給你：「行程我排了一半，另一半交給你。」`,
+   o:g=>[
+    {t:'照她的步調，慢慢走',
+     g:`你們在一個不知名的小鎮多待了兩天，因為她喜歡那裡的早餐。回程的飛機上她靠著你睡著，手裡還握著那家店的名片。`,
+     b:`她的步調太慢，你一直偷看手機上的訓練菜單。她發現了，說：「你人在這裡，心在重訓室。」`},
+    {t:'把後半段排成她一直想去的地方',
+     g:`那是她大學時就存在手機裡的一張照片。你們站在照片裡的那個位置，她說：「我以為我會一個人來。」`,
+     b:`你訂錯了日期，抵達時那個地方剛好在整修。她安慰你說沒關係，可是你看得出來她有點失望。`},
+    {t:'偷偷安排一個驚喜',
+     g:`最後一晚，你請當地的樂團在海邊為她唱了一首她最愛的歌。她一邊笑一邊罵你浪費錢，眼淚卻一直掉。`,
+     b:`驚喜被路人認出來，變成了球迷見面會。她站在人群外面，替你拿著那束花。`}]},
+  {t:'第一次大吵',i:g=>`你錯過了她${g.work}上最重要的那一天——因為臨時加了一場友誼賽。她沒有生氣，只是那天晚上，她沒有回家。`,
+   o:g=>[
+    {t:'傳一則很長的訊息道歉',
+     g:`你寫了又刪、刪了又寫，最後只留下最真心的那幾句。隔天早上她回來了，手上提著你愛吃的早餐：「下次，你要先告訴我。」`,
+     b:`訊息已讀了一整天都沒有回。你後來才知道，她要的不是道歉，是你人在那裡。`},
+    {t:'去她朋友家門口等她',
+     g:`你在樓下等到凌晨兩點。她下樓時穿著拖鞋，什麼話都沒說，只是把她的圍巾繞在你脖子上。`,
+     b:`她的朋友下樓來跟你說：「她現在不想見你。」你在車上坐了一整晚，天亮才開走。`},
+    {t:'跟球隊請假，補她一個屬於她的一天',
+     g:`你請了球季中唯一的一天假，陪她去那個你錯過的場合的慶功宴。她在台上致詞時，看著台下的你說：「謝謝那個遲到的人。」`,
+     b:`請假的消息上了新聞，標題是「為愛請假」。她看到報導，嘆了口氣：「我不想變成你的新聞。」`}]}
+];
+function datingScene(g,done){
+  const L=S.love, n=L.dsn||0; L.dsn=n+1;
+  const sc=DATING_SC[n%DATING_SC.length];
+  choose(`<span class="ev-h">交往｜${sc.t}</span><small>${sc.i(g)}<br>求婚值 ${L.prop||0}／100｜感情值 ${L.bond}／100</small>`,
+    modeOpts(sc.o(g),datingSFor,datingPick(`交往｜${sc.t}`,done)));
 }
 
 /* ---------- 旅外：跨國轉聯盟時觸發 ---------- */
@@ -276,7 +406,7 @@ function withRoute(g,done){
       done(); }));
 }
 /* 遠距路線：每年一次，感情值自然流失；太低時她可能提出結束 */
-function longDistance(g,next){
+function longDistance(g,done){
   const L=S.love, pc=playerCountry(), tz=(TZ[pc]||{})[L.herC]||0;
   L.apartYrs=(L.apartYrs||0)+1; addBond(-10);
   choose(`<span class="ev-h">遠距｜第 ${L.apartYrs} 年</span><small>你在 ${COUNTRY_N[pc]}，${g.n} 在 ${COUNTRY_N[L.herC]}${tz?`，時差 ${tz} 小時`:''}。距離本身每年都在消耗感情（−10）。<br>感情值 ${L.bond}／100</small>`,
@@ -298,7 +428,7 @@ function longDistance(g,next){
         const wasMarried=L.st==='married'; endRelation();
         card('bad',wasMarried?'離婚':'分手',`${hl(g.n)} 打電話來，語氣很平靜，聽得出來她已經想了很久：「我們都值得一個能在身邊的人。」${wasMarried?'你們和平離婚。':'你們分手了。'}——${abGainTxt(k,-1,gk)}。`);
       }
-      next(); }));
+      done(); }));
 }
 
 /* ---------- 外遇誘惑：機率隨感情值下降而升高 ---------- */
@@ -333,6 +463,7 @@ export function endRelation(){
   else L.st=L.exes.length?'divorced':'single';
   if(id){ L.aff[id]=0; if((L.hurt[id]||0)>=2&&!L.burned.includes(id))L.burned.push(id); }
   L.partner=null; L.pid=null; L.dyrs=0; L.ch=0; L.prop=0; L.proposed=false; L.bond=0; L.apart=false; L.withYrs=0; L.apartYrs=0;
+  L.knot=false; L.xrYr=null; L.relRef=0;
 }
 export function divorceRec(){ endRelation(); }
 export function loveCaught(next){
