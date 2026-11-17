@@ -373,7 +373,7 @@ function abroadEvent(next){
     L.apart=true; L.apartYrs=0;
     card('info','各自的戰場',`你要去 ${COUNTRY_N[pc]} 打球了。${hl(g.n)} 聽完，沉默了很久，最後握住你的手：「我還沒做到。」她說過，她要${g.goal}——那條路在 ${COUNTRY_N[L.herC]}，現在還不能放下。「你去吧。我在這裡，把我的事做完。」你們決定，試試看遠距離。`);
     next(); return; }
-  const p=clamp(Math.round(g.goP+(L.bond-60)/2+(home?30:0)),5,90);
+  const p=followChance(g,home);
   const rel=L.st==='married'?'你的妻子':'女友';
   choose(`<span class="ev-h">旅外｜${g.n}</span><small>你要去 ${COUNTRY_N[pc]} 打球了。可是${rel} ${g.n} 的${g.work}在 ${COUNTRY_N[L.herC]}，那是她一點一滴打下來的。</small>`,[
     {t:'問她願不願意一起走',s:`由她決定（約 ${p}%）｜一起走＝同行路線，不走＝遠距路線`,f:()=>{
@@ -388,15 +388,33 @@ export function mayFollow(g,from,to){
   if(S.love.ch>=3)return true;
   return g.id==='misaki'&&from==='JP'&&to==='US';
 }
-/* 圓夢後她來找你：遠距中走完三章，她搬到你所在的國家，接著走同行路線。
+/* 她願意跟著你到另一個國家的機率：基本機率 + 感情值修正，回她的家鄉 +30 */
+function followChance(g,home){ return clamp(Math.round(g.goP+(S.love.bond-60)/2+(home?30:0)),5,90); }
+/* 圓夢後她來找你：遠距中走完三章時，依同行機率決定她要不要搬到你所在的國家，接著走同行路線。
    張沛慈例外（孩子們在山上）；早瀨美咲的目標就是派駐美國，只有你在美國時才會過來。 */
 function comeToYou(g){
   const L=S.love, pc=playerCountry();
   if(!L.apart||pc===L.herC||g.id==='peici'||(g.id==='misaki'&&pc!=='US'))return;
-  const yrs=L.apartYrs||1, home=pc===g.c;
+  if(!chance(followChance(g,pc===g.c)))return;
+  joinYou(g,`慶功的那天晚上，${hl(g.n)} 打電話給你。那頭很吵，有人在唱歌、有人在開香檳，她躲到走廊上，聲音有點喘：「我做到了。」停了一下，她又說：「所以，現在換我去找你。」`);
+}
+/* 她搬到你所在的國家，結束遠距 */
+function joinYou(g,lead){
+  const L=S.love, pc=playerCountry(), yrs=L.apartYrs||1, home=pc===g.c;
   L.herC=pc; L.apart=false; L.apartYrs=0; L.withYrs=1; addBond(10);
   const gt=loveGainTxt('sta',1); board(1);
-  card('gold','她來找你了',`慶功的那天晚上，${hl(g.n)} 打電話給你。那頭很吵，有人在唱歌、有人在開香檳，她躲到走廊上，聲音有點喘：「我做到了。」停了一下，她又說：「所以，現在換我去找你。」<br><br>一個月後，你在 ${COUNTRY_N[pc]} 的機場等她。她拖著兩個行李箱走出入境大廳，頭髮比你上次見到時長了一些，看到你的時候，先是笑，然後才哭。${home?'「回家了。」她說，「這次是跟你一起。」':`「我查好了，這裡也有${g.work}可以做。」她說，「不過那是下個月的事。這個月，我只想待在你旁邊。」`}<br><br>遠距 ${yrs} 年，你們終於又在同一個時區了——${gt}，感情值 +10。`);
+  card('gold','她來找你了',`${lead}<br><br>一個月後，你在 ${COUNTRY_N[pc]} 的機場等她。她拖著兩個行李箱走出入境大廳，頭髮比你上次見到時長了一些，看到你的時候，先是笑，然後才哭。${home?'「回家了。」她說，「這次是跟你一起。」':`「我查好了，這裡也有${g.work}可以做。」她說，「不過那是下個月的事。這個月，我只想待在你旁邊。」`}<br><br>遠距 ${yrs} 年，你們終於又在同一個時區了——${gt}，感情值 +10。`);
+}
+/* 遠距中「休賽季全部留給她」成功、而且她已經圓夢：問她要不要搬過來一起生活（每個人都會問，答應與否看同行機率） */
+function askJoin(g,done){
+  const L=S.love, pc=playerCountry(), p=followChance(g,pc===g.c);
+  choose(`<span class="ev-h">遠距｜一起生活</span><small>那三個月過得太快。離開前一晚，你看著她桌上攤開的工作行程，忽然很想問一件事：她已經做到了她想做的事，那接下來，要不要到 ${COUNTRY_N[pc]}，跟你一起生活？</small>`,[
+    {t:'問她願不願意一起走',main:true,s:`由她決定（約 ${p}%）｜願意＝結束遠距、接同行路線`,f:()=>{
+      if(chance(p))joinYou(g,`${hl(g.n)} 沒有馬上回答。她把手上的行程表放下，走到窗邊看了很久，才轉過身來：「好。我在這裡想做的事，已經做完了。」`);
+      else card('info','還不是時候',`${hl(g.n)} 握著你的手，想了很久：「這裡還有我放不下的人和事。再給我一點時間，好嗎？」你點點頭，把機票收進口袋。`);
+      done(); }},
+    {t:'把話吞回去，不勉強她',s:'維持遠距',f:()=>{
+      card('info','下次再說',`你最後什麼都沒有問。上飛機前，${hl(g.n)} 抱了你很久，在你耳邊說：「下次換我飛過去。」`); done(); }}]);
 }
 function goWith(g,home){
   const L=S.love; L.herC=playerCountry(); L.withYrs=1; L.apart=false;
@@ -470,6 +488,7 @@ function longDistance(g,done){
         const wasMarried=L.st==='married'; endRelation();
         card('bad',wasMarried?'離婚':'分手',`${hl(g.n)} 打電話來，語氣很平靜，聽得出來她已經想了很久：「我們都值得一個能在身邊的人。」${wasMarried?'你們和平離婚。':'你們分手了。'}——${abGainTxt(k,-1,gk)}。`);
       }
+      if(good&&m==='bold'&&L.pid===g.id&&L.apart&&L.ch>=3){ askJoin(g,done); return; }
       done(); }));
 }
 
