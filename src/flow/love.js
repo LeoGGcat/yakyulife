@@ -1,9 +1,9 @@
-import {S} from '../core/state.js?v=2.1.3';
-import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.3';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.3';
-import {card, choose, board} from '../ui/dom.js?v=2.1.3';
-import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.3';
-import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.3';
+import {S} from '../core/state.js?v=2.1.4';
+import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.4';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.4';
+import {card, choose, board} from '../ui/dom.js?v=2.1.4';
+import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.4';
+import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.4';
 
 /* ================= 戀愛系統（v2.1.0 重置） =================
    流程：好感事件（三選一）→ 好感滿 100 → 告白 75% → 交往（她的三章故事，任一章後可求婚）
@@ -47,12 +47,14 @@ export function ensureLove(){
   return L;
 }
 export function partnerGirl(){ const L=S.love; return L&&L.pid?GIRL[L.pid]:null; }
-/* 外遇人選：當地入選、不是伴侶、不是馮海莎 */
+/* 外遇人選：先前累積過好感度的女主角（不限國家），不是伴侶、不是馮海莎、不是已經不會回頭的人 */
 export function affairPool(){
   const L=ensureLove();
-  return (L.cast[playerCountry()]||[]).filter(id=>id!==L.pid&&!GIRL[id].safe);
+  return Object.keys(L.aff).filter(id=>(L.aff[id]||0)>0&&id!==L.pid&&GIRL[id]&&!GIRL[id].safe&&!L.burned.includes(id));
 }
-export function affairChance(bond){ return clamp(Math.round(5+(100-bond)*0.3),5,35); }
+/* 交往或婚後，每年有 affairChance(感情值) 的機率，當年的事件就是外遇誘惑（有人選才會發生） */
+export const RESIST_BOND=10, RESIST_PROP=25;
+export function affairChance(bond){ return clamp(Math.round(10+(100-bond)*0.3),10,40); }
 /* 求婚值：交往期間她的章節選項成功就累積（同好感度：保守 +25、一般 +50、放手一搏直接滿，放手一搏失敗 −25）。
    求婚值多少都能求婚，求婚值越高越容易成功；還沒走完的章節在婚後繼續。 */
 export const PROP_GAIN=AFF_GAIN, PROP_BOLD_FAIL=AFF_BOLD_FAIL;
@@ -155,6 +157,7 @@ function coupleYear(next){
       next(); return; }
   }
   const ask=()=>L.st==='dating'?proposalAsk(next):next();
+  if(chance(affairChance(L.bond))&&temptation(g,ask))return;
   /* 遠距也能求婚；被拒後的心結、十字路口接在遠距事件後面 */
   /* 遠距期間她的故事照樣往下走：夢想是她自己在原本的國家追的，不需要你在身邊 */
   if(L.apart){ longDistance(g,()=>{
@@ -165,7 +168,6 @@ function coupleYear(next){
   if(L.st==='dating'){
     if(datingTurn(g,ask))return;
     if(L.ch<3&&chance(PRE_MARRIAGE_FIRE)){ chapter(g,ask); return; }
-    if(chance(affairChance(L.bond))&&temptation(g,ask))return;
     /* 日常相處：三章都走完後每年出現，章節還在進行時偶發；一半是三選一的交往事件，一半是日常（求婚值 +25） */
     if((L.ch>=3||chance(30))&&chance(50)){ datingScene(g,ask); return; }
     if(L.ch>=3||chance(30)){ const gt=loveGainTxt('sta',1); addBond(5); const pv=addProp(25); board(1);
@@ -175,7 +177,6 @@ function coupleYear(next){
   }
   /* 已婚：剩下的章節在婚內走完 */
   if(L.ch<3&&chance(60)){ chapter(g,next); return; }
-  if(chance(affairChance(L.bond))&&temptation(g,next))return;
   const fire=L.kids===0?40:30;
   if(!chance(fire)){ next(); return; }
   if(L.kids<4&&chance([65,45,30,20][L.kids])){ /* 生子：第一胎最優先，越生越少 */
@@ -492,20 +493,25 @@ function longDistance(g,done){
       done(); }));
 }
 
-/* ---------- 外遇誘惑：機率隨感情值下降而升高 ---------- */
+/* ---------- 外遇誘惑：機率隨感情值下降而升高；對象是你曾經心動過的人 ---------- */
 function temptation(g,done){
   const L=S.love, cands=affairPool();
   if(!cands.length)return false;
-  const t=GIRL[pick(cands)], dating=L.st==='dating';
-  choose(`${t.n} 收工後傳訊息約你去喝一杯。你看著那則訊息很久——你很清楚，你想去的不只是那杯酒。`,[
-    {t:'赴約（賭一把）',warn:true,s:`沒被抓到＝體力提升｜被抓到＝能力下跌、${dating?'感情':'婚姻'}危機`,f:()=>{
+  /* 好感度越高，越可能是她 */
+  const tot=cands.reduce((a,id)=>a+L.aff[id],0); let r=R()*tot, tid=cands[0];
+  for(const id of cands){ r-=L.aff[id]; if(r<0){ tid=id; break; } }
+  const t=GIRL[tid], dating=L.st==='dating', pc=playerCountry();
+  const where=t.c===pc?`${t.n} 收工後傳訊息約你去喝一杯。`:`${t.n} 傳訊息說，她這週剛好到 ${COUNTRY_N[pc]} 出差，問你要不要出來喝一杯。`;
+  choose(`<span class="ev-h">誘惑｜${t.n}（${t.job}）</span><small>${where}你們之前差一點就走到一起了，你一直都記得她笑起來的樣子。你看著那則訊息很久——你很清楚，你想去的不只是那杯酒。<br>${dating?`求婚值 ${L.prop||0}／100｜`:''}感情值 ${L.bond}／100</small>`,[
+    {t:'赴約（賭一把）',warn:true,s:`感情值 −10｜沒被抓到＝體力提升｜被抓到＝能力下跌、${dating?'感情':'婚姻'}危機`,f:()=>{
       L.affairs++; addBond(-10);
       if(chance(55)){ const gt=loveGainTxt('sta',2); board(1);
         card('bad','深夜',`沒有人拍到。你回到家時，${hl(g.n)} 已經睡了，桌上攤著她明天的工作行程，旁邊留了一盞小燈給你。——${gt}。（這是你自己的選擇，這條路不會有好結局）`); done(); }
       else if(dating)loveCaughtDating(done); else loveCaught(done); }},
-    {t:`回訊息：「我要回家了。」`,main:true,s:'感情值 +5，絕對不虧',f:()=>{
-      addBond(5); const gt=loveGainTxt('sta',1); board(1);
-      card('good','回家',`你把手機扣在桌上，結了帳，在回家的路上傳訊息問 ${hl(g.n)}：今天的${g.work}順不順利？——${gt}。`); done(); }}]);
+    {t:`回訊息：「我要回家了。」`,main:true,s:`感情值 +${RESIST_BOND}${dating?`、求婚值 +${RESIST_PROP}`:''}，絕對不虧`,f:()=>{
+      const b0=L.bond, p0=L.prop||0; addBond(RESIST_BOND); if(dating)addProp(RESIST_PROP);
+      const gt=loveGainTxt('sta',1); board(1);
+      card('good','回家',`你把手機扣在桌上，只回了一句「我要回家了」，結了帳就走。回家的路上，你傳訊息問 ${hl(g.n)}：今天的${g.work}順不順利？她回了一長串，最後一句是：「你今天怎麼這麼乖？」你看著那行字，笑了很久。<br>${dating?`求婚值 ${p0} → <b class="up">${L.prop}</b>｜`:''}感情值 ${b0} → <b class="up">${L.bond}</b>——${gt}。`); done(); }}]);
   return true;
 }
 function scumCheck(){
