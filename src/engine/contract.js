@@ -1,18 +1,18 @@
-import {S} from '../core/state.js?v=2.1.2';
-import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.2';
-import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.2';
-import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.2';
-import {card, choose, board} from '../ui/dom.js?v=2.1.2';
-import {tlNote} from '../ui/timeline.js?v=2.1.2';
-import {ovr} from './ability.js?v=2.1.2';
-import {injuryMarketStatus} from './injury.js?v=2.1.2';
-import {hasActiveFranchise} from './tenure.js?v=2.1.2';
-import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.2';
-import {capTeam} from './career.js?v=2.1.2';
-import {traitCard, removeTrait} from '../flow/events.js?v=2.1.2';
-import {advance} from './draft.js?v=2.1.2';
-import {finishContractYear} from '../flow/phases.js?v=2.1.2';
-import {endGame} from '../ui/retire.js?v=2.1.2';
+import {S} from '../core/state.js?v=2.1.3';
+import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.3';
+import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.3';
+import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.3';
+import {card, choose, board} from '../ui/dom.js?v=2.1.3';
+import {tlNote} from '../ui/timeline.js?v=2.1.3';
+import {ovr} from './ability.js?v=2.1.3';
+import {injuryMarketStatus} from './injury.js?v=2.1.3';
+import {hasActiveFranchise} from './tenure.js?v=2.1.3';
+import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.3';
+import {capTeam} from './career.js?v=2.1.3';
+import {traitCard, removeTrait} from '../flow/events.js?v=2.1.3';
+import {advance} from './draft.js?v=2.1.3';
+import {finishContractYear} from '../flow/phases.js?v=2.1.3';
+import {endGame} from '../ui/retire.js?v=2.1.3';
 export function pitcherContractCap(){ return ({SP:7,CL:5,MR:4})[S.role]||7; }
 /* 年薪（萬台幣）。頂級聯盟採漸進曲線：底薪貼近聯盟現況，明星價值才逐步拉開。 */
 export function hasMlbService(){

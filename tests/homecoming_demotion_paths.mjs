@@ -14,10 +14,10 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=homecoming-demotion`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.2');
-    const rng=await import('./src/core/rng.js?v=2.1.2');
-    const contract=await import('./src/engine/contract.js?v=2.1.2');
-    const {LV}=await import('./src/data/teams.js?v=2.1.2');
+    const state=await import('./src/core/state.js?v=2.1.3');
+    const rng=await import('./src/core/rng.js?v=2.1.3');
+    const contract=await import('./src/engine/contract.js?v=2.1.3');
+    const {LV}=await import('./src/data/teams.js?v=2.1.3');
     const teamName=function(){
       if(!this.orgTeam)return '';
       if(this.lv==='MLB'||this.lv==='CPBL1'||this.lv==='NPB1')return this.orgTeam;

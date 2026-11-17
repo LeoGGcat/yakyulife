@@ -1,9 +1,9 @@
-import {S} from '../core/state.js?v=2.1.2';
-import {R, ri, chance, clamp} from '../core/rng.js?v=2.1.2';
-import {ABL, POS_AB, PITCH_TOOLS, DPN, DP_TH, DP_BAR, POS_ADJ_RUNS, DP_RANK} from '../data/abilities.js?v=2.1.2';
-import {LV} from '../data/teams.js?v=2.1.2';
-import {card, choose, board} from '../ui/dom.js?v=2.1.2';
-import {roleN, pitcherRole, bullpenRole} from './season.js?v=2.1.2';
+import {S} from '../core/state.js?v=2.1.3';
+import {R, ri, chance, clamp} from '../core/rng.js?v=2.1.3';
+import {ABL, POS_AB, PITCH_TOOLS, DPN, DP_TH, DP_BAR, POS_ADJ_RUNS, DP_RANK} from '../data/abilities.js?v=2.1.3';
+import {LV} from '../data/teams.js?v=2.1.3';
+import {card, choose, board} from '../ui/dom.js?v=2.1.3';
+import {roleN, pitcherRole, bullpenRole} from './season.js?v=2.1.3';
 export function dpScore(p){ const a=S.ab;
   switch(p){
     case 'SS': return a.rng*0.5 + a.fld*0.3 + a.arm*0.2;   /* 游擊:範圍主導 */

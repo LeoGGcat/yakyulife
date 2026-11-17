@@ -15,10 +15,10 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-system`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const rng=await import('./src/core/rng.js?v=2.1.2');
-    const state=await import('./src/core/state.js?v=2.1.2');
-    const love=await import('./src/flow/love.js?v=2.1.2');
-    const girls=await import('./src/data/girls.js?v=2.1.2');
+    const rng=await import('./src/core/rng.js?v=2.1.3');
+    const state=await import('./src/core/state.js?v=2.1.3');
+    const love=await import('./src/flow/love.js?v=2.1.3');
+    const girls=await import('./src/data/girls.js?v=2.1.3');
     const casts=[];
     for(let i=0;i<400;i++){ rng.seedInit('cast'+i); casts.push(love.drawCast()); }
     rng.seedInit('pool'); const S=state.newState('測試',1,'P',null); state.setS(S);
