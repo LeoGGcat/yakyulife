@@ -1,22 +1,22 @@
-import {S, stepQ, nextStep, stageLabel} from '../core/state.js?v=2.1.2';
-import {R, ri, chance, clamp} from '../core/rng.js?v=2.1.2';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.2';
-import {LV, PATHS, envLeagueOps, teamNick} from '../data/teams.js?v=2.1.2';
-import {keepTh} from '../data/thresholds.js?v=2.1.2';
-import {AMA_ANNUAL} from '../data/economy.js?v=2.1.2';
-import {card, choose, board, divider} from '../ui/dom.js?v=2.1.2';
-import {tlNote, tlPush, tlRestage} from '../ui/timeline.js?v=2.1.2';
-import {allocUI} from '../ui/alloc.js?v=2.1.2';
-import {addAb, ovr, ovrPit, ovrBat, dposReview, statBonusTxt} from '../engine/ability.js?v=2.1.2';
-import {rollInjury, tjCap, tjEffortMult} from '../engine/injury.js?v=2.1.2';
-import {isMrTeamEligible} from '../engine/tenure.js?v=2.1.2';
-import {amateurSeason, proSeason, slgOf, currentSalaryRating, baseballERA, baseballWHIP, seasonGrade} from '../engine/season.js?v=2.1.2';
-import {championshipChance} from '../engine/championship.js?v=2.1.2';
-import {buyoutRemaining, contractAnnual, fmtMoneyFx, contractMarketProfile, controlledAnnual, crossOffers, daibaFarewell, extensionOffer, faFlow, fmtMoney, handleDemotion, levelMinAnnual, makeContract, makeOffers, offseasonTradeCheck, pickOfferUI, returnHomeSign, signTo, teamChampRate} from '../engine/contract.js?v=2.1.2';
-import {drawEvents, removeTrait, checkChampionTrait} from './events.js?v=2.1.2';
-import {loveEvent} from './love.js?v=2.1.2';
-import {runDraft, pathChoiceHS, pathChoiceU4, advance} from '../engine/draft.js?v=2.1.2';
-import {endGame} from '../ui/retire.js?v=2.1.2';
+import {S, stepQ, nextStep, stageLabel} from '../core/state.js?v=2.1.3';
+import {R, ri, chance, clamp} from '../core/rng.js?v=2.1.3';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.3';
+import {LV, PATHS, envLeagueOps, teamNick} from '../data/teams.js?v=2.1.3';
+import {keepTh} from '../data/thresholds.js?v=2.1.3';
+import {AMA_ANNUAL} from '../data/economy.js?v=2.1.3';
+import {card, choose, board, divider} from '../ui/dom.js?v=2.1.3';
+import {tlNote, tlPush, tlRestage} from '../ui/timeline.js?v=2.1.3';
+import {allocUI} from '../ui/alloc.js?v=2.1.3';
+import {addAb, ovr, ovrPit, ovrBat, dposReview, statBonusTxt} from '../engine/ability.js?v=2.1.3';
+import {rollInjury, tjCap, tjEffortMult} from '../engine/injury.js?v=2.1.3';
+import {isMrTeamEligible} from '../engine/tenure.js?v=2.1.3';
+import {amateurSeason, proSeason, slgOf, currentSalaryRating, baseballERA, baseballWHIP, seasonGrade} from '../engine/season.js?v=2.1.3';
+import {championshipChance} from '../engine/championship.js?v=2.1.3';
+import {buyoutRemaining, contractAnnual, fmtMoneyFx, contractMarketProfile, controlledAnnual, crossOffers, daibaFarewell, extensionOffer, faFlow, fmtMoney, handleDemotion, levelMinAnnual, makeContract, makeOffers, offseasonTradeCheck, pickOfferUI, returnHomeSign, signTo, teamChampRate} from '../engine/contract.js?v=2.1.3';
+import {drawEvents, removeTrait, checkChampionTrait} from './events.js?v=2.1.3';
+import {loveEvent} from './love.js?v=2.1.3';
+import {runDraft, pathChoiceHS, pathChoiceU4, advance} from '../engine/draft.js?v=2.1.3';
+import {endGame} from '../ui/retire.js?v=2.1.3';
 /* ================= 年度流程 ================= */
 export function startYear(){ S.yearOutsideIncome=0; stepQ.length=0; stepQ.push(phasePre,phaseMid,phaseEnd); divider(`${S.year} 年 · ${S.age} 歲 · ${stageLabel()}`); tlPush(); nextStep(); }
 /* 七下保送幾顆「6」。天才需要 5 顆，保送不足的部分要玩家自己擲出來。
@@ -545,8 +545,7 @@ export function finishContractYear(o){
       {t:inJapan?'繼續挑戰日職':'繼續挑戰小聯盟',main:true,
        s:inJapan?`留在${LV[S.lv].n}，繼續爭取升上一軍`:`留在${LV[S.lv].n}，繼續朝大聯盟前進`,f:()=>crossOffers(o)},
       {t:`返台加盟中職（${LV[homeLv].n}）`,s:`結束${inJapan?'旅日':'小聯盟'}挑戰，回到台灣延續職業生涯`,f:()=>{
-        signTo('CPBL',homeLv);
-        card('good','返鄉',`你決定結束${inJapan?'旅日':'旅美'}挑戰，回到台灣，從<b class="hl">${LV[homeLv].n}</b>延續職業生涯。`);
+        returnHomeSign(S.org,'CPBL',homeLv,`你決定結束${inJapan?'旅日':'旅美'}挑戰，回到台灣，從<b class="hl">${LV[homeLv].n}</b>延續職業生涯。`);
         advance();
       }}
     ]);
