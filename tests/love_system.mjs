@@ -42,7 +42,7 @@ try{
     S.love.ch=0;
     return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
-      aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],swing:[love.affairSwing(100),love.affairSwing(70),love.affairSwing(40),love.affairSwing(0)],fg:[love.forgiveChance(90),love.forgiveChance(60),love.forgiveChance(0)],
+      aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],swing:[love.affairSwing(100),love.affairSwing(70),love.affairSwing(40),love.affairSwing(0)],fg:[love.forgiveChance(90),love.forgiveChance(60),love.forgiveChance(0)],kid:[love.kidChance(0,70),love.kidChance(0,100),love.kidChance(0,0),love.kidChance(3,30),love.kidChance(4,100)],cold:(()=>{ const L=S.love; L.pid='ruotong'; L.cold=null; const o=[]; for(const b of [20,25,40,10,10,10]){ L.bond=b; o.push(love.coldTick()); } L.pid='haisha'; L.bond=10; o.push(love.coldTick()); L.cold=null; return o; })(),
       prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
       follow,jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
   });
@@ -67,6 +67,8 @@ try{
   assert.deepEqual(r.aff,[5,50,19],'感情值越低越容易外遇，滿感情值仍有 5%');
   assert.deepEqual(r.swing,[0,1,2,4],'感情越差，外遇能力變動越劇烈');
   assert.deepEqual(r.fg,[64,46,10],'感情值越高越容易被原諒');
+  assert.deepEqual(r.kid,[65,85,20,12,0],'感情值影響生小孩機率');
+  assert.deepEqual(r.cold,[1,2,0,1,2,3,1],'感情值低於 30 連續累計，回升或換人就重算');
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
   assert.deepEqual(r.follow,[false,false,true,true,false,false,true,false,false,true],'夢想達成前不跟著出國，美咲只走日本→美國');
   assert.deepEqual(errors,[]);

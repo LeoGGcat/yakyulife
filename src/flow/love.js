@@ -60,6 +60,16 @@ export function affairChance(bond){ return clamp(Math.round(5+(100-bond)*0.45),5
 export function affairSwing(bond){ return clamp(Math.round((100-bond)/25),0,4); }
 /* 被抓到之後她原諒你的機率：看被抓到當下的感情值（赴約已扣 10），10%～70%。 */
 export function forgiveChance(bond){ return clamp(Math.round(10+bond*0.6),10,70); }
+/* 感情冷淡：交往或婚後，年初感情值低於 BOND_COLD 連續 COLD_YEARS 年，她會提分手／離婚（第二年先有警告）。 */
+export const BOND_COLD=30, COLD_YEARS=3;
+/* 生小孩：原本的機率（第一胎 65、45、30、20）乘上感情值倍率；感情值 70 → ×1，100 → ×1.3，0 → ×0.3 */
+export const KID_BASE=[65,45,30,20];
+export function kidChance(kids,bond){ return kids>=KID_BASE.length?0:clamp(Math.round(KID_BASE[kids]*(0.3+bond/100)),0,95); }
+/* 回傳這是第幾個冷淡年（0＝感情值不低）；同一段感情內累計，換人重算 */
+export function coldTick(){
+  const L=S.love, c=L.cold&&L.cold.pid===L.pid?L.cold:{pid:L.pid,n:0};
+  c.n=L.bond<BOND_COLD?c.n+1:0; L.cold=c; return c.n;
+}
 /* 求婚值：交往期間她的章節選項成功就累積（同好感度：保守 +25、一般 +50、放手一搏直接滿，放手一搏失敗 −25）。
    求婚值多少都能求婚，求婚值越高越容易成功；還沒走完的章節在婚後繼續。 */
 export const PROP_GAIN=AFF_GAIN, PROP_BOLD_FAIL=AFF_BOLD_FAIL;
@@ -147,6 +157,7 @@ function confess(g,next){
 /* ---------- 交往中／已婚 ---------- */
 function coupleYear(next){
   const L=S.love, g=GIRL[L.pid];
+  if(coldYear(g,next))return;
   if(L.st==='dating'){
     L.dyrs=(L.dyrs||0)+1;
     const y=L.dyrs;
@@ -184,7 +195,7 @@ function coupleYear(next){
   if(L.ch<3&&chance(60)){ chapter(g,next); return; }
   const fire=L.kids===0?40:30;
   if(!chance(fire)){ next(); return; }
-  if(L.kids<4&&chance([65,45,30,20][L.kids])){ /* 生子：第一胎最優先，越生越少 */
+  if(chance(kidChance(L.kids,L.bond))){ /* 生子：第一胎最優先，越生越少；感情值越高越容易 */
     L.kids++; const kk=pick(POS_AB[S.pos]); const gt=loveGainTxt(kk,2); board(1);
     card('gold','新生命',`${hl(g.n)} 平安生下你們的第 ${hl(L.kids)} 個孩子。你們在冰箱上貼了一張輪班表，誰顧孩子、誰去工作，寫得清清楚楚——她的${g.work}跟你的球季一樣重要。當了${L.kids>1?'幾次':''}爸爸的男人，眼神都不一樣了——${gt}。`);
     next(); return; }
@@ -192,6 +203,19 @@ function coupleYear(next){
     card('good','球場邊的父親',`你被拍到賽前隔著護網，蹲著教孩子怎麼戴手套，影片配文「最強棒球教室」瘋傳。那天 ${hl(g.n)} 忙著她的${g.work}，去幼兒園接孩子的是你——${gt}。`); next(); return; }
   const gt=loveGainTxt('sta',1); addBond(5); board(1);
   card('good','結婚紀念日',`結婚紀念日，你們各自推掉了工作，回到當年辦婚禮的那個地方。${hl(g.n)} 牽著你的手走了一圈，說：「明年換我挑地方，你不准偷看行程。」——${gt}。`); next();
+}
+
+/* 感情冷淡：連續低於門檻第二年先警告，第三年她提分手／離婚 */
+function coldYear(g,next){
+  const L=S.love, n=coldTick(), married=L.st==='married';
+  if(n===COLD_YEARS-1){
+    card('bad','冷淡',`這一年你們說的話，比一整個客場之旅還少。某天晚上 ${hl(g.n)} 把手機放下，看著你說：「我們是不是只剩下${married?'一張結婚證書':'一個稱呼'}了？」你答不出來。<br>感情值 ${L.bond}（低於 ${BOND_COLD} 已連續 ${n} 年；明年還是這樣，她就會離開）`);
+    return false; }
+  if(n<COLD_YEARS)return false;
+  const k1=pick(POS_AB[S.pos]),g1=addAb(k1,-2); board(1);
+  endRelation('cold');
+  card('bad',married?'離婚':'分手',`沒有爭吵，也沒有誰做錯了什麼。${hl(g.n)} 只是在某個平常的早上，把${married?'簽好名的離婚協議書':'你家的鑰匙'}放在餐桌上：「我們已經三年沒有好好看過對方了。我不想再這樣過下去。」${married?'你們和平離婚。':'你們分手了。'}——${abGainTxt(k1,-1,g1)}。`);
+  next(); return true;
 }
 
 /* 她的故事：三章，交往或婚後都會走。交往中的選項累積求婚值與感情值，婚後只影響感情值；
