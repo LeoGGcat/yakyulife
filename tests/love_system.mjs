@@ -39,13 +39,21 @@ try{
     const follow=[mf('xiaoqing','TW','JP',0),mf('xiaoqing','TW','US',2),mf('xiaoqing','TW','JP',3),
       mf('misaki','JP','US',0),mf('misaki','JP','TW',0),mf('misaki','US','JP',2),mf('misaki','JP','TW',3),
       mf('maya','US','JP',1),mf('rin','JP','US',2),mf('rin','JP','US',3)];
+    /* 留下來的說法要跟她實際所在的國家一致：早瀨美咲在美國時不能說「留在東京」 */
+    const sl=(id,herC,home)=>{ S.love.herC=herC; return love.stayLine(G[id],home); };
+    const stay={misakiJP:sl('misaki','JP',false),misakiUS:sl('misaki','US',false),
+      xqJP:sl('xiaoqing','JP',false),xqTW:sl('xiaoqing','TW',false),xqStay:G.xiaoqing.stay};
     S.love.ch=0;
-    return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
+    return {stay,casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
       aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],
       prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
       follow,jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
   });
+  assert.ok(r.stay.misakiJP.includes('東京'),'美咲在日本時用原本的 stay');
+  assert.ok(!r.stay.misakiUS.includes('東京')&&r.stay.misakiUS.includes('美國'),'美咲在美國時不能說留在東京');
+  assert.ok(r.stay.xqJP.includes('日本'),'跟到國外的她，留下的地點是她所在的國家');
+  assert.equal(r.stay.xqTW,r.stay.xqStay,'在自己的國家時照舊用 stay');
   assert.deepEqual(r.counts,[6,5,5],'台灣 6 人（含馮海莎）、日本 5、美國 5');
   assert.ok(r.shapeOk,'每位角色都有三幕好感事件、三章故事與旅外文本');
   let haisha=0,xiaoqing=0;
