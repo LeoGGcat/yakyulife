@@ -141,13 +141,15 @@ function affPick(g,tag,next){
     if(L.aff[g.id]>=100)confess(g,next); else next();
   };
 }
+/* 好感事件第 n 幕。純投手有 scP 替代版時用它（例如蘿莎的打擊練習改成投球練習）；打者與二刀流一律用 sc。 */
+export function affSc(g,n){ return (S.pos==='P'&&g.scP&&g.scP[n%3])||g.sc[n%3]; }
 function affectionScene(g,next){
   const L=S.love;
   if(L.past[g.id]){ reunionScene(g,next); return; }
   if(!L.met[g.id]){ L.met[g.id]=1;
     card('info',`相遇｜${g.n}（${g.job}）`,g.meet); }
   const n=L.scn[g.id]||0; L.scn[g.id]=n+1;
-  const sc=g.sc[n%3], aff=L.aff[g.id]||0;
+  const sc=affSc(g,n), aff=L.aff[g.id]||0;
   choose(`<span class="ev-h">戀愛｜${g.n}（${g.job}）</span><small>${sc.i}<br>好感度 ${aff}／100</small>`,
     modeOpts(sc.o,affSFor,affPick(g,'戀愛',next)));
 }
