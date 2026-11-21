@@ -42,7 +42,7 @@ try{
     S.love.ch=0;
     return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
-      aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],
+      aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],swing:[love.affairSwing(100),love.affairSwing(70),love.affairSwing(40),love.affairSwing(0)],fg:[love.forgiveChance(90),love.forgiveChance(60),love.forgiveChance(0)],
       prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
       follow,jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
   });
@@ -64,7 +64,9 @@ try{
   assert.deepEqual(r.odds,{safe:80,norm:65,bold:50});
   assert.deepEqual(r.gain,{safe:25,norm:50,bold:100});
   assert.deepEqual(r.pc,[75,5,95,38]); assert.equal(r.conf,75); assert.equal(r.fire,80);
-  assert.deepEqual(r.aff,[10,40,19]);
+  assert.deepEqual(r.aff,[5,50,19],'感情值越低越容易外遇，滿感情值仍有 5%');
+  assert.deepEqual(r.swing,[0,1,2,4],'感情越差，外遇能力變動越劇烈');
+  assert.deepEqual(r.fg,[64,46,10],'感情值越高越容易被原諒');
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
   assert.deepEqual(r.follow,[false,false,true,true,false,false,true,false,false,true],'夢想達成前不跟著出國，美咲只走日本→美國');
   assert.deepEqual(errors,[]);
