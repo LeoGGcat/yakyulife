@@ -7,7 +7,7 @@ import {TRAIT_KEYS} from '../data/traits.js?v=2.1.4';
 import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.4';
 import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.4';
 import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.4';
-import {roleN, fmtIP, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.4';
+import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.4';
 import {fmtMoney} from '../engine/contract.js?v=2.1.4';
 import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.4';
 import {capTeam, careerMilestones, honorGroups, honorSections, posLegendPhrase, primaryPos, statTable, tierOf, yearRanges, honorText,
@@ -142,16 +142,29 @@ export function rpIntlData(side){
     (Number.isFinite(st&&st.PA)&&Number.isFinite(st&&st.AB)?Math.max(0,Math.round(st.PA-st.AB)):0);
   const totalBB=Number.isFinite(IS.BB)?Math.max(0,Math.round(IS.BB)):il.reduce((n,r)=>n+walks(r.st),0);
   const use=side?il.filter(r=>side==='pit'?twHasPit(r.st):twHasBat(r.st)):il;
+  /* 通算改由逐屆紀錄、只挑「這一側真的有上場」的那幾屆加總。S.intlStat 是一個混合桶：
+     純投手那屆把被安打／投出的四壞記在 G/H/BB，跟打擊側共用同一組 key，
+     所以投打換過角色的生涯，打擊通算會多出投手那屆的場次、被安打與保送(PA 卻對得上)，
+     投球通算反而漏掉那屆的場次與四壞。只有逐屆紀錄不齊的舊存檔才退回 S.intlStat。 */
+  const fromLog=il.length>0&&il.length>=(Number(S.intlCount)||0);
+  const own=il.filter(r=>isP?twHasPit(r.st):twHasBat(r.st));
+  const sum=f=>own.reduce((n,r)=>n+(Number(f(r.st))||0),0);
   if(isP){
+    const T=fromLog?{G:sum(pitG),IP:ipFromOuts(sum(st=>outsFromIP(st.IP))),W:sum(st=>st.W),SV:sum(st=>st.SV),
+      SO:sum(st=>st.SO),BB:sum(pitBB),ER:sum(st=>st.ER)}
+      :{G:pitG(IS),IP:IS.IP,W:IS.W,SV:IS.SV||0,SO:IS.SO,BB:pitBB(IS),ER:IS.ER};
     return {hd:['G','IP','W','SV','SO','BB','ERA'],
       rows:use.map(r=>{ const st=r.st; return {year:r.year,name:r.name,rank:r.rank,
         txt:[pitG(st),fmtIP(st.IP),st.W,st.SV||0,st.SO,pitBB(st),RP_F2(baseballERA(st))]}; }),
-      tot:[pitG(IS),fmtIP(IS.IP),IS.W,IS.SV||0,IS.SO,pitBB(IS),RP_F2(baseballERA(IS))]};
+      tot:[T.G,fmtIP(T.IP),T.W,T.SV||0,T.SO,T.BB,RP_F2(baseballERA(T))]};
   }
+  const T=fromLog?{G:sum(st=>st.G),PA:sum(st=>st.PA),AB:sum(st=>st.AB),H:sum(st=>st.H),HR:sum(st=>st.HR),
+      RBI:sum(st=>st.RBI),BB:sum(walks)}
+    :{G:IS.G,PA:IS.PA,AB:IS.AB,H:IS.H,HR:IS.HR,RBI:IS.RBI,BB:totalBB};
   return {hd:['G','PA','AVG','H','HR','RBI','BB'],
     rows:use.map(r=>{ const st=r.st; return {year:r.year,name:r.name,rank:r.rank,
       txt:[st.G,st.PA,RP_F3(st.AB>0?st.H/st.AB:null),st.H,st.HR,st.RBI,walks(st)]}; }),
-    tot:[IS.G,IS.PA,RP_F3(IS.AB>0?IS.H/IS.AB:null),IS.H,IS.HR,IS.RBI,totalBB]};
+    tot:[T.G,T.PA,RP_F3(T.AB>0?T.H/T.AB:null),T.H,T.HR,T.RBI,T.BB]};
 }
 export function rpHonorItems(){ /* [[text,accent?],...] per item; ×N gets the accent color */
   return careerMilestones().map(t=>[[t,0]])
