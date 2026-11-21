@@ -40,7 +40,21 @@ try{
       mf('misaki','JP','US',0),mf('misaki','JP','TW',0),mf('misaki','US','JP',2),mf('misaki','JP','TW',3),
       mf('maya','US','JP',1),mf('rin','JP','US',2),mf('rin','JP','US',3)];
     S.love.ch=0;
-    return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
+    /* 前任：分開後隔兩年才會再遇到；復合只有一次機會 */
+    S.org='CPBL'; S.year=2030; S.love.aff={}; S.love.burned=[]; S.love.past={};
+    S.love.st='dating'; S.love.pid='ruotong'; S.love.partner='陳若彤'; S.love.ch=2;
+    love.endRelation('left');
+    const ex1={past:{...S.love.past.ruotong},st:S.love.st,aff:S.love.aff.ruotong};
+    S.year=2031; const coolPool=love.singlePool(null);
+    S.year=2032; const backPool=love.singlePool(null), freshPool=love.singlePool('haisha');
+    S.love.st='dating'; S.love.pid='ruotong'; S.love.partner='陳若彤'; S.love.ch=3;
+    love.endRelation('wait');
+    const ex2={burned:S.love.burned.slice(),n:S.love.past.ruotong.n};
+    S.year=2040; const afterPool=love.singlePool(null);
+    S.love.st='married'; S.love.pid='haisha'; S.love.partner='馮海莎'; S.love.kids=2; S.love.ch=1;
+    love.endRelation('far');
+    const ex3={past:{...S.love.past.haisha},st:S.love.st,exes:S.love.exes.map(e=>[e.id,e.kids])};
+    return {ex1,coolPool,backPool,freshPool,ex2,afterPool,ex3,casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
       aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],
       prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
@@ -67,6 +81,13 @@ try{
   assert.deepEqual(r.aff,[10,40,19]);
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
   assert.deepEqual(r.follow,[false,false,true,true,false,false,true,false,false,true],'夢想達成前不跟著出國，美咲只走日本→美國');
+  assert.deepEqual(r.ex1,{past:{yr:2030,ch:2,n:1,how:'left',wed:false},st:'single',aff:0},'分手時記下前任：年份、她的章節進度、原因');
+  assert.deepEqual(r.coolPool,['haisha','peici'],'分手隔年不會再遇到前任');
+  assert.deepEqual(r.backPool,['haisha','ruotong','peici'],'隔兩年後可以重逢');
+  assert.deepEqual(r.freshPool,['ruotong','peici'],'主動分手的隔年先遇到別人的規則不變');
+  assert.deepEqual(r.ex2,{burned:['ruotong'],n:2},'跟同一個人第二次分開，她就不會回來');
+  assert.deepEqual(r.afterPool,['haisha','peici']);
+  assert.deepEqual(r.ex3,{past:{yr:2040,ch:1,n:1,how:'far',wed:true},st:'divorced',exes:[['haisha',2]]},'離婚：前妻紀錄與孩子照舊');
   assert.deepEqual(errors,[]);
   console.log('love system ok');
 }finally{ await browser.close(); }
