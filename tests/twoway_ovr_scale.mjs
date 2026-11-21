@@ -32,9 +32,9 @@ try{
   await page.goto(`${url}?seed=tw-ovr-scale`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.4');
-    const A    =await import('./src/engine/ability.js?v=2.1.4');
-    const {LV} =await import('./src/data/teams.js?v=2.1.4');
+    const state=await import('./src/core/state.js?v=2.1.5');
+    const A    =await import('./src/engine/ability.js?v=2.1.5');
+    const {LV} =await import('./src/data/teams.js?v=2.1.5');
 
     const mk=(pos,ab,over={})=>{
       const s=state.newState('x',1,pos,null);
