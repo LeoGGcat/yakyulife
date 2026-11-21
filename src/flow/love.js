@@ -532,9 +532,18 @@ function goWith(g,home){
   const gt=loveGainTxt('sta',1); board(1);
   card('gold','一起出發',`${home?`${hl(g.n)} 聽到消息時眼睛一亮：「回${COUNTRY_N[g.c]}？那是我家耶！」她比你還早開始打包。`:g.go}——${gt}。`);
 }
+/* g.stay 寫的是她在自己家鄉的情境（例如早瀨美咲「選擇留在東京」）。
+   她已經跟著你到了別的國家、你又要轉往第三地或回她以外的地方時，改用 stayAway[她所在國家] 或共用句，地點才會對。 */
+export function stayLine(g,home){
+  const L=S.love, C=COUNTRY_N[L.herC];
+  if(home)return `${hl(g.n)} 在 ${C} 已經有了自己的事業，她選擇留下。`;
+  if(L.herC===g.c)return g.stay;
+  return (g.stayAway&&g.stayAway[L.herC])
+    ||`${hl(g.n)} 的${g.work}在 ${C} 才剛站穩腳步，那是她跟著你過來之後，一點一滴重新打下來的。她選擇留在 ${C}。`;
+}
 function stayApart(g,home,asked){
   const L=S.love; L.apart=true; L.apartYrs=0;
-  card('info','各自的戰場',`${asked?'她想了整整一個晚上，隔天早上才給你答案。':''}${home?`${hl(g.n)} 在 ${COUNTRY_N[L.herC]} 已經有了自己的事業，她選擇留下。`:g.stay}你們決定，試試看遠距離。`);
+  card('info','各自的戰場',`${asked?'她想了整整一個晚上，隔天早上才給你答案。':''}${stayLine(g,home)}你們決定，試試看遠距離。`);
 }
 /* 同行路線：第一年在異鄉重新開始，第二年她站穩腳步。
    目的地是她自己的家鄉（例如跟你出國後又一起回來）時，改用「回到故鄉」的文案：沒有語言問題，而是重新接回原本的生活。 */
