@@ -1,18 +1,18 @@
-import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.4';
-import {R, ri, SEED} from '../core/rng.js?v=2.1.4';
-import {OFFICIAL_URL} from '../config.js?v=2.1.4';
-import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.4';
-import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.4';
-import {TRAIT_KEYS} from '../data/traits.js?v=2.1.4';
-import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.4';
-import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.4';
-import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.4';
-import {roleN, fmtIP, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.4';
-import {fmtMoney} from '../engine/contract.js?v=2.1.4';
-import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.4';
+import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.5';
+import {R, ri, SEED} from '../core/rng.js?v=2.1.5';
+import {OFFICIAL_URL} from '../config.js?v=2.1.5';
+import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.5';
+import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.5';
+import {TRAIT_KEYS} from '../data/traits.js?v=2.1.5';
+import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.5';
+import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.5';
+import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.5';
+import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.5';
+import {fmtMoney} from '../engine/contract.js?v=2.1.5';
+import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.5';
 import {capTeam, careerMilestones, honorGroups, honorSections, posLegendPhrase, primaryPos, statTable, tierOf, yearRanges, honorText,
-  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.4';
-import {shareImageSheet} from './share-image.js?v=2.1.4';
+  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.5';
+import {shareImageSheet} from './share-image.js?v=2.1.5';
 /* ================= 結算圖資料建構 =================
    Data builders for shareImage()'s canvas layout (design handoff 2026-08-14).
    All values come from S.*; the in-game settlement cards are untouched. */
@@ -142,16 +142,29 @@ export function rpIntlData(side){
     (Number.isFinite(st&&st.PA)&&Number.isFinite(st&&st.AB)?Math.max(0,Math.round(st.PA-st.AB)):0);
   const totalBB=Number.isFinite(IS.BB)?Math.max(0,Math.round(IS.BB)):il.reduce((n,r)=>n+walks(r.st),0);
   const use=side?il.filter(r=>side==='pit'?twHasPit(r.st):twHasBat(r.st)):il;
+  /* 通算改由逐屆紀錄、只挑「這一側真的有上場」的那幾屆加總。S.intlStat 是一個混合桶：
+     純投手那屆把被安打／投出的四壞記在 G/H/BB，跟打擊側共用同一組 key，
+     所以投打換過角色的生涯，打擊通算會多出投手那屆的場次、被安打與保送(PA 卻對得上)，
+     投球通算反而漏掉那屆的場次與四壞。只有逐屆紀錄不齊的舊存檔才退回 S.intlStat。 */
+  const fromLog=il.length>0&&il.length>=(Number(S.intlCount)||0);
+  const own=il.filter(r=>isP?twHasPit(r.st):twHasBat(r.st));
+  const sum=f=>own.reduce((n,r)=>n+(Number(f(r.st))||0),0);
   if(isP){
+    const T=fromLog?{G:sum(pitG),IP:ipFromOuts(sum(st=>outsFromIP(st.IP))),W:sum(st=>st.W),SV:sum(st=>st.SV),
+      SO:sum(st=>st.SO),BB:sum(pitBB),ER:sum(st=>st.ER)}
+      :{G:pitG(IS),IP:IS.IP,W:IS.W,SV:IS.SV||0,SO:IS.SO,BB:pitBB(IS),ER:IS.ER};
     return {hd:['G','IP','W','SV','SO','BB','ERA'],
       rows:use.map(r=>{ const st=r.st; return {year:r.year,name:r.name,rank:r.rank,
         txt:[pitG(st),fmtIP(st.IP),st.W,st.SV||0,st.SO,pitBB(st),RP_F2(baseballERA(st))]}; }),
-      tot:[pitG(IS),fmtIP(IS.IP),IS.W,IS.SV||0,IS.SO,pitBB(IS),RP_F2(baseballERA(IS))]};
+      tot:[T.G,fmtIP(T.IP),T.W,T.SV||0,T.SO,T.BB,RP_F2(baseballERA(T))]};
   }
+  const T=fromLog?{G:sum(st=>st.G),PA:sum(st=>st.PA),AB:sum(st=>st.AB),H:sum(st=>st.H),HR:sum(st=>st.HR),
+      RBI:sum(st=>st.RBI),BB:sum(walks)}
+    :{G:IS.G,PA:IS.PA,AB:IS.AB,H:IS.H,HR:IS.HR,RBI:IS.RBI,BB:totalBB};
   return {hd:['G','PA','AVG','H','HR','RBI','BB'],
     rows:use.map(r=>{ const st=r.st; return {year:r.year,name:r.name,rank:r.rank,
       txt:[st.G,st.PA,RP_F3(st.AB>0?st.H/st.AB:null),st.H,st.HR,st.RBI,walks(st)]}; }),
-    tot:[IS.G,IS.PA,RP_F3(IS.AB>0?IS.H/IS.AB:null),IS.H,IS.HR,IS.RBI,totalBB]};
+    tot:[T.G,T.PA,RP_F3(T.AB>0?T.H/T.AB:null),T.H,T.HR,T.RBI,T.BB]};
 }
 export function rpHonorItems(){ /* [[text,accent?],...] per item; ×N gets the accent color */
   return careerMilestones().map(t=>[[t,0]])
@@ -1105,7 +1118,9 @@ export function endGame(reason){
   if(S.traits.thief)picks.push('被這個小倫倫了好幾年，打不好還是有高薪，真的有夠爽');
   if(S.traits.mrteam)picks.push('十五年只為一隊，'+(teamNick(S.mrTeamName||'')||'')+'先生這個稱號，他當之無愧');
   if(S.traits.confidante)picks.push('場上叱吒風雲，感情跟我一樣，55555');
-  if(S.traits.jiejiri)picks.push('打擊區裡什麼球都打得到，求婚倒是被三振兩次');
+  if(S.traits.jiejiri)picks.push(endingPos()==='P'
+    ?'看起來在求婚這件事上，他顯然不像投球那樣隨心所欲'
+    :'打擊區裡什麼球都打得到，求婚倒是被三振兩次');
   if(S.traits.smallschool)picks.push('從那種小學校打到職業，這故事夠拍一部電影了');
   if(S.traits.grinder)picks.push('沒什麼天分卻拼到這種成就，這種球員最讓人尊敬');
   if(S.traits.goldcloth)picks.push('我愛台中猛獁，不離不棄，( ￣□￣)/喔~~喔喔~~喔喔~~喔喔~猛瑪');
