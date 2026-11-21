@@ -55,7 +55,22 @@ export function affairPool(){
 }
 /* 交往或婚後，每年有 affairChance(感情值) 的機率，當年的事件就是外遇誘惑（有人選才會發生） */
 export const RESIST_BOND=10, RESIST_PROP=25;
-export function affairChance(bond){ return clamp(Math.round(10+(100-bond)*0.3),10,40); }
+export function affairChance(bond){ return clamp(Math.round(5+(100-bond)*0.45),5,50); }
+/* 感情越差，外遇的代價與收穫越劇烈：以赴約前的感情值計算，每少 25 點多 1 級（感情值 100 → 0 級、0 → 4 級）。
+   沒被抓到＝體力 +(2+級數)；被抓到＝隨機能力 −(3+級數)。 */
+export function affairSwing(bond){ return clamp(Math.round((100-bond)/25),0,4); }
+/* 被抓到之後她原諒你的機率：看被抓到當下的感情值（赴約已扣 10），10%～70%。 */
+export function forgiveChance(bond){ return clamp(Math.round(10+bond*0.6),10,70); }
+/* 感情冷淡：交往或婚後，年初感情值低於 BOND_COLD 連續 COLD_YEARS 年，她會提分手／離婚（第二年先有警告）。 */
+export const BOND_COLD=30, COLD_YEARS=3;
+/* 生小孩：原本的機率（第一胎 65、45、30、20）乘上感情值倍率；感情值 70 → ×1，100 → ×1.3，0 → ×0.3 */
+export const KID_BASE=[65,45,30,20];
+export function kidChance(kids,bond){ return kids>=KID_BASE.length?0:clamp(Math.round(KID_BASE[kids]*(0.3+bond/100)),0,95); }
+/* 回傳這是第幾個冷淡年（0＝感情值不低）；同一段感情內累計，換人重算 */
+export function coldTick(){
+  const L=S.love, c=L.cold&&L.cold.pid===L.pid?L.cold:{pid:L.pid,n:0};
+  c.n=L.bond<BOND_COLD?c.n+1:0; L.cold=c; return c.n;
+}
 /* 求婚值：交往期間她的章節選項成功就累積（同好感度：保守 +25、一般 +50、放手一搏直接滿，放手一搏失敗 −25）。
    求婚值多少都能求婚，求婚值越高越容易成功；還沒走完的章節在婚後繼續。 */
 export const PROP_GAIN=AFF_GAIN, PROP_BOLD_FAIL=AFF_BOLD_FAIL;
@@ -222,6 +237,7 @@ function reunionScene(g,next){
 /* ---------- 交往中／已婚 ---------- */
 function coupleYear(next){
   const L=S.love, g=GIRL[L.pid];
+  if(coldYear(g,next))return;
   if(L.st==='dating'){
     L.dyrs=(L.dyrs||0)+1;
     const y=L.dyrs;
@@ -259,7 +275,7 @@ function coupleYear(next){
   if(L.ch<3&&chance(60)){ chapter(g,next); return; }
   const fire=L.kids===0?40:30;
   if(!chance(fire)){ next(); return; }
-  if(L.kids<4&&chance([65,45,30,20][L.kids])){ /* 生子：第一胎最優先，越生越少 */
+  if(chance(kidChance(L.kids,L.bond))){ /* 生子：第一胎最優先，越生越少；感情值越高越容易 */
     L.kids++; const kk=pick(POS_AB[S.pos]); const gt=loveGainTxt(kk,2); board(1);
     card('gold','新生命',`${hl(g.n)} 平安生下你們的第 ${hl(L.kids)} 個孩子。你們在冰箱上貼了一張輪班表，誰顧孩子、誰去工作，寫得清清楚楚——她的${g.work}跟你的球季一樣重要。當了${L.kids>1?'幾次':''}爸爸的男人，眼神都不一樣了——${gt}。`);
     next(); return; }
@@ -267,6 +283,19 @@ function coupleYear(next){
     card('good','球場邊的父親',`你被拍到賽前隔著護網，蹲著教孩子怎麼戴手套，影片配文「最強棒球教室」瘋傳。那天 ${hl(g.n)} 忙著她的${g.work}，去幼兒園接孩子的是你——${gt}。`); next(); return; }
   const gt=loveGainTxt('sta',1); addBond(5); board(1);
   card('good','結婚紀念日',`結婚紀念日，你們各自推掉了工作，回到當年辦婚禮的那個地方。${hl(g.n)} 牽著你的手走了一圈，說：「明年換我挑地方，你不准偷看行程。」——${gt}。`); next();
+}
+
+/* 感情冷淡：連續低於門檻第二年先警告，第三年她提分手／離婚 */
+function coldYear(g,next){
+  const L=S.love, n=coldTick(), married=L.st==='married';
+  if(n===COLD_YEARS-1){
+    card('bad','冷淡',`這一年你們說的話，比一整個客場之旅還少。某天晚上 ${hl(g.n)} 把手機放下，看著你說：「我們是不是只剩下${married?'一張結婚證書':'一個稱呼'}了？」你答不出來。<br>感情值 ${L.bond}（低於 ${BOND_COLD} 已連續 ${n} 年；明年還是這樣，她就會離開）`);
+    return false; }
+  if(n<COLD_YEARS)return false;
+  const k1=pick(POS_AB[S.pos]),g1=addAb(k1,-2); board(1);
+  endRelation('cold');
+  card('bad',married?'離婚':'分手',`沒有爭吵，也沒有誰做錯了什麼。${hl(g.n)} 只是在某個平常的早上，把${married?'簽好名的離婚協議書':'你家的鑰匙'}放在餐桌上：「我們已經三年沒有好好看過對方了。我不想再這樣過下去。」${married?'你們和平離婚。':'你們分手了。'}——${abGainTxt(k1,-1,g1)}。`);
+  next(); return true;
 }
 
 /* 她的故事：三章，交往或婚後都會走。交往中的選項累積求婚值與感情值，婚後只影響感情值；
@@ -583,9 +612,9 @@ function temptation(g,done){
   const t=GIRL[tid], dating=L.st==='dating', pc=playerCountry();
   const where=t.c===pc?`${t.n} 收工後傳訊息約你去喝一杯。`:`${t.n} 傳訊息說，她這週剛好到 ${COUNTRY_N[pc]} 出差，問你要不要出來喝一杯。`;
   choose(`<span class="ev-h">誘惑｜${t.n}（${t.job}）</span><small>${where}你們之前差一點就走到一起了，你一直都記得她笑起來的樣子。你看著那則訊息很久——你很清楚，你想去的不只是那杯酒。<br>${dating?`求婚值 ${L.prop||0}／100｜`:''}感情值 ${L.bond}／100</small>`,[
-    {t:'赴約（賭一把）',warn:true,s:`感情值 −10｜沒被抓到＝體力提升｜被抓到＝能力下跌、${dating?'感情':'婚姻'}危機`,f:()=>{
-      L.affairs++; addBond(-10);
-      if(chance(55)){ const gt=loveGainTxt('sta',2); board(1);
+    {t:'赴約（賭一把）',warn:true,s:`感情值 −10｜沒被抓到＝體力 +${2+affairSwing(L.bond)}｜被抓到＝能力 −${3+affairSwing(L.bond)}、${dating?'感情':'婚姻'}危機（她原諒你的機率 ${forgiveChance(Math.max(0,L.bond-10))}%）`,f:()=>{
+      L.affairs++; L.swing=affairSwing(L.bond); addBond(-10);
+      if(chance(55)){ const gt=loveGainTxt('sta',2+L.swing); L.swing=0; board(1);
         card('bad','深夜',`沒有人拍到。你回到家時，${hl(g.n)} 已經睡了，桌上攤著她明天的工作行程，旁邊留了一盞小燈給你。——${gt}。（這是你自己的選擇，這條路不會有好結局）`); done(); }
       else if(dating)loveCaughtDating(done); else loveCaught(done); }},
     {t:`回訊息：「我要回家了。」`,main:true,s:`感情值 +${RESIST_BOND}${dating?`、求婚值 +${RESIST_PROP}`:''}，絕對不虧`,f:()=>{
@@ -619,12 +648,12 @@ export function endRelation(how){
 export function divorceRec(){ endRelation(); }
 export function loveCaught(next){
   const L=S.love, g=GIRL[L.pid]; L.caught++; L.hurt[L.pid]=(L.hurt[L.pid]||0)+1;
-  const kk=pick(POS_AB[S.pos]); const gk=addAb(kk,-3);
+  const kk=pick(POS_AB[S.pos]); const gk=addAb(kk,-3-(L.swing||0)), fc=forgiveChance(L.bond); L.swing=0;
   const extra=scumCheck(); board(1);
   card('bad','頭版醜聞',`狗仔的照片鋪滿了整個版面。贊助商連夜撤下你的廣告，你在記者會上鞠躬九十度，閃光燈亮成一片。${abGainTxt(kk,-1,gk)}。${extra}`);
   choose(`${g.n} 已經找好了律師。她說，這段婚姻要不要結束，由她來決定`,[
-    {t:'把一切說清楚，請她給一次機會',s:'由她決定（40%）｜失敗＝再扣能力並離婚',f:()=>{
-      if(chance(40)){ L.bond=Math.min(L.bond,30);
+    {t:'把一切說清楚，請她給一次機會',s:`由她決定（${fc}%，看感情值）｜失敗＝再扣能力並離婚`,f:()=>{
+      if(chance(fc)){ L.bond=Math.min(L.bond,30);
         card('info','她的決定',`${hl(g.n)} 聽你說完，沉默了很久：「我留下來，不是因為原諒你，是因為我還沒想好要不要原諒你。」婚姻還在，但有些東西，再也回不去了。感情值 ${L.bond}。`); next(); }
       else{ const k2=pick(POS_AB[S.pos]); const g2=addAb(k2,-2); endRelation('cheat'); board(1);
         card('bad','她的決定',`她聽完只是搖了搖頭。隔天，律師的文件就寄到了。${hl(g.n)} 對外的聲明只有一句：「我要繼續過我自己的人生。」——${abGainTxt(k2,-1,g2)}。`); next(); } }},
@@ -633,12 +662,12 @@ export function loveCaught(next){
 }
 export function loveCaughtDating(next){
   const L=S.love, g=GIRL[L.pid]; L.caught++; L.cheatYr=S.year; L.hurt[L.pid]=(L.hurt[L.pid]||0)+1;
-  const kk=pick(POS_AB[S.pos]); const gk=addAb(kk,-3);
+  const kk=pick(POS_AB[S.pos]); const gk=addAb(kk,-3-(L.swing||0)), fc=forgiveChance(L.bond); L.swing=0;
   const extra=scumCheck(); board(1);
   card('bad','劈腿曝光',`照片流出，時間、地點，對得整整齊齊。${abGainTxt(kk,-1,gk)}。${extra}`);
   choose(`${g.n} 已讀不回三天後，答應見一面`,[
-    {t:'道歉，請她再給一次機會',s:'由她決定（40%）｜失敗＝再扣能力並分手',f:()=>{
-      if(chance(40)){ L.bond=Math.min(L.bond,30);
+    {t:'道歉，請她再給一次機會',s:`由她決定（${fc}%，看感情值）｜失敗＝再扣能力並分手`,f:()=>{
+      if(chance(fc)){ L.bond=Math.min(L.bond,30);
         card('info','她的決定',`她把想說的話都說完了，最後只留下一句：「這是最後一次。」感情保住了，可是信任上的那道裂痕，怎麼樣都補不回來。感情值 ${L.bond}。`); next(); }
       else{ const k2=pick(POS_AB[S.pos]); const g2=addAb(k2,-2); endRelation('cheat'); board(1);
         card('bad','她的決定',`她把你送的東西整理成一箱寄了回來，封鎖了所有的聯絡方式。${hl(g.n)} 的生活照常往前走，沒有你——${abGainTxt(k2,-1,g2)}。`); next(); } }},
