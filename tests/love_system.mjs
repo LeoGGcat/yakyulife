@@ -15,10 +15,10 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-system`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const rng=await import('./src/core/rng.js?v=2.1.4');
-    const state=await import('./src/core/state.js?v=2.1.4');
-    const love=await import('./src/flow/love.js?v=2.1.4');
-    const girls=await import('./src/data/girls.js?v=2.1.4');
+    const rng=await import('./src/core/rng.js?v=2.1.5');
+    const state=await import('./src/core/state.js?v=2.1.5');
+    const love=await import('./src/flow/love.js?v=2.1.5');
+    const girls=await import('./src/data/girls.js?v=2.1.5');
     const casts=[];
     for(let i=0;i<400;i++){ rng.seedInit('cast'+i); casts.push(love.drawCast()); }
     rng.seedInit('pool'); const S=state.newState('測試',1,'P',null); state.setS(S);
@@ -39,13 +39,35 @@ try{
     const follow=[mf('xiaoqing','TW','JP',0),mf('xiaoqing','TW','US',2),mf('xiaoqing','TW','JP',3),
       mf('misaki','JP','US',0),mf('misaki','JP','TW',0),mf('misaki','US','JP',2),mf('misaki','JP','TW',3),
       mf('maya','US','JP',1),mf('rin','JP','US',2),mf('rin','JP','US',3)];
+    /* 留下來的說法要跟她實際所在的國家一致：早瀨美咲在美國時不能說「留在東京」 */
+    const sl=(id,herC,home)=>{ S.love.herC=herC; return love.stayLine(G[id],home); };
+    const stay={misakiJP:sl('misaki','JP',false),misakiUS:sl('misaki','US',false),
+      xqJP:sl('xiaoqing','JP',false),xqTW:sl('xiaoqing','TW',false),xqStay:G.xiaoqing.stay};
     S.love.ch=0;
-    return {casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
+    /* 前任：分開後隔兩年才會再遇到；復合只有一次機會 */
+    S.org='CPBL'; S.year=2030; S.love.aff={}; S.love.burned=[]; S.love.past={};
+    S.love.st='dating'; S.love.pid='ruotong'; S.love.partner='陳若彤'; S.love.ch=2;
+    love.endRelation('left');
+    const ex1={past:{...S.love.past.ruotong},st:S.love.st,aff:S.love.aff.ruotong};
+    S.year=2031; const coolPool=love.singlePool(null);
+    S.year=2032; const backPool=love.singlePool(null), freshPool=love.singlePool('haisha');
+    S.love.st='dating'; S.love.pid='ruotong'; S.love.partner='陳若彤'; S.love.ch=3;
+    love.endRelation('wait');
+    const ex2={burned:S.love.burned.slice(),n:S.love.past.ruotong.n};
+    S.year=2040; const afterPool=love.singlePool(null);
+    S.love.st='married'; S.love.pid='haisha'; S.love.partner='馮海莎'; S.love.kids=2; S.love.ch=1;
+    love.endRelation('far');
+    const ex3={past:{...S.love.past.haisha},st:S.love.st,exes:S.love.exes.map(e=>[e.id,e.kids])};
+    return {stay,ex1,coolPool,backPool,freshPool,ex2,afterPool,ex3,casts,poolTW,poolJP,country,shapeOk,counts:[byC('TW'),byC('JP'),byC('US')],
       odds:love.LOVE_ODDS,gain:love.AFF_GAIN,conf:love.CONFESS_RATE,fire:love.PRE_MARRIAGE_FIRE,
-      aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],
+      aff:[love.affairChance(100),love.affairChance(0),love.affairChance(70)],swing:[love.affairSwing(100),love.affairSwing(70),love.affairSwing(40),love.affairSwing(0)],fg:[love.forgiveChance(90),love.forgiveChance(60),love.forgiveChance(0)],kid:[love.kidChance(0,70),love.kidChance(0,100),love.kidChance(0,0),love.kidChance(3,30),love.kidChance(4,100)],cold:(()=>{ const L=S.love; L.pid='ruotong'; L.cold=null; const o=[]; for(const b of [20,25,40,10,10,10]){ L.bond=b; o.push(love.coldTick()); } L.pid='haisha'; L.bond=10; o.push(love.coldTick()); L.cold=null; return o; })(),
       prop:love.PROP_GAIN, pc:[love.proposalChance(100,70),love.proposalChance(0,70),love.proposalChance(100,100),love.proposalChance(50,70)],
       follow,jp:girls.GIRLS.filter(g=>g.c==='JP').map(g=>g.id),us:girls.GIRLS.filter(g=>g.c==='US').map(g=>g.id)};
   });
+  assert.ok(r.stay.misakiJP.includes('東京'),'美咲在日本時用原本的 stay');
+  assert.ok(!r.stay.misakiUS.includes('東京')&&r.stay.misakiUS.includes('美國'),'美咲在美國時不能說留在東京');
+  assert.ok(r.stay.xqJP.includes('日本'),'跟到國外的她，留下的地點是她所在的國家');
+  assert.equal(r.stay.xqTW,r.stay.xqStay,'在自己的國家時照舊用 stay');
   assert.deepEqual(r.counts,[6,5,5],'台灣 6 人（含馮海莎）、日本 5、美國 5');
   assert.ok(r.shapeOk,'每位角色都有三幕好感事件、三章故事與旅外文本');
   let haisha=0,xiaoqing=0;
@@ -64,9 +86,20 @@ try{
   assert.deepEqual(r.odds,{safe:80,norm:65,bold:50});
   assert.deepEqual(r.gain,{safe:25,norm:50,bold:100});
   assert.deepEqual(r.pc,[75,5,95,38]); assert.equal(r.conf,75); assert.equal(r.fire,80);
-  assert.deepEqual(r.aff,[10,40,19]);
+  assert.deepEqual(r.aff,[5,50,19],'感情值越低越容易外遇，滿感情值仍有 5%');
+  assert.deepEqual(r.swing,[0,1,2,4],'感情越差，外遇能力變動越劇烈');
+  assert.deepEqual(r.fg,[64,46,10],'感情值越高越容易被原諒');
+  assert.deepEqual(r.kid,[65,85,20,12,0],'感情值影響生小孩機率');
+  assert.deepEqual(r.cold,[1,2,0,1,2,3,1],'感情值低於 30 連續累計，回升或換人就重算');
   assert.deepEqual(r.prop,{safe:25,norm:50,bold:100},'求婚值累積方式同好感度');
   assert.deepEqual(r.follow,[false,false,true,true,false,false,true,false,false,true],'夢想達成前不跟著出國，美咲只走日本→美國');
+  assert.deepEqual(r.ex1,{past:{yr:2030,ch:2,n:1,how:'left',wed:false},st:'single',aff:0},'分手時記下前任：年份、她的章節進度、原因');
+  assert.deepEqual(r.coolPool,['haisha','peici'],'分手隔年不會再遇到前任');
+  assert.deepEqual(r.backPool,['haisha','ruotong','peici'],'隔兩年後可以重逢');
+  assert.deepEqual(r.freshPool,['ruotong','peici'],'主動分手的隔年先遇到別人的規則不變');
+  assert.deepEqual(r.ex2,{burned:['ruotong'],n:2},'跟同一個人第二次分開，她就不會回來');
+  assert.deepEqual(r.afterPool,['haisha','peici']);
+  assert.deepEqual(r.ex3,{past:{yr:2040,ch:1,n:1,how:'far',wed:true},st:'divorced',exes:[['haisha',2]]},'離婚：前妻紀錄與孩子照舊');
   assert.deepEqual(errors,[]);
   console.log('love system ok');
 }finally{ await browser.close(); }
