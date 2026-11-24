@@ -1079,8 +1079,9 @@ export function endGame(reason){
     .forEach(k=>{ traitNames(k).forEach(name=>tr.push(`<span class="tag" style="${traitTagStyle(k)}">${name}</span>`)); });
   (S.removed||[]).forEach(lbl=>tr.push(`<span class="tag" style="text-decoration:line-through;opacity:.4;color:#8a8a8a;border-color:#4a4a4a">${lbl}</span>`));
   const lv=S.love;
-  const cur=lv.st==='married'?`老婆 ${lv.partner}（${lv.kids}）`:lv.st==='dating'?`交往中 ${lv.partner}（${lv.dyrs||0} 年）`:lv.st==='divorced'?'離婚':'未婚';
-  const exStr=lv.exes.length?`｜前妻 ${lv.exes.map(e=>`${e.name}（${e.kids}）`).join('、')}`:'';
+  const kid=n=>n?`（育${n}）`:''; /* 跟結算圖 rpFamily 同一種寫法；舊版「老婆 某某（1）」看不出括號是什麼 */
+  const cur=lv.st==='married'?`老婆 ${lv.partner}${kid(lv.kids)}`:lv.st==='dating'?`交往中 ${lv.partner}（${lv.dyrs||0} 年）`:lv.st==='divorced'?'離婚':'未婚';
+  const exStr=lv.exes.length?`｜前妻 ${lv.exes.map(e=>`${e.name}${kid(e.kids)}`).join('、')}`:'';
   const totKids=lv.kids+lv.exes.reduce((t,e)=>t+e.kids,0);
   card('','生涯檔案',`隱藏素質：${tr.join(' ')||'（無）'}<br>家庭：${cur}${exStr}｜子女共 ${totKids} 人${lv.affairs?`｜外遇 ${lv.affairs}(${lv.caught})`:''}<br>國際賽出賽：${S.intlCount} 次｜生涯大傷：${S.bigInj} 次${(S.pos==='P'||twoWayView())?`｜手肘危機：${S.tjCrises||0} 次｜Tommy John 手術：${S.tjCount} 次`:''}<br>生涯總薪資：<b class="hl" style="font-size:18px">${fmtMoney(Math.round(S.salary))}</b> 台幣`);
   /* 球迷留言 */
