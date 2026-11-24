@@ -1,18 +1,18 @@
-import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.5';
-import {R, ri, SEED} from '../core/rng.js?v=2.1.5';
-import {OFFICIAL_URL} from '../config.js?v=2.1.5';
-import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.5';
-import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.5';
-import {TRAIT_KEYS} from '../data/traits.js?v=2.1.5';
-import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.5';
-import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.5';
-import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.5';
-import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.5';
-import {fmtMoney} from '../engine/contract.js?v=2.1.5';
-import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.5';
+import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.6';
+import {R, ri, SEED} from '../core/rng.js?v=2.1.6';
+import {OFFICIAL_URL} from '../config.js?v=2.1.6';
+import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.6';
+import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.6';
+import {TRAIT_KEYS} from '../data/traits.js?v=2.1.6';
+import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.6';
+import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.6';
+import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.6';
+import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.6';
+import {fmtMoney} from '../engine/contract.js?v=2.1.6';
+import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.6';
 import {capTeam, careerMilestones, honorGroups, honorSections, posLegendPhrase, primaryPos, statTable, tierOf, yearRanges, honorText,
-  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.5';
-import {shareImageSheet} from './share-image.js?v=2.1.5';
+  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.6';
+import {shareImageSheet} from './share-image.js?v=2.1.6';
 /* ================= 結算圖資料建構 =================
    Data builders for shareImage()'s canvas layout (design handoff 2026-08-14).
    All values come from S.*; the in-game settlement cards are untouched. */
@@ -1079,8 +1079,9 @@ export function endGame(reason){
     .forEach(k=>{ traitNames(k).forEach(name=>tr.push(`<span class="tag" style="${traitTagStyle(k)}">${name}</span>`)); });
   (S.removed||[]).forEach(lbl=>tr.push(`<span class="tag" style="text-decoration:line-through;opacity:.4;color:#8a8a8a;border-color:#4a4a4a">${lbl}</span>`));
   const lv=S.love;
-  const cur=lv.st==='married'?`老婆 ${lv.partner}（${lv.kids}）`:lv.st==='dating'?`交往中 ${lv.partner}（${lv.dyrs||0} 年）`:lv.st==='divorced'?'離婚':'未婚';
-  const exStr=lv.exes.length?`｜前妻 ${lv.exes.map(e=>`${e.name}（${e.kids}）`).join('、')}`:'';
+  const kid=n=>n?`（育${n}）`:''; /* 跟結算圖 rpFamily 同一種寫法；舊版「老婆 某某（1）」看不出括號是什麼 */
+  const cur=lv.st==='married'?`老婆 ${lv.partner}${kid(lv.kids)}`:lv.st==='dating'?`交往中 ${lv.partner}（${lv.dyrs||0} 年）`:lv.st==='divorced'?'離婚':'未婚';
+  const exStr=lv.exes.length?`｜前妻 ${lv.exes.map(e=>`${e.name}${kid(e.kids)}`).join('、')}`:'';
   const totKids=lv.kids+lv.exes.reduce((t,e)=>t+e.kids,0);
   card('','生涯檔案',`隱藏素質：${tr.join(' ')||'（無）'}<br>家庭：${cur}${exStr}｜子女共 ${totKids} 人${lv.affairs?`｜外遇 ${lv.affairs}(${lv.caught})`:''}<br>國際賽出賽：${S.intlCount} 次｜生涯大傷：${S.bigInj} 次${(S.pos==='P'||twoWayView())?`｜手肘危機：${S.tjCrises||0} 次｜Tommy John 手術：${S.tjCount} 次`:''}<br>生涯總薪資：<b class="hl" style="font-size:18px">${fmtMoney(Math.round(S.salary))}</b> 台幣`);
   /* 球迷留言 */

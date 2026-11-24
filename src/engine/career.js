@@ -1,10 +1,10 @@
-import {S} from '../core/state.js?v=2.1.5';
-import {clamp} from '../core/rng.js?v=2.1.5';
-import {DPN, POSN, POS_ADJ_RUNS, POS_TIER_K, POS_TIER_STR} from '../data/abilities.js?v=2.1.5';
-import {LG_N, envOf, envWhip, envLeagueOps} from '../data/teams.js?v=2.1.5';
-import {TIER_TH, LEAGUE_K, MILESTONE_DEF, HOF_TH_K} from '../data/economy.js?v=2.1.5';
-import {fmtIP, slgOf, roleName3, baseballERA, baseballWHIP, pitG, pitBB} from './season.js?v=2.1.5';
-import {isCareerScoringAward, HONOR_GROUP_NAMES, honorSide, splitBySide} from './award-rules.js?v=2.1.5';
+import {S} from '../core/state.js?v=2.1.6';
+import {clamp} from '../core/rng.js?v=2.1.6';
+import {DPN, POSN, POS_ADJ_RUNS, POS_TIER_K, POS_TIER_STR} from '../data/abilities.js?v=2.1.6';
+import {LG_N, envOf, envWhip, envLeagueOps} from '../data/teams.js?v=2.1.6';
+import {TIER_TH, LEAGUE_K, MILESTONE_DEF, HOF_TH_K} from '../data/economy.js?v=2.1.6';
+import {fmtIP, slgOf, roleName3, baseballERA, baseballWHIP, pitG, pitBB} from './season.js?v=2.1.6';
+import {isCareerScoringAward, HONOR_GROUP_NAMES, honorSide, splitBySide} from './award-rules.js?v=2.1.6';
 export {HONOR_GROUP_NAMES, honorSide};
 /* ================= 生涯終章 ================= */
 const BUCKET_G={CPBL:120,NPB:143,MLB:162};
@@ -101,12 +101,16 @@ export function twoWayView(){
     ['CPBL','NPB','MLB','MINOR'].some(b=>isTwoWayCareer(S.stats&&S.stats[b]));
 }
 export function careerScore(st,bucket){
-  if(S.pos==='P')return pitcherCareerScore(st,bucket);
+  /* 二刀流判定必須排在 S.pos==='P' 之前。被強制收斂成投手的二刀流 S.pos 會變成 'P'，
+     舊版在這裡就直接回傳投球分，整段生涯的打擊產出被丟掉；但 tierOf 的 posKey 是看
+     isTwoWayCareer 判的，仍然套二刀流的折算與 7500 的名人堂線——分數只算一半、
+     門檻卻照二刀流的全額。玩家回報「中職拿了 14 年 MVP 進不了名人堂」就是這個。 */
   /* 二刀流:兩份產出都是他真的打出來的，所以兩邊相加。會不會過強不是靠這裡壓，
      而是靠 LEAGUE_K.TW 與 HOF_TH_K.TW 這兩個校準常數——尺歸尺、分歸分。
      打擊側裡的 positionScore 已經含指定打擊的 −14／162 場，那一刀在這裡挨；
      投球側完全不受影響，所以不會被同一件事罰兩次(posTierK 對二刀流也回 1)。 */
   if(isTwoWayCareer(st))return pitcherCareerScore(st,bucket)+hitterCareerScore(st,bucket);
+  if(S.pos==='P')return pitcherCareerScore(st,bucket);
   return hitterCareerScore(st,bucket);
 }
 export function primaryPos(){ /* 生涯主守位:過半→該位;無過半→工具人/搖擺人(年數降序) */

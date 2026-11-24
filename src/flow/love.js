@@ -1,9 +1,9 @@
-import {S} from '../core/state.js?v=2.1.5';
-import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.5';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.5';
-import {card, choose, board} from '../ui/dom.js?v=2.1.5';
-import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.5';
-import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.5';
+import {S} from '../core/state.js?v=2.1.6';
+import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.6';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.6';
+import {card, choose, board} from '../ui/dom.js?v=2.1.6';
+import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.6';
+import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.6';
 
 /* ================= 戀愛系統（v2.1.0 重置） =================
    流程：好感事件（三選一）→ 好感滿 100 → 告白 75% → 交往（她的三章故事，任一章後可求婚）
@@ -141,13 +141,23 @@ function affPick(g,tag,next){
     if(L.aff[g.id]>=100)confess(g,next); else next();
   };
 }
+/* 純投手版文案（打者與二刀流一律用原文）。欄位說明見 data/girls.js 的 meetP／finP／scP／chP。
+   scP／chP 每一格是「只寫要改的地方」：有寫的欄位蓋過原文，o 依索引逐一覆蓋，null 的選項沿用原文。 */
+const pureP=()=>S.pos==='P';
+function pitView(base,over){
+  if(!over)return base;
+  return {...base,...over,o:base.o.map((x,k)=>over.o&&over.o[k]?{...x,...over.o[k]}:x)};
+}
+export function affSc(g,n){ const k=n%3; return pitView(g.sc[k],pureP()&&g.scP?g.scP[k]:null); }
+export function girlCh(g,i){ return pitView(g.ch[i],pureP()&&g.chP?g.chP[i]:null); }
+export function girlTxt(g,f){ return (pureP()&&g[f+'P'])||g[f]; }
 function affectionScene(g,next){
   const L=S.love;
   if(L.past[g.id]){ reunionScene(g,next); return; }
   if(!L.met[g.id]){ L.met[g.id]=1;
-    card('info',`相遇｜${g.n}（${g.job}）`,g.meet); }
+    card('info',`相遇｜${g.n}（${g.job}）`,girlTxt(g,'meet')); }
   const n=L.scn[g.id]||0; L.scn[g.id]=n+1;
-  const sc=g.sc[n%3], aff=L.aff[g.id]||0;
+  const sc=affSc(g,n), aff=L.aff[g.id]||0;
   choose(`<span class="ev-h">戀愛｜${g.n}（${g.job}）</span><small>${sc.i}<br>好感度 ${aff}／100</small>`,
     modeOpts(sc.o,affSFor,affPick(g,'戀愛',next)));
 }
@@ -302,7 +312,7 @@ function coldYear(g,next){
 /* 她的故事：三章，交往或婚後都會走。交往中的選項累積求婚值與感情值，婚後只影響感情值；
    她的結果（end）一定會發生。 */
 function chapter(g,done){
-  const L=S.love, i=L.ch, c=g.ch[i], dating=L.st==='dating';
+  const L=S.love, i=L.ch, c=girlCh(g,i), dating=L.st==='dating';
   const sFor=m=>dating
     ?`成功率 ${LOVE_ODDS[m]}%｜求婚值 ${m==='bold'?'直接滿':'+'+PROP_GAIN[m]}、感情值 +${BOND_GAIN[m]}${m==='bold'?`｜失敗 求婚值 −${PROP_BOLD_FAIL}、感情值 −${BOND_FAIL.bold}`:''}`
     :`成功率 ${LOVE_ODDS[m]}%｜感情值 +${BOND_GAIN[m]}${BOND_FAIL[m]?`｜失敗 −${BOND_FAIL[m]}`:''}`;
@@ -315,7 +325,7 @@ function chapter(g,done){
       const propTxt=dating?`求婚值 ${p0} → <b class="${L.prop>=p0?'up':'dn'}">${L.prop}</b>｜`:'';
       card(good?'good':'bad',`${g.n}的故事｜第 ${i+1} 章　${c.t}`,
         `${good?o.g:o.b}<br><br>${c.end}<br>${propTxt}感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
-      if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。<br><br>${g.fin||'這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。'}`);
+      if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。<br><br>${girlTxt(g,'fin')||'這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。'}`);
       if(L.ch===3)comeToYou(g);
       done();
     }));
@@ -585,21 +595,33 @@ function withRoute(g,done){
       card(good?'good':'bad',home?'故鄉':'異鄉',`${good?o.g:o.b}${gt?'——'+gt:''}`);
       done(); }));
 }
+/* 遠距的三個選項。台灣↔日本只差一小時、飛三個多小時；跨太平洋才是十幾個小時的航程與日夜顛倒，
+   文案依兩地距離切換，避免人在中職、她在日本時出現「搭了十幾個小時的飛機」。 */
+export function longDistanceOpts(g,pc,herC){
+  const tz=(TZ[pc]||{})[herC]||0, near=tz<=2;
+  return [
+      {t:'每天約好固定的時間視訊',
+       g:`每天的那三十分鐘，成了你們最珍惜的時間。${hl(g.n)} 跟你說她這陣子的${g.work}，你跟她說球隊的趣事，你們隔著螢幕笑了很久。`,
+       b:near
+         ?`明明只差一個小時，那三十分鐘還是越來越難湊。有時是你剛比完賽累到睡著，有時是視訊那頭的她還在加班。你們都很努力，但距離就是距離。`
+         :`時差讓那三十分鐘越來越難湊。有時是你剛比完賽累到睡著，有時是視訊那頭的她累得睜不開眼。你們都很努力，但距離就是距離。`},
+      {t:'利用休兵日飛回去看她',
+       g:near
+         ?`休兵日一早，你搭了第一班飛機，飛了三個多小時，只為了陪她吃一頓午餐。她在機場看到你時，手上的咖啡差點打翻。`
+         :`你搭了十幾個小時的飛機，只為了陪她吃一頓早餐。她在機場看到你時，手上的咖啡差點打翻。`,
+       b:near
+         ?`颱風讓班機一延再延，你到的時候只剩下兩個小時。你們在機場的咖啡店坐了一下，又得各自回去。`
+         :`班機延誤了六個小時，你到的時候只剩下兩個小時。你們在機場的咖啡店坐了一下，又得各自回去。`},
+      {t:'休賽季全部留給她，住進她的生活',
+       g:`整整三個月，你住進她的生活：陪她通勤、認識她的同事、在她加班時等她下班。離開那天，她說：「現在，我想像你的時候，終於有畫面了。」`,
+       b:`你闖進她忙碌的生活，她每天都要分心照顧你。第三週她說：「我好想你，可是我現在真的沒有時間陪你。」`}];
+}
 /* 遠距路線：每年一次，感情值自然流失；太低時她可能提出結束 */
 function longDistance(g,done){
   const L=S.love, pc=playerCountry(), tz=(TZ[pc]||{})[L.herC]||0;
   L.apartYrs=(L.apartYrs||0)+1; addBond(-10);
   choose(`<span class="ev-h">遠距｜第 ${L.apartYrs} 年</span><small>你在 ${COUNTRY_N[pc]}，${g.n} 在 ${COUNTRY_N[L.herC]}${tz?`，時差 ${tz} 小時`:''}。距離本身每年都在消耗感情（−10）。<br>感情值 ${L.bond}／100</small>`,
-    modeOpts([
-      {t:'每天約好固定的時間視訊',
-       g:`每天的那三十分鐘，成了你們最珍惜的時間。${hl(g.n)} 跟你說她這陣子的${g.work}，你跟她說球隊的趣事，你們隔著螢幕笑了很久。`,
-       b:`時差讓那三十分鐘越來越難湊。有時是你剛比完賽累到睡著，有時是視訊那頭的她累得睜不開眼。你們都很努力，但距離就是距離。`},
-      {t:'利用休兵日飛回去看她',
-       g:`你搭了十幾個小時的飛機，只為了陪她吃一頓早餐。她在機場看到你時，手上的咖啡差點打翻。`,
-       b:`班機延誤了六個小時，你到的時候只剩下兩個小時。你們在機場的咖啡店坐了一下，又得各自回去。`},
-      {t:'休賽季全部留給她，住進她的生活',
-       g:`整整三個月，你住進她的生活：陪她通勤、認識她的同事、在她加班時等她下班。離開那天，她說：「現在，我想像你的時候，終於有畫面了。」`,
-       b:`你闖進她忙碌的生活，她每天都要分心照顧你。第三週她說：「我好想你，可是我現在真的沒有時間陪你。」`}],
+    modeOpts(longDistanceOpts(g,pc,L.herC),
       m=>`成功率 ${LOVE_ODDS[m]}%｜感情值 +${BOND_GAIN[m]}${BOND_FAIL[m]?`｜失敗 −${BOND_FAIL[m]}`:''}`,(m,good,o)=>{
       addBond(good?BOND_GAIN[m]:-BOND_FAIL[m]); const gt=good?modeGain(m):''; if(good)board(1);
       card(good?'good':'bad','遠距',`${good?o.g:o.b}${gt?'——'+gt:''}`);
