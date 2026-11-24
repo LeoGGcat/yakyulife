@@ -20,6 +20,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 # 同時只跑一份部署；不取消進行中的那份，避免半途中斷留下壞掉的站台
 concurrency:
@@ -95,6 +96,21 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+      # 2026-11 起 GitHub 的 artifact 列表有延遲：剛上傳完立刻查會是 0 份，
+      # deploy-pages 就直接失敗（"No artifacts named github-pages"）。
+      # 先等 API 查得到這份 artifact 再部署，最多等 3 分鐘。
+      - name: 等 artifact 出現在 API 上
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 36); do
+            n=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts?name=github-pages" --jq '.total_count' || echo 0)
+            echo "第 $i 次查詢：找到 $n 份"
+            [ "$n" -ge 1 ] && exit 0
+            sleep 5
+          done
+          echo "✗ 等了 3 分鐘仍查不到 github-pages artifact"; exit 1
 
       - id: deployment
         uses: actions/deploy-pages@v5
