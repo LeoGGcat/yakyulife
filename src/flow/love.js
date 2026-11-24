@@ -141,13 +141,21 @@ function affPick(g,tag,next){
     if(L.aff[g.id]>=100)confess(g,next); else next();
   };
 }
-/* 好感事件第 n 幕。純投手有 scP 替代版時用它（例如蘿莎的打擊練習改成投球練習）；打者與二刀流一律用 sc。 */
-export function affSc(g,n){ return (S.pos==='P'&&g.scP&&g.scP[n%3])||g.sc[n%3]; }
+/* 純投手版文案（打者與二刀流一律用原文）。欄位說明見 data/girls.js 的 meetP／finP／scP／chP。
+   scP／chP 每一格是「只寫要改的地方」：有寫的欄位蓋過原文，o 依索引逐一覆蓋，null 的選項沿用原文。 */
+const pureP=()=>S.pos==='P';
+function pitView(base,over){
+  if(!over)return base;
+  return {...base,...over,o:base.o.map((x,k)=>over.o&&over.o[k]?{...x,...over.o[k]}:x)};
+}
+export function affSc(g,n){ const k=n%3; return pitView(g.sc[k],pureP()&&g.scP?g.scP[k]:null); }
+export function girlCh(g,i){ return pitView(g.ch[i],pureP()&&g.chP?g.chP[i]:null); }
+export function girlTxt(g,f){ return (pureP()&&g[f+'P'])||g[f]; }
 function affectionScene(g,next){
   const L=S.love;
   if(L.past[g.id]){ reunionScene(g,next); return; }
   if(!L.met[g.id]){ L.met[g.id]=1;
-    card('info',`相遇｜${g.n}（${g.job}）`,g.meet); }
+    card('info',`相遇｜${g.n}（${g.job}）`,girlTxt(g,'meet')); }
   const n=L.scn[g.id]||0; L.scn[g.id]=n+1;
   const sc=affSc(g,n), aff=L.aff[g.id]||0;
   choose(`<span class="ev-h">戀愛｜${g.n}（${g.job}）</span><small>${sc.i}<br>好感度 ${aff}／100</small>`,
@@ -304,7 +312,7 @@ function coldYear(g,next){
 /* 她的故事：三章，交往或婚後都會走。交往中的選項累積求婚值與感情值，婚後只影響感情值；
    她的結果（end）一定會發生。 */
 function chapter(g,done){
-  const L=S.love, i=L.ch, c=g.ch[i], dating=L.st==='dating';
+  const L=S.love, i=L.ch, c=girlCh(g,i), dating=L.st==='dating';
   const sFor=m=>dating
     ?`成功率 ${LOVE_ODDS[m]}%｜求婚值 ${m==='bold'?'直接滿':'+'+PROP_GAIN[m]}、感情值 +${BOND_GAIN[m]}${m==='bold'?`｜失敗 求婚值 −${PROP_BOLD_FAIL}、感情值 −${BOND_FAIL.bold}`:''}`
     :`成功率 ${LOVE_ODDS[m]}%｜感情值 +${BOND_GAIN[m]}${BOND_FAIL[m]?`｜失敗 −${BOND_FAIL[m]}`:''}`;
@@ -317,7 +325,7 @@ function chapter(g,done){
       const propTxt=dating?`求婚值 ${p0} → <b class="${L.prop>=p0?'up':'dn'}">${L.prop}</b>｜`:'';
       card(good?'good':'bad',`${g.n}的故事｜第 ${i+1} 章　${c.t}`,
         `${good?o.g:o.b}<br><br>${c.end}<br>${propTxt}感情值 ${b0} → <b class="${L.bond>=b0?'up':'dn'}">${L.bond}</b>${gt?'｜'+gt:''}`);
-      if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。<br><br>${g.fin||'這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。'}`);
+      if(L.ch===3)card('gold',`${g.n}的目標`,`${hl(g.n)} 做到了——${g.goal}。<br><br>${girlTxt(g,'fin')||'這條路是她一步一步走出來的。你很慶幸，這一路上，自己一直都在。'}`);
       if(L.ch===3)comeToYou(g);
       done();
     }));
