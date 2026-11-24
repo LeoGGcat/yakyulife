@@ -15,8 +15,8 @@ try{
   await page.goto(`${url}?seed=pitcher-contract-years-v1`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.5');
-    const contract=await import('./src/engine/contract.js?v=2.1.5');
+    const state=await import('./src/core/state.js?v=2.1.6');
+    const contract=await import('./src/engine/contract.js?v=2.1.6');
     const healthy={rating:10,maxYears:99,aav:1,bonus:1,drop:0,status:'healthy',proveIt:false};
     const years=(pos,role,age)=>{
       const s=state.newState('年限測試',0,pos,null);

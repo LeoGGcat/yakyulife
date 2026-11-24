@@ -15,8 +15,8 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-distance`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const love=await import('./src/flow/love.js?v=2.1.5');
-    const girls=await import('./src/data/girls.js?v=2.1.5');
+    const love=await import('./src/flow/love.js?v=2.1.6');
+    const girls=await import('./src/data/girls.js?v=2.1.6');
     const g=girls.GIRL.rin;
     const txt=(pc,herC)=>love.longDistanceOpts(g,pc,herC).map(o=>o.g+'｜'+o.b).join('\n');
     return {twjp:txt('TW','JP'),jptw:txt('JP','TW'),twus:txt('TW','US'),jpus:txt('JP','US'),

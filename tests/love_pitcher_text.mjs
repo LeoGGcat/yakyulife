@@ -16,10 +16,10 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-pitcher-text`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const rng=await import('./src/core/rng.js?v=2.1.5');
-    const state=await import('./src/core/state.js?v=2.1.5');
-    const love=await import('./src/flow/love.js?v=2.1.5');
-    const girls=await import('./src/data/girls.js?v=2.1.5');
+    const rng=await import('./src/core/rng.js?v=2.1.6');
+    const state=await import('./src/core/state.js?v=2.1.6');
+    const love=await import('./src/flow/love.js?v=2.1.6');
+    const girls=await import('./src/data/girls.js?v=2.1.6');
     const rosa=girls.GIRL.rosa, out={};
     const optOk=o=>o.length===3&&o.every(x=>x.t&&x.g&&x.b);
     const flat=s=>[s.t,s.i,s.end,...s.o.flatMap(o=>[o.t,o.g,o.b])].filter(Boolean).join('|');
