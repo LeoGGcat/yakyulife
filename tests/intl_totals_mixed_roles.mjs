@@ -17,9 +17,9 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=intl-totals-mixed`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.5');
-    const intl=await import('./src/engine/intl.js?v=2.1.5');
-    const retire=await import('./src/ui/retire.js?v=2.1.5');
+    const state=await import('./src/core/state.js?v=2.1.6');
+    const intl=await import('./src/engine/intl.js?v=2.1.6');
+    const retire=await import('./src/ui/retire.js?v=2.1.6');
     const s=state.newState('換位',1,'TW',null); state.setS(s);
     const logs=[
       {year:2030,name:'世界棒球經典賽',rank:'八強止步',st:{G:5,PA:15,AB:14,H:3,HR:0,RBI:1,BB:1}},

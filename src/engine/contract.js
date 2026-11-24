@@ -1,19 +1,21 @@
-import {S} from '../core/state.js?v=2.1.5';
-import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.5';
-import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.5';
-import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.5';
-import {card, choose, board} from '../ui/dom.js?v=2.1.5';
-import {tlNote} from '../ui/timeline.js?v=2.1.5';
-import {ovr} from './ability.js?v=2.1.5';
-import {injuryMarketStatus} from './injury.js?v=2.1.5';
-import {hasActiveFranchise} from './tenure.js?v=2.1.5';
-import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.5';
-import {capTeam} from './career.js?v=2.1.5';
-import {traitCard, removeTrait} from '../flow/events.js?v=2.1.5';
-import {advance} from './draft.js?v=2.1.5';
-import {finishContractYear} from '../flow/phases.js?v=2.1.5';
-import {endGame} from '../ui/retire.js?v=2.1.5';
-export function pitcherContractCap(){ return ({SP:7,CL:5,MR:4})[S.role]||7; }
+import {S} from '../core/state.js?v=2.1.6';
+import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.6';
+import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.6';
+import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.6';
+import {card, choose, board} from '../ui/dom.js?v=2.1.6';
+import {tlNote} from '../ui/timeline.js?v=2.1.6';
+import {ovr} from './ability.js?v=2.1.6';
+import {injuryMarketStatus} from './injury.js?v=2.1.6';
+import {hasActiveFranchise} from './tenure.js?v=2.1.6';
+import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.6';
+import {capTeam} from './career.js?v=2.1.6';
+import {traitCard, removeTrait} from '../flow/events.js?v=2.1.6';
+import {advance} from './draft.js?v=2.1.6';
+import {finishContractYear} from '../flow/phases.js?v=2.1.6';
+import {endGame} from '../ui/retire.js?v=2.1.6';
+/* 先發投手長約上限 10 年：現實已有 Cole 9 年、Skubal 9 年、山本由伸 12 年的王牌長約。
+   後援維持短約——Díaz、Hader 等頂級終結者也只到 5 年。 */
+export function pitcherContractCap(){ return ({SP:10,CL:5,MR:4})[S.role]||10; }
 /* 年薪（萬台幣）。頂級聯盟採漸進曲線：底薪貼近聯盟現況，明星價值才逐步拉開。 */
 export function hasMlbService(){
   return !!(S&&((S.stats&&S.stats.MLB&&S.stats.MLB.yr>0)||(S.log||[]).some(r=>r.lv==='MLB')));
@@ -228,14 +230,14 @@ export function contractMarketProfile(d,targetLv,sourceLv){
   }[status];
   return {...map,status,rating,reputation,star,proveIt:(status==='major'||status==='rehab')};
 }
-export function faYears(d,cap,profile){ /* FA 年限:近三年成績穩定+傷病少→年限長;上限 cap(野手15/投手7) */
+export function faYears(d,cap,profile){ /* FA 年限:近三年成績穩定+傷病少→年限長;上限 cap(野手15/先發10/終結者5/中繼4) */
   const mp=profile||contractMarketProfile(d), value=mp.rating;
   const perf=Math.max(0,Math.min(1,(value+2)/8)); /* d=-2→0, d=6→1 */
   const injPenalty=(S.bigInj||0)*0.12+(S.tjCount||0)*0.15;
   let yrs=Math.round(2+perf*(cap-2)-injPenalty*cap);
-  /* 年齡上限:球團不會賭老將的長約(考慮引退年齡與衰退) */
+  /* 年齡上限:球團不會賭老將的長約(考慮引退年齡與衰退)。30–31 歲給到 9 年(Judge、Skubal 皆在 30 歲簽 9 年) */
   let ageCap=cap;
-  if(S.age>=36)ageCap=2; else if(S.age>=34)ageCap=3; else if(S.age>=32)ageCap=5; else if(S.age>=30)ageCap=8;
+  if(S.age>=36)ageCap=2; else if(S.age>=34)ageCap=3; else if(S.age>=32)ageCap=5; else if(S.age>=30)ageCap=9;
   yrs=Math.min(yrs,ageCap,mp.maxYears);
   return Math.max(1,Math.min(cap,yrs));
 }

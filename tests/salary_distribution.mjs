@@ -16,10 +16,10 @@ try{
   await page.goto(`${url}?seed=salary-distribution-v1`,{waitUntil:'domcontentloaded'});
 
   const report=await page.evaluate(async samplesPerBand=>{
-    const state=await import('./src/core/state.js?v=2.1.5');
-    const season=await import('./src/engine/season.js?v=2.1.5');
-    const contract=await import('./src/engine/contract.js?v=2.1.5');
-    const {LV}=await import('./src/data/teams.js?v=2.1.5');
+    const state=await import('./src/core/state.js?v=2.1.6');
+    const season=await import('./src/engine/season.js?v=2.1.6');
+    const contract=await import('./src/engine/contract.js?v=2.1.6');
+    const {LV}=await import('./src/data/teams.js?v=2.1.6');
 
     const percentile=(values,q)=>{
       const sorted=values.slice().sort((a,b)=>a-b);

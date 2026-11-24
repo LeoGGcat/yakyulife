@@ -9,15 +9,18 @@
      meet  第一次相遇（第一次抽到她時顯示）
      work  她的工作用在共用句子裡的名詞（「她最近的〔work〕」）
      sc    好感事件三幕：i 情境、o [保守, 一般, 放手一搏]，每個選項 {t 選項, g 成功, b 失敗}
+     純投手版（選填，S.pos==='P' 才用；打者與二刀流一律用原文）：
+       meetP／finP 取代 meet／fin
+       scP／chP   跟 sc／ch 同索引，每格只寫要改的欄位（i、t、end…），o 依索引逐一覆蓋，null＝沿用原文
      conf  告白：ok 成功、no 失敗（失敗不扣好感）
      propNo 求婚被拒時她說的話
      ch    交往三章：t 標題、i 情境、o 同上（g／b 是你的陪伴成不成功）、end 她自己的結果
      go／stay 旅外時她決定一起走／留下的說法（stay 以她在自己家鄉為前提）；goP 她一起走的基本機率
      stayAway 選填，{國家:說法}：她已經跟你到了別的國家、這次選擇留在那裡時用；沒有就用共用句
      safe  true＝永遠不會出現在外遇人選 */
-import {GIRLS_TW} from './girls-tw.js?v=2.1.5';
-import {GIRLS_JP} from './girls-jp.js?v=2.1.5';
-import {GIRLS_US} from './girls-us.js?v=2.1.5';
+import {GIRLS_TW} from './girls-tw.js?v=2.1.6';
+import {GIRLS_JP} from './girls-jp.js?v=2.1.6';
+import {GIRLS_US} from './girls-us.js?v=2.1.6';
 export const COUNTRY_N={TW:'台灣',JP:'日本',US:'美國'};
 export const TW_JOBS=['cheer','reporter','teacher','wbb','pilot'];
 const WORK={xiaoqing:'舞蹈',haisha:'主持工作',ruotong:'新聞',peici:'學校',yongen:'投球',yunxi:'飛行',
