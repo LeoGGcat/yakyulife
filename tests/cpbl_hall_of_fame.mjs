@@ -14,7 +14,10 @@
      ① 真實名人堂等級的生涯要進得去（投打都要）
      ② 一般長青球員要留在線下——放寬不等於人人有獎
      ③ 投手的獎項要真的值錢：同樣的累積數據，拿滿獎的人要明顯高於沒拿獎的
-     ④ 日職與大聯盟一個字都沒被動到 */
+     ④ 日職與大聯盟一個字都沒被動到
+     ⑤ 二刀流（v2.1.6，玩家回報「中職拿了 14 年 MVP 進不了名人堂」）：
+        被強制收斂成投手（S.pos='P'）的二刀流，打擊產出不能被丟掉；
+        獎項在二刀流身上要跟投手／打者等值（Khonor 取齊 0.335） */
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
@@ -53,6 +56,7 @@ try{
       Object.assign(s,{stage:'PRO',lv:bucket==='CPBL'?'CPBL1':bucket==='NPB'?'NPB1':'MLB',
         org:bucket==='CPBL'?'CPBL':bucket==='NPB'?'NPB':'MiLB',orgTeam:'X',age:40,
         dpos:pos==='P'?null:'DH',role:pos==='P'?'SP':null});
+      if(pos==='P'&&stat.PA)s.twSeasons=stat.yr; /* 收斂後的二刀流：S.pos 已經是 'P' */
       s.honors=honors||[]; s.teamName=function(){return 'X';};
       s.stats[bucket]=Object.assign(state.blankStat(),stat);
       state.setS(s);
@@ -65,6 +69,10 @@ try{
     const CHANG={yr:17,yrB:17,G:1900,PA:8000,AB:7100,H:2100,HR:250,RBI:1100,SB:120,BB:800,AS:8,DEF:60};
     const PENG={yr:17,yrB:17,G:1850,PA:7800,AB:6900,H:2050,HR:150,RBI:950,SB:80,BB:850,AS:9,DEF:50};
 
+    const TW={yr:16,yrP:16,yrB:16,GP:300,IP:1600,W:110,L:60,SO:1500,ER:450,
+      G:1500,PA:6000,AB:5300,H:1700,HR:250,RBI:900,SB:60,BB:600,AS:14,DPG:{DH:1500}};
+    const twH=n=>{const h=[];yrs(2030,n).forEach(y=>{h.push(`${y} 中職年度MVP`);h.push(`${y} 中職年度最佳投手`);h.push(`${y} 中職年度最佳打者`);});return h;};
+
     return {
       /* ① 真實名人堂等級 */
       pan  :run('CPBL','P', PAN,pitH(8,4,2)),                       /* 潘威倫量級 160 勝 */
@@ -73,6 +81,11 @@ try{
       peng :run('CPBL','IF',PENG,batH(9,5,3,2)),                    /* 彭政閔量級 2050 安 */
       /* ② 一般長青球員——放寬之後仍然要留在線下 */
       midP :run('CPBL','P',{yr:11,yrP:11,GP:250,IP:1400,W:80,L:75,SO:900,ER:580,AS:2},pitH(2,0,0)),
+      /* ⑤ 二刀流：16 季／110 勝／1700 安／250 轟／14 座年度MVP（同年也拿最佳投手＋最佳打者） */
+      tw   :run('CPBL','TW',TW,twH(14)),
+      twP  :run('CPBL','P', TW,twH(14)),   /* 同一份履歷，晚年被收斂成投手 */
+      twOF :run('CPBL','OF',TW,twH(14)),   /* 同一份履歷，晚年被收斂成打者 */
+      twNo :run('CPBL','TW',TW,[]),        /* 同一份履歷，一座獎都沒有 */
       midH :run('CPBL','IF',{yr:13,yrB:13,G:1400,PA:5600,AB:5000,H:1400,HR:110,RBI:650,SB:60,BB:520,AS:3},batH(3,1,0,1)),
       /* ③ 獎項對投手要有重量：同一份累積數據，一個拿滿獎、一個全沒拿 */
       panNoAward:run('CPBL','P',PAN,[]),
@@ -97,6 +110,16 @@ try{
   /* 保留足夠的落差，門檻再動也不會悄悄把這條地板吃掉 */
   assert.ok(r.midH.r<0.75,`一般打者離名人堂線太近（${r.midH.r}），「明星球員」這一級快沒意義了`);
 
+  /* ⑤ 二刀流：14 座 MVP 要進得去；收斂成哪一側都不能把另一側的產出丟掉 */
+  assert.ok(r.tw.hof,`中職二刀流 16 季／110 勝／1700 安／14 座年度MVP 進不了中職名人堂：${J(r.tw)}`);
+  assert.equal(r.twP.sc,r.tw.sc,`二刀流被收斂成投手之後，打擊產出被丟掉了：${J(r.twP)} vs ${J(r.tw)}`);
+  assert.equal(r.twOF.sc,r.tw.sc,`二刀流被收斂成打者之後，評價分跟沒收斂時不同：${J(r.twOF)} vs ${J(r.tw)}`);
+  assert.equal(r.tw.th,7500,'中職二刀流的名人堂線應維持 7500（HOF_TH_K.CPBL.TW=1）');
+  /* 一座獎都沒有的同一份數據，仍然留在線下——放寬的是獎項的價值，不是門檻 */
+  assert.ok(!r.twNo.hof,`中職二刀流一座獎都沒拿也進了名人堂：${J(r.twNo)}`);
+  assert.equal(r.K.LEAGUE_K.CPBL.TW[1],r.K.LEAGUE_K.CPBL.P[1],
+    'honorScore 是投打共用的尺，中職二刀流的獎項折算也要跟投手／打者一樣');
+
   /* ③ 投手的獎項要值錢。
      不驗「沒拿過獎的 160 勝投手必須出局」——17 季拿 160 勝卻一座獎都沒有，現實裡
      不存在，拿它當地板只會逼出一組畸形的常數。真正的地板是上面的 midP（80 勝無獎）。
@@ -119,6 +142,7 @@ try{
   assert.equal(errors.length,0,errors.join('\n'));
   console.log(JSON.stringify({
     潘威倫量級:J(r.pan),郭源治量級:J(r.kuo),張泰山量級:J(r.chang),彭政閔量級:J(r.peng),
+    二刀流14MVP:J(r.tw),二刀流收斂投手:J(r.twP),二刀流無獎:J(r.twNo),
     一般先發:J(r.midP),一般打者:J(r.midH),潘威倫無獎:J(r.panNoAward),
     獎項帶來的提升:`+${(lift*100).toFixed(0)}%`},null,1));
 }finally{ await browser.close(); }
