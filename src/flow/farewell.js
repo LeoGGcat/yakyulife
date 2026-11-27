@@ -1,11 +1,11 @@
-import {S} from '../core/state.js?v=2.1.7';
-import {R, clamp} from '../core/rng.js?v=2.1.7';
-import {LV, PATHS} from '../data/teams.js?v=2.1.7';
-import {card, board} from '../ui/dom.js?v=2.1.7';
-import {pitG, pitH, pitBB, ipFromOuts, outsFromIP, statLine, normalizeBatterStats, normalizePitchingStats} from '../engine/season.js?v=2.1.7';
-import {ovr, ovrPit, ovrBat} from '../engine/ability.js?v=2.1.7';
-import {buyoutRemaining, daibaFarewell} from '../engine/contract.js?v=2.1.7';
-import {endGame} from '../ui/retire.js?v=2.1.7';
+import {S} from '../core/state.js?v=2.1.8';
+import {R, clamp} from '../core/rng.js?v=2.1.8';
+import {LV, PATHS} from '../data/teams.js?v=2.1.8';
+import {card, board} from '../ui/dom.js?v=2.1.8';
+import {pitG, pitH, pitBB, ipFromOuts, outsFromIP, statLine, normalizeBatterStats, normalizePitchingStats} from '../engine/season.js?v=2.1.8';
+import {ovr, ovrPit, ovrBat} from '../engine/ability.js?v=2.1.8';
+import {buyoutRemaining, daibaFarewell} from '../engine/contract.js?v=2.1.8';
+import {endGame} from '../ui/retire.js?v=2.1.8';
 /* ================= 主動引退：引退季／一日球員約 =================
    春訓「身體大不如前」選擇引退時分兩條路，看的是能力而不是當下層級：
    ・能力還站得上所屬體系的一軍 → 宣布這是最後一年，把一半機會讓給二軍年輕球員（出賽、打席五折，

@@ -14,8 +14,8 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=retirement-ending`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.7');
-    const retire=await import('./src/ui/retire.js?v=2.1.7');
+    const state=await import('./src/core/state.js?v=2.1.8');
+    const retire=await import('./src/ui/retire.js?v=2.1.8');
     const pitcher=retire.nextBaseEnding('P');
     const hitter=retire.nextBaseEnding('SS');
     const pitcherCoach=retire.jerseyWeightEnding('P');
@@ -32,6 +32,13 @@ try{
     formerFamily.love.exes=[{name:'測試前妻',kids:2}];
     state.setS(formerFamily);
     const withFormerChild=retire.postCareerEndingKeys(tiers);
+    /* v2.1.8：再婚、這段婚姻沒有孩子 → 不會抽到〈下一個壘包〉 */
+    formerFamily.love.st='married'; formerFamily.love.kids=0;
+    const remarriedNoChild=retire.postCareerEndingKeys(tiers);
+    formerFamily.love.kids=1;
+    const remarriedChild=retire.postCareerEndingKeys(tiers);
+    const noChild=state.newState('沒有孩子',0,'IF',null); noChild.love.st='married'; state.setS(noChild);
+    const marriedNoChild=retire.postCareerEndingKeys(tiers);
     const nationalPlayer=state.newState('國家隊測試',0,'P',null);
     nationalPlayer.intlCount=1;
     state.setS(nationalPlayer);
@@ -75,7 +82,7 @@ try{
     };
     return {
       pitcher,hitter,pitcherCoach,hitterCoach,latePitcher,lateHitter,
-      withCurrentChild,withFormerChild,selected,
+      withCurrentChild,withFormerChild,remarriedNoChild,remarriedChild,marriedNoChild,selected,
       withInternational,nationalSelected,
       withoutConditions,glassKeys,glassSelected,tjTwoKeys,tjThreeKeys,
       twCases,twTitles,
@@ -107,6 +114,9 @@ try{
   assert(result.latePitcher.body.includes('<br><br>'));
   assert(result.withCurrentChild.includes('nextBase'));
   assert(result.withFormerChild.includes('nextBase'));
+  assert(!result.remarriedNoChild.includes('nextBase'),'再婚沒有孩子：沒有〈下一個壘包〉');
+  assert(result.remarriedChild.includes('nextBase'));
+  assert(!result.marriedNoChild.includes('nextBase'),'沒有孩子：沒有〈下一個壘包〉');
   assert(result.withCurrentChild.includes('coach'));
   assert(result.withCurrentChild.includes('scout'));
   assert.equal(result.withCurrentChild.length,result.withoutConditions.length+1);

@@ -1,16 +1,16 @@
-import {S, blankStat, bucketOf, nextStep, stageLabel} from '../core/state.js?v=2.1.7';
-import {R, ri, chance, clamp, N0} from '../core/rng.js?v=2.1.7';
-import {POS_ADJ_RUNS, POS_PT_BAR} from '../data/abilities.js?v=2.1.7';
-import {LV, HS_CUPS, U_CUPS, spLoad, envRate, envAvg, envHR9, ENV_K, hrCapRate, avgCapOf, softCap, softBoost} from '../data/teams.js?v=2.1.7';
-import {pitchTh, batTh} from '../data/thresholds.js?v=2.1.7';
-import {card, board} from '../ui/dom.js?v=2.1.7';
-import {ovr, careerAllStars, toolGap} from './ability.js?v=2.1.7';
-import {tjAccrue, tjGamble} from './injury.js?v=2.1.7';
+import {S, blankStat, bucketOf, nextStep, stageLabel} from '../core/state.js?v=2.1.8';
+import {R, ri, chance, clamp, N0} from '../core/rng.js?v=2.1.8';
+import {POS_ADJ_RUNS, POS_PT_BAR} from '../data/abilities.js?v=2.1.8';
+import {LV, HS_CUPS, U_CUPS, spLoad, envRate, envAvg, envHR9, ENV_K, hrCapRate, avgCapOf, softCap, softBoost} from '../data/teams.js?v=2.1.8';
+import {pitchTh, batTh} from '../data/thresholds.js?v=2.1.8';
+import {card, board} from '../ui/dom.js?v=2.1.8';
+import {ovr, careerAllStars, toolGap} from './ability.js?v=2.1.8';
+import {tjAccrue, tjGamble} from './injury.js?v=2.1.8';
 /* temporary scaffold until awards/intl/contract/flow are extracted */
-import {demotionAudit} from './contract.js?v=2.1.7';
-import {awards} from './awards.js?v=2.1.7';
-import {maybeIntl} from './intl.js?v=2.1.7';
-import {traitCard, removeTrait} from '../flow/events.js?v=2.1.7';
+import {demotionAudit} from './contract.js?v=2.1.8';
+import {awards} from './awards.js?v=2.1.8';
+import {maybeIntl} from './intl.js?v=2.1.8';
+import {traitCard, removeTrait} from '../flow/events.js?v=2.1.8';
 export function bullpenRole(){ /* 牛棚內依上季表現判定中繼／終結者，與先發體力門檻分開。 */
   /* 牛棚:讀「上一季」的 d(prevD,因為 lastD 已被 phasePre 清空);頂尖 → 終結者 */
   const pd=(S.prevD!==undefined?S.prevD:(S.lastD||0));
