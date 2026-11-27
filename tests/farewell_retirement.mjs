@@ -13,11 +13,11 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=farewell`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.6');
-    const phases=await import('./src/flow/phases.js?v=2.1.6');
-    const fw=await import('./src/flow/farewell.js?v=2.1.6');
-    const dom=await import('./src/ui/dom.js?v=2.1.6');
-    const season=await import('./src/engine/season.js?v=2.1.6');
+    const state=await import('./src/core/state.js?v=2.1.7');
+    const phases=await import('./src/flow/phases.js?v=2.1.7');
+    const fw=await import('./src/flow/farewell.js?v=2.1.7');
+    const dom=await import('./src/ui/dom.js?v=2.1.7');
+    const season=await import('./src/engine/season.js?v=2.1.7');
     const teamName=function(){ return this.orgTeam; };
     const mk=(pos,org,lv,abl,role)=>{
       const s=state.newState('告別測試',9,pos,null);

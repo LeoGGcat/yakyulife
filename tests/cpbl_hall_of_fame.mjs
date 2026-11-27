@@ -15,7 +15,7 @@
      ② 一般長青球員要留在線下——放寬不等於人人有獎
      ③ 投手的獎項要真的值錢：同樣的累積數據，拿滿獎的人要明顯高於沒拿獎的
      ④ 日職與大聯盟一個字都沒被動到
-     ⑤ 二刀流（v2.1.6，玩家回報「中職拿了 14 年 MVP 進不了名人堂」）：
+     ⑤ 二刀流（v2.1.7，玩家回報「中職拿了 14 年 MVP 進不了名人堂」）：
         被強制收斂成投手（S.pos='P'）的二刀流，打擊產出不能被丟掉；
         獎項在二刀流身上要跟投手／打者等值（Khonor 取齊 0.335） */
 import assert from 'node:assert/strict';
@@ -34,9 +34,9 @@ try{
   await page.goto(`${url}?seed=cpbl-hof`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state =await import('./src/core/state.js?v=2.1.6');
-    const career=await import('./src/engine/career.js?v=2.1.6');
-    const ECON  =await import('./src/data/economy.js?v=2.1.6');
+    const state =await import('./src/core/state.js?v=2.1.7');
+    const career=await import('./src/engine/career.js?v=2.1.7');
+    const ECON  =await import('./src/data/economy.js?v=2.1.7');
 
     const yrs=(a,n)=>{const o=[];for(let i=0;i<n;i++)o.push(a+i);return o;};
     const pitH=(nAll,nTitle,nBest)=>{const h=[];

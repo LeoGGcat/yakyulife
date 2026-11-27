@@ -1,18 +1,20 @@
-import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.6';
-import {R, ri, SEED} from '../core/rng.js?v=2.1.6';
-import {OFFICIAL_URL} from '../config.js?v=2.1.6';
-import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.6';
-import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.6';
-import {TRAIT_KEYS} from '../data/traits.js?v=2.1.6';
-import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.6';
-import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.6';
-import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.6';
-import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.6';
-import {fmtMoney} from '../engine/contract.js?v=2.1.6';
-import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.6';
+import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.7';
+import {R, ri, SEED} from '../core/rng.js?v=2.1.7';
+import {OFFICIAL_URL} from '../config.js?v=2.1.7';
+import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.7';
+import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.7';
+import {TRAIT_KEYS} from '../data/traits.js?v=2.1.7';
+import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.7';
+import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.7';
+import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.7';
+import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.7';
+import {fmtMoney} from '../engine/contract.js?v=2.1.7';
+import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.7';
 import {capTeam, careerMilestones, honorGroups, honorSections, posLegendPhrase, primaryPos, statTable, tierOf, yearRanges, honorText,
-  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.6';
-import {shareImageSheet} from './share-image.js?v=2.1.6';
+  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.7';
+import {shareImageSheet} from './share-image.js?v=2.1.7';
+import {GIRL} from '../data/girls.js?v=2.1.7';
+import {FAMILY, FAMILY_UNMET, FAMILY_LIFE_OF, FAMILY_SECOND, FAMILY_KID_N} from '../data/family.js?v=2.1.7';
 /* ================= 結算圖資料建構 =================
    Data builders for shareImage()'s canvas layout (design handoff 2026-08-14).
    All values come from S.*; the in-game settlement cards are untouched. */
@@ -884,8 +886,19 @@ export function postCareerEndingKeys(tiers,kids,internationalAppearances){
 }
 export function postCareerEnding(tiers,roll){
   const keys=postCareerEndingKeys(tiers),r=roll===undefined?R():roll;
-  const ending=POST_CAREER_ENDINGS[keys[Math.min(keys.length-1,Math.floor(Math.max(0,r)*keys.length))]];
-  return typeof ending==='function'?ending():ending;
+  const key=keys[Math.min(keys.length-1,Math.floor(Math.max(0,r)*keys.length))], ending=POST_CAREER_ENDINGS[key];
+  return {...(typeof ending==='function'?ending():ending),key};
+}
+/* 家庭生活結局：只有結婚才會出現。life＝「你們的日子」的段落鍵（見 data/family.js），sub＝新工作的代換字。 */
+export function familyEnding(life,sub){
+  const L=S.love, g=L&&L.st==='married'?GIRL[L.pid]:null, f=g?FAMILY[g.id]:null;
+  if(!f||!f.life[life])return null;
+  const met=(L.ch||0)>=3, kids=Math.max(0,L.kids||0), o=sub||{};
+  let mid=f.life[life], end=kids>0?f.home.kids:f.home.none;
+  if(!met)(FAMILY_UNMET[g.id]||[]).forEach(([a,b])=>{ mid=mid.split(a).join(b); end=end.split(a).join(b); });
+  const fill=t=>t.replace(/\[\[([^|\]]*)\|([^\]]*)\]\]/g,(_,a,b)=>met?a:b)
+    .replace(/\{job\}/g,o.job||'').replace(/\{off\}/g,o.off||'').replace(/\{kid\}/g,FAMILY_KID_N[Math.min(4,kids)]);
+  return {title:f.t,body:[met?f.her.ok:f.her.no,mid,end].map(fill).join('<br><br>')};
 }
 export function retireScene(tiers){
   /* tiers: {CPBL:{i,sc},NPB:...,MLB:...} 有出賽才有 */
@@ -1134,14 +1147,18 @@ export function endGame(reason){
   card('info','球迷看板・引退串',picks.map(p=>'「'+p.replace(/{n}/g,S.name)+'」').join('<br>'));
   let endingForShare;
   if(usesSecondCareerEnding(S.age)){
-    const second=SECOND_CAREER_ENDINGS[Math.floor(R()*SECOND_CAREER_ENDINGS.length)];
+    const si=Math.floor(R()*SECOND_CAREER_ENDINGS.length), second=SECOND_CAREER_ENDINGS[si];
     const body=second.replace(/{n}/g,S.name)+`<br><br><span class="sub">離開球場的人生，也是人生。${S.name}，辛苦了。</span>`;
     endingForShare={title:'第二人生',body};
     card('gold','第二人生',body);
+    const fam=familyEnding(FAMILY_SECOND[si].life,FAMILY_SECOND[si]);
+    if(fam)card('gold','家・〈'+fam.title+'〉',fam.body);
   }else{
     const ending=postCareerEnding(tiersByLg);
     endingForShare=ending;
     card('gold','退役後・〈'+ending.title+'〉',ending.body);
+    const fam=familyEnding(FAMILY_LIFE_OF[ending.key]);
+    if(fam)card('gold','家・〈'+fam.title+'〉',fam.body);
   }
   /* 一鍵分享 */
   const sh=document.createElement('div'); sh.className='card share-career';

@@ -1,10 +1,10 @@
-import {S} from '../core/state.js?v=2.1.6';
-import {clamp} from '../core/rng.js?v=2.1.6';
-import {DPN, POSN, POS_ADJ_RUNS, POS_TIER_K, POS_TIER_STR} from '../data/abilities.js?v=2.1.6';
-import {LG_N, envOf, envWhip, envLeagueOps} from '../data/teams.js?v=2.1.6';
-import {TIER_TH, LEAGUE_K, MILESTONE_DEF, HOF_TH_K} from '../data/economy.js?v=2.1.6';
-import {fmtIP, slgOf, roleName3, baseballERA, baseballWHIP, pitG, pitBB} from './season.js?v=2.1.6';
-import {isCareerScoringAward, HONOR_GROUP_NAMES, honorSide, splitBySide} from './award-rules.js?v=2.1.6';
+import {S} from '../core/state.js?v=2.1.7';
+import {clamp} from '../core/rng.js?v=2.1.7';
+import {DPN, POSN, POS_ADJ_RUNS, POS_TIER_K, POS_TIER_STR} from '../data/abilities.js?v=2.1.7';
+import {LG_N, envOf, envWhip, envLeagueOps} from '../data/teams.js?v=2.1.7';
+import {TIER_TH, LEAGUE_K, MILESTONE_DEF, HOF_TH_K} from '../data/economy.js?v=2.1.7';
+import {fmtIP, slgOf, roleName3, baseballERA, baseballWHIP, pitG, pitBB} from './season.js?v=2.1.7';
+import {isCareerScoringAward, HONOR_GROUP_NAMES, honorSide, splitBySide} from './award-rules.js?v=2.1.7';
 export {HONOR_GROUP_NAMES, honorSide};
 /* ================= 生涯終章 ================= */
 const BUCKET_G={CPBL:120,NPB:143,MLB:162};

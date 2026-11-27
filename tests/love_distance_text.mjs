@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
-/* v2.1.6 遠距文案依兩地距離切換：人在中職、她在日本時，不能出現「搭了十幾個小時的飛機」。 */
+/* v2.1.7 遠距文案依兩地距離切換：人在中職、她在日本時，不能出現「搭了十幾個小時的飛機」。 */
 const url=process.env.YAKYOLIFE_URL||'http://127.0.0.1:8124/';
 const browser=await chromium.launch({
   headless:true,
@@ -15,8 +15,8 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-distance`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const love=await import('./src/flow/love.js?v=2.1.6');
-    const girls=await import('./src/data/girls.js?v=2.1.6');
+    const love=await import('./src/flow/love.js?v=2.1.7');
+    const girls=await import('./src/data/girls.js?v=2.1.7');
     const g=girls.GIRL.rin;
     const txt=(pc,herC)=>love.longDistanceOpts(g,pc,herC).map(o=>o.g+'｜'+o.b).join('\n');
     return {twjp:txt('TW','JP'),jptw:txt('JP','TW'),twus:txt('TW','US'),jpus:txt('JP','US'),
