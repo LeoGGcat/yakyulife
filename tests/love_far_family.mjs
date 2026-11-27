@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
-/* v2.1.7 遠距的個別劇情（分開、最後的提議、好結局、重逢）與已婚才有的家庭生活結局。 */
+/* v2.1.8 遠距的個別劇情（分開、最後的提議、好結局、重逢）與已婚才有的家庭生活結局。 */
 const url=process.env.YAKYOLIFE_URL||'http://127.0.0.1:8124/';
 const browser=await chromium.launch({
   headless:true,
@@ -15,13 +15,13 @@ try{
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=love-far-family`,{waitUntil:'domcontentloaded'});
   const r=await page.evaluate(async()=>{
-    const rng=await import('./src/core/rng.js?v=2.1.7');
-    const state=await import('./src/core/state.js?v=2.1.7');
-    const love=await import('./src/flow/love.js?v=2.1.7');
-    const girls=await import('./src/data/girls.js?v=2.1.7');
-    const far=await import('./src/data/girls-far.js?v=2.1.7');
-    const fam=await import('./src/data/family.js?v=2.1.7');
-    const retire=await import('./src/ui/retire.js?v=2.1.7');
+    const rng=await import('./src/core/rng.js?v=2.1.8');
+    const state=await import('./src/core/state.js?v=2.1.8');
+    const love=await import('./src/flow/love.js?v=2.1.8');
+    const girls=await import('./src/data/girls.js?v=2.1.8');
+    const far=await import('./src/data/girls-far.js?v=2.1.8');
+    const fam=await import('./src/data/family.js?v=2.1.8');
+    const retire=await import('./src/ui/retire.js?v=2.1.8');
     const ids=girls.GIRLS.map(g=>g.id);
     rng.seedInit('far'); const S=state.newState('遠距測試',1,'IF',null); state.setS(S);
     S.stage='PRO'; S.org='MLB'; love.ensureLove();

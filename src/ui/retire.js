@@ -1,20 +1,20 @@
-import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.7';
-import {R, ri, SEED} from '../core/rng.js?v=2.1.7';
-import {OFFICIAL_URL} from '../config.js?v=2.1.7';
-import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.7';
-import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.7';
-import {TRAIT_KEYS} from '../data/traits.js?v=2.1.7';
-import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.7';
-import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.7';
-import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.7';
-import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.7';
-import {fmtMoney} from '../engine/contract.js?v=2.1.7';
-import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.7';
+import {S, blankStat, bucketOf} from '../core/state.js?v=2.1.8';
+import {R, ri, SEED} from '../core/rng.js?v=2.1.8';
+import {OFFICIAL_URL} from '../config.js?v=2.1.8';
+import {LV, LG_N, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS, teamNick} from '../data/teams.js?v=2.1.8';
+import {TIER_TH, FAN, RP_LV_SUF} from '../data/economy.js?v=2.1.8';
+import {TRAIT_KEYS} from '../data/traits.js?v=2.1.8';
+import {$, card, choose, divider, board, actClear} from './dom.js?v=2.1.8';
+import {careerTimelineCard, tlNote} from './timeline.js?v=2.1.8';
+import {traitNames, traitTagStyle, traitColorRank} from './traits.js?v=2.1.8';
+import {roleN, fmtIP, outsFromIP, ipFromOuts, slgOf, baseballERA, baseballWHIP, pitG, pitBB} from '../engine/season.js?v=2.1.8';
+import {fmtMoney} from '../engine/contract.js?v=2.1.8';
+import {isChampionshipYear, isProChampionshipYear} from '../engine/championship.js?v=2.1.8';
 import {capTeam, careerMilestones, honorGroups, honorSections, posLegendPhrase, primaryPos, statTable, tierOf, yearRanges, honorText,
-  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.7';
-import {shareImageSheet} from './share-image.js?v=2.1.7';
-import {GIRL} from '../data/girls.js?v=2.1.7';
-import {FAMILY, FAMILY_UNMET, FAMILY_LIFE_OF, FAMILY_SECOND, FAMILY_KID_N} from '../data/family.js?v=2.1.7';
+  twoWayView, twHasPit, twHasBat, statTables, yrsOf} from '../engine/career.js?v=2.1.8';
+import {shareImageSheet} from './share-image.js?v=2.1.8';
+import {GIRL} from '../data/girls.js?v=2.1.8';
+import {FAMILY, FAMILY_UNMET, FAMILY_LIFE_OF, FAMILY_SECOND, FAMILY_KID_N} from '../data/family.js?v=2.1.8';
 /* ================= 結算圖資料建構 =================
    Data builders for shareImage()'s canvas layout (design handoff 2026-08-14).
    All values come from S.*; the in-game settlement cards are untouched. */
@@ -865,8 +865,10 @@ export function oldGhostLongCareerComment(pos){
   return `今年新人大物引退時，${pos==='TW'?'二刀流':pos==='P'?'先發投手':'第四棒'}{n}`;
 }
 export function postCareerEndingKeys(tiers,kids,internationalAppearances){
+  /* 〈下一個壘包〉一定要有孩子。已婚時只看這段婚姻的孩子：結算後面的「家」寫的是現在這個家，
+     不能出現「陪孩子打少棒」卻接「你們家沒有孩子」。單身／離婚時，前段婚姻的孩子照算。 */
   const childCount=kids===undefined
-    ?Math.max(0,(S.love&&S.love.kids)||0)+((S.love&&S.love.exes)||[]).reduce((n,ex)=>n+Math.max(0,ex.kids||0),0)
+    ?Math.max(0,(S.love&&S.love.kids)||0)+(S.love&&S.love.st==='married'?0:((S.love&&S.love.exes)||[]).reduce((n,ex)=>n+Math.max(0,ex.kids||0),0))
     :Math.max(0,Number(kids)||0);
   const internationalCount=internationalAppearances===undefined
     ?Math.max(0,Number(S.intlCount)||0)

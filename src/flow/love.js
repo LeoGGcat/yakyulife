@@ -1,10 +1,10 @@
-import {S} from '../core/state.js?v=2.1.7';
-import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.7';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.7';
-import {card, choose, board} from '../ui/dom.js?v=2.1.7';
-import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.7';
-import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.7';
-import {FAR_END, FAR_GOOD} from '../data/girls-far.js?v=2.1.7';
+import {S} from '../core/state.js?v=2.1.8';
+import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.8';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.8';
+import {card, choose, board} from '../ui/dom.js?v=2.1.8';
+import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.8';
+import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.8';
+import {FAR_END, FAR_GOOD} from '../data/girls-far.js?v=2.1.8';
 
 /* ================= 戀愛系統（v2.1.0 重置） =================
    流程：好感事件（三選一）→ 好感滿 100 → 告白 75% → 交往（她的三章故事，任一章後可求婚）

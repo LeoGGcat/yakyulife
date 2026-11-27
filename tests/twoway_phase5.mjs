@@ -21,11 +21,11 @@ try{
   await page.goto(`${url}?seed=twoway-phase5`,{waitUntil:'domcontentloaded'});
 
   const r=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.7');
-    const season=await import('./src/engine/season.js?v=2.1.7');
-    const career=await import('./src/engine/career.js?v=2.1.7');
-    const retire=await import('./src/ui/retire.js?v=2.1.7');
-    const share=await import('./src/ui/share-image.js?v=2.1.7');
+    const state=await import('./src/core/state.js?v=2.1.8');
+    const season=await import('./src/engine/season.js?v=2.1.8');
+    const career=await import('./src/engine/career.js?v=2.1.8');
+    const retire=await import('./src/ui/retire.js?v=2.1.8');
+    const share=await import('./src/ui/share-image.js?v=2.1.8');
 
     /* ── ① 單刀投手的 G ──
        第 2 階段把投球區塊整段改成寫 st.GP，而 normalizePitchingStats 是靠
@@ -83,7 +83,7 @@ try{
     const table=career.statTables('CPBL');
 
     /* 逐年板(遊戲中的「逐年」分頁)：二刀流有投／打切換，切到哪一側就是該側完整六欄 */
-    const dom=await import('./src/ui/dom.js?v=2.1.7');
+    const dom=await import('./src/ui/dom.js?v=2.1.8');
     dom.board(1);
     const bd=document.getElementById('bd-detail');
     const bdRoot=document.getElementById('board');

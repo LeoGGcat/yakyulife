@@ -1,18 +1,18 @@
-import {S} from '../core/state.js?v=2.1.7';
-import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.7';
-import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.7';
-import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.7';
-import {card, choose, board} from '../ui/dom.js?v=2.1.7';
-import {tlNote} from '../ui/timeline.js?v=2.1.7';
-import {ovr} from './ability.js?v=2.1.7';
-import {injuryMarketStatus} from './injury.js?v=2.1.7';
-import {hasActiveFranchise} from './tenure.js?v=2.1.7';
-import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.7';
-import {capTeam} from './career.js?v=2.1.7';
-import {traitCard, removeTrait} from '../flow/events.js?v=2.1.7';
-import {advance} from './draft.js?v=2.1.7';
-import {finishContractYear} from '../flow/phases.js?v=2.1.7';
-import {endGame} from '../ui/retire.js?v=2.1.7';
+import {S} from '../core/state.js?v=2.1.8';
+import {R, ri, pick, chance, clamp, SEED} from '../core/rng.js?v=2.1.8';
+import {LV, PATHS, CPBL_TEAMS, NPB_TEAMS, MLB_TEAMS} from '../data/teams.js?v=2.1.8';
+import {AMA_ANNUAL, LEVEL_MIN_ANNUAL, MLB_SERVICE_MINOR_MIN} from '../data/economy.js?v=2.1.8';
+import {card, choose, board} from '../ui/dom.js?v=2.1.8';
+import {tlNote} from '../ui/timeline.js?v=2.1.8';
+import {ovr} from './ability.js?v=2.1.8';
+import {injuryMarketStatus} from './injury.js?v=2.1.8';
+import {hasActiveFranchise} from './tenure.js?v=2.1.8';
+import {seasonSalaryRating, currentSalaryRating} from './season.js?v=2.1.8';
+import {capTeam} from './career.js?v=2.1.8';
+import {traitCard, removeTrait} from '../flow/events.js?v=2.1.8';
+import {advance} from './draft.js?v=2.1.8';
+import {finishContractYear} from '../flow/phases.js?v=2.1.8';
+import {endGame} from '../ui/retire.js?v=2.1.8';
 /* 先發投手長約上限 10 年：現實已有 Cole 9 年、Skubal 9 年、山本由伸 12 年的王牌長約。
    後援維持短約——Díaz、Hader 等頂級終結者也只到 5 年。 */
 export function pitcherContractCap(){ return ({SP:10,CL:5,MR:4})[S.role]||10; }

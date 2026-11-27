@@ -13,8 +13,8 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=no-age-cap`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.7');
-    const phases=await import('./src/flow/phases.js?v=2.1.7');
+    const state=await import('./src/core/state.js?v=2.1.8');
+    const phases=await import('./src/flow/phases.js?v=2.1.8');
     const teamName=function(){ return this.orgTeam; };
     /* 48 歲以上、能力仍在一軍水準：季初只吃衰退，不再被年齡直接結束生涯。 */
     const run=(age)=>{
