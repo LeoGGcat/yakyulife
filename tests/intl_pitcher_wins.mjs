@@ -14,8 +14,8 @@ try{
   const errors=[]; page.on('pageerror',error=>errors.push(error.message));
   await page.goto(`${url}?seed=intl-pitcher-wins`,{waitUntil:'domcontentloaded'});
   const result=await page.evaluate(async()=>{
-    const state=await import('./src/core/state.js?v=2.1.6');
-    const intl=await import('./src/engine/intl.js?v=2.1.6');
+    const state=await import('./src/core/state.js?v=2.1.7');
+    const intl=await import('./src/engine/intl.js?v=2.1.7');
     const rows=[];
     for(const role of ['SP','MR']){
       for(let n=0;n<400;n++){

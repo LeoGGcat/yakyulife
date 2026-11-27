@@ -1,22 +1,23 @@
-import {S, stepQ, nextStep, stageLabel} from '../core/state.js?v=2.1.6';
-import {R, ri, chance, clamp} from '../core/rng.js?v=2.1.6';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.6';
-import {LV, PATHS, envLeagueOps, teamNick} from '../data/teams.js?v=2.1.6';
-import {keepTh} from '../data/thresholds.js?v=2.1.6';
-import {AMA_ANNUAL} from '../data/economy.js?v=2.1.6';
-import {card, choose, board, divider} from '../ui/dom.js?v=2.1.6';
-import {tlNote, tlPush, tlRestage} from '../ui/timeline.js?v=2.1.6';
-import {allocUI} from '../ui/alloc.js?v=2.1.6';
-import {addAb, ovr, ovrPit, ovrBat, dposReview, statBonusTxt} from '../engine/ability.js?v=2.1.6';
-import {rollInjury, tjCap, tjEffortMult} from '../engine/injury.js?v=2.1.6';
-import {isMrTeamEligible} from '../engine/tenure.js?v=2.1.6';
-import {amateurSeason, proSeason, slgOf, currentSalaryRating, baseballERA, baseballWHIP, seasonGrade} from '../engine/season.js?v=2.1.6';
-import {championshipChance} from '../engine/championship.js?v=2.1.6';
-import {buyoutRemaining, contractAnnual, fmtMoneyFx, contractMarketProfile, controlledAnnual, crossOffers, daibaFarewell, extensionOffer, faFlow, fmtMoney, handleDemotion, levelMinAnnual, makeContract, makeOffers, offseasonTradeCheck, pickOfferUI, returnHomeSign, signTo, teamChampRate} from '../engine/contract.js?v=2.1.6';
-import {drawEvents, removeTrait, checkChampionTrait} from './events.js?v=2.1.6';
-import {loveEvent} from './love.js?v=2.1.6';
-import {runDraft, pathChoiceHS, pathChoiceU4, advance} from '../engine/draft.js?v=2.1.6';
-import {endGame} from '../ui/retire.js?v=2.1.6';
+import {S, stepQ, nextStep, stageLabel} from '../core/state.js?v=2.1.7';
+import {R, ri, chance, clamp} from '../core/rng.js?v=2.1.7';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.7';
+import {LV, PATHS, envLeagueOps, teamNick} from '../data/teams.js?v=2.1.7';
+import {keepTh} from '../data/thresholds.js?v=2.1.7';
+import {AMA_ANNUAL} from '../data/economy.js?v=2.1.7';
+import {card, choose, board, divider} from '../ui/dom.js?v=2.1.7';
+import {tlNote, tlPush, tlRestage} from '../ui/timeline.js?v=2.1.7';
+import {allocUI} from '../ui/alloc.js?v=2.1.7';
+import {addAb, ovr, ovrPit, ovrBat, dposReview, statBonusTxt} from '../engine/ability.js?v=2.1.7';
+import {rollInjury, tjCap, tjEffortMult} from '../engine/injury.js?v=2.1.7';
+import {isMrTeamEligible} from '../engine/tenure.js?v=2.1.7';
+import {amateurSeason, proSeason, slgOf, currentSalaryRating, baseballERA, baseballWHIP, seasonGrade} from '../engine/season.js?v=2.1.7';
+import {championshipChance} from '../engine/championship.js?v=2.1.7';
+import {buyoutRemaining, contractAnnual, fmtMoneyFx, contractMarketProfile, controlledAnnual, crossOffers, daibaFarewell, extensionOffer, faFlow, fmtMoney, handleDemotion, levelMinAnnual, makeContract, makeOffers, offseasonTradeCheck, pickOfferUI, returnHomeSign, signTo, teamChampRate} from '../engine/contract.js?v=2.1.7';
+import {drawEvents, removeTrait, checkChampionTrait} from './events.js?v=2.1.7';
+import {loveEvent} from './love.js?v=2.1.7';
+import {runDraft, pathChoiceHS, pathChoiceU4, advance} from '../engine/draft.js?v=2.1.7';
+import {endGame} from '../ui/retire.js?v=2.1.7';
+import {canPlayTop, playedTop, startFarewellSeason, finishFarewellSeason, oneDayContract} from './farewell.js?v=2.1.7';
 /* ================= 年度流程 ================= */
 export function startYear(){ S.yearOutsideIncome=0; stepQ.length=0; stepQ.push(phasePre,phaseMid,phaseEnd); divider(`${S.year} 年 · ${S.age} 歲 · ${stageLabel()}`); tlPush(); nextStep(); }
 /* 七下保送幾顆「6」。天才需要 5 顆，保送不足的部分要玩家自己擲出來。
@@ -232,7 +233,6 @@ export function twoWayAudit(){
 export function phasePre(){
   board(0); S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.marketInjury='healthy'; S.prevD=S.lastD||0; S.lastD=0; S.lastPayD=0; /* 先保留上季 d 供投手定位判定 */
   checkChampionTrait(); /* 舊存檔已有五冠時也會補解鎖。 */
-  if(S.age>=48){ buyoutRemaining(1,true); endGame('身體已到極限，'+S.year+' 年春訓後宣布引退。'); return; }
   const declAge=S.age-(S.traits.disc?2:0); /* 自律狂:衰退曲線整體延後兩年 */
   if(declAge>=32){ const baseDec=declAge>=35?5+(declAge-35):2;
     const oldGhostActive=!!(S.oldGhostPending&&!S.oldGhostUsed);
@@ -401,7 +401,13 @@ export function phasePre(){
         tlRestage(); afterAsk(); /* spring move: this season is already CPBL */
       }});
     }
-    oldOpts.push({t:'召開引退記者會',warn:true,s:'結束選手生涯',f:()=>{buyoutRemaining(0.7,true);daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}});
+    /* 能力還在一軍：打完這一季再走；只剩二軍水準：簽一日球員約，回一軍做最後一次出賽。見 farewell.js。 */
+    /* 沒上過所屬體系的一軍：沒有「回到一軍」可言，維持原本的引退記者會。 */
+    oldOpts.push(canPlayTop()
+      ?{t:'宣布最後一季',warn:true,s:'打完本季後引退',f:()=>startFarewellSeason(afterAsk)}
+      :playedTop()
+      ?{t:'簽下一日球員約',warn:true,s:'回到一軍完成告別戰後引退',f:oneDayContract}
+      :{t:'召開引退記者會',warn:true,s:'結束選手生涯',f:()=>{buyoutRemaining(0.7,true);daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}});
     choose('又是一年春訓，身體大不如前了',oldOpts);
     return;
   }
@@ -510,7 +516,8 @@ export function phaseEnd(){
   }
   /* 冠軍、薪資與國際賽都結算完畢後，先把本季記在原隊，再進入季末交易。 */
   if(S.stage==='PRO')updateTeamTenureTraits();
-  const go=()=>S.stage==='PRO'?offseasonTradeCheck(()=>movement()):movement();
+  /* 引退季打完：不進季末交易與去向，直接結算。 */
+  const go=()=>S.stage==='PRO'&&S.farewellYr===S.year?finishFarewellSeason():S.stage==='PRO'?offseasonTradeCheck(()=>movement()):movement();
   if(S.pool>0){ const p=S.pool; S.pool=0;
     choose('分配能力點',[{t:'<i class="ph-bold ph-gear" aria-hidden="true"></i>開始分配',s:`${p} 點・大賽／國際賽成果`,main:true,f:()=>allocUI({pool:p},'季末能力點分配（大賽／國際賽成果）',go)}]); }
   else go();
