@@ -1,11 +1,11 @@
-import {S} from '../core/state.js?v=2.1.6';
-import {R, ri, pick, chance, clamp} from '../core/rng.js?v=2.1.6';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.6';
-import {LV} from '../data/teams.js?v=2.1.6';
-import {card, choose, board} from '../ui/dom.js?v=2.1.6';
-import {addAb} from './ability.js?v=2.1.6';
-import {isSP, pitG, TW_EFFORT} from './season.js?v=2.1.6';
-import {removeTrait} from '../flow/events.js?v=2.1.6';
+import {S} from '../core/state.js?v=2.1.7';
+import {R, ri, pick, chance, clamp} from '../core/rng.js?v=2.1.7';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.7';
+import {LV} from '../data/teams.js?v=2.1.7';
+import {card, choose, board} from '../ui/dom.js?v=2.1.7';
+import {addAb} from './ability.js?v=2.1.7';
+import {isSP, pitG, TW_EFFORT} from './season.js?v=2.1.7';
+import {removeTrait} from '../flow/events.js?v=2.1.7';
 /* 單刀投手的手肘磨損倍數。二刀流那組在 season.js 的 TW_EFFORT.tj（1.55/1.35/1.20）。
    二刀流的倍數自成一組的理由：workload 項是 IP÷該層級場次，局數砍下去會自動讓他的
    手臂比全職王牌更耐用——但現實相反（大谷開了兩次刀）。見 docs/twoway-design.md。

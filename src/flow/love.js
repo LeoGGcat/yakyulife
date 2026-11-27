@@ -1,9 +1,10 @@
-import {S} from '../core/state.js?v=2.1.6';
-import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.6';
-import {ABL, POS_AB} from '../data/abilities.js?v=2.1.6';
-import {card, choose, board} from '../ui/dom.js?v=2.1.6';
-import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.6';
-import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.6';
+import {S} from '../core/state.js?v=2.1.7';
+import {R, pick, chance, clamp} from '../core/rng.js?v=2.1.7';
+import {ABL, POS_AB} from '../data/abilities.js?v=2.1.7';
+import {card, choose, board} from '../ui/dom.js?v=2.1.7';
+import {addAb, addAbStat, statBonusTxt, abGainTxt} from '../engine/ability.js?v=2.1.7';
+import {GIRLS, GIRL, COUNTRY_N, TW_JOBS} from '../data/girls.js?v=2.1.7';
+import {FAR_END, FAR_GOOD} from '../data/girls-far.js?v=2.1.7';
 
 /* ================= 戀愛系統（v2.1.0 重置） =================
    流程：好感事件（三選一）→ 好感滿 100 → 告白 75% → 交往（她的三章故事，任一章後可求婚）
@@ -168,7 +169,7 @@ function confess(g,next){
     {t:p?'請她再給一次機會':'告白',main:true,s:`成功率 ${rate}%｜失敗不扣好感，下次遇到她可以再說${p?'｜她的故事從上次停下的地方繼續；再分開，她就不會回頭':''}`,f:()=>{
       if(chance(rate)){
         L.st='dating'; L.pid=g.id; L.partner=g.n; L.dyrs=0; if(!p)L.datedTimes=(L.datedTimes||0)+1;
-        L.ch=p?Math.min(3,p.ch||0):0; L.prop=0; L.proposed=false; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0; L.knot=false; L.xrYr=null; L.relRef=0; L.dsn=0;
+        L.ch=p?Math.min(3,p.ch||0):0; L.prop=0; L.proposed=false; L.bond=BOND_START; L.herC=playerCountry(); L.lastC=L.herC; L.apart=false; L.withYrs=0; L.apartYrs=0; L.knot=false; L.xrYr=null; L.relRef=0; L.dsn=0; L.farOffer=false;
         const gt=loveGainTxt('sta',2); board(1);
         if(p){ card('gold','復合',`${p.how==='cheat'?REUNION_OK_CHEAT(g):REUNION_OK(g)}<br><br>你們復合了——${gt}。${L.ch>0&&L.ch<3?`<br>她的故事，從第 ${L.ch+1} 章接著走。`:''}`); next(); return; }
         card('gold','交往',`${g.conf.ok}<br><br>你們開始交往了——${gt}。`);
@@ -183,17 +184,21 @@ function confess(g,next){
 
 /* ---------- 重逢：再遇到前任 ---------- */
 /* 分開的原因：wait 交往太久沒給答案／left 你提的分手／far 遠距撐不下去／cold 感情冷淡／cheat 外遇或劈腿 */
-function reunionMeet(g,p){
+export function reunionMeet(g,p){
   const her=hl(g.n);
-  const lead={
+  const lead0={
     wait:`分手之後，${her} 的${g.work}一天都沒有停下來。她說過，她的人生不會停在原地等任何人——她真的做到了。這天你們在同一個場合遇上，是她先認出你的。她朝你點了點頭，像是在打招呼，也像是在說：都過去了。`,
     left:`當年是你先開口說分開的。再見到 ${her} 時，她正和朋友聊著最近的${g.work}，笑得很開。她看見你，愣了半秒，然後自己走了過來：「好久不見。你看起來過得不錯。」`,
     far:`那通電話之後，你們就沒有再聯絡過。現在你們終於在同一個地方，卻是在這種場合不期而遇。${her} 看著你，笑了一下：「原來不用算時差，是這種感覺。」`,
     cold:`那天早上她放在餐桌上的東西，你到現在都還記得。再見到 ${her} 時，她先開口問你最近好不好，語氣很自然，像是那三年的沉默從來沒有發生過。你們聊了很久——比最後那幾年加起來還久。`,
     cheat:`${her} 看到你的那一刻，笑容收了回去。那件事之後，她刪掉了你所有的聯絡方式，也再沒有在任何場合提起你。她沒有轉身就走，只是禮貌地點了點頭——那種禮貌，比生氣還要遠。`
-  }[p.how]||`分開之後，你和 ${her} 又在同一個場合遇到了。她的${g.work}一天都沒有停下來，看起來比從前更從容了。她對你點了點頭，像是在打招呼，也像是在說：要重新開始，就從頭來過。`;
+  };
+  const fe=p.how==='far'?FAR_END[g.id]:null;
+  const lead=(fe?farFill(fe.meet):lead0[p.how])||`分開之後，你和 ${her} 又在同一個場合遇到了。她的${g.work}一天都沒有停下來，看起來比從前更從容了。她對你點了點頭，像是在打招呼，也像是在說：要重新開始，就從頭來過。`;
   const ex=p.wed?formerOf(g):null, kids=ex?(ex.kids||0):0;
-  const tail=p.wed?(kids>0?`<br><br>離婚之後，你們每個月還是會在孩子的學校門口碰面，交接書包、交代功課，從來不多說一句。這是你們第一次，不是因為孩子而見面。`
+  const tail=p.wed?(kids>0?(p.how==='far'
+      ?`<br><br>離婚之後，每年寒暑假，你們都在機場的入境大廳交接孩子的行李箱和暑假作業，從來不多說一句。這是你們第一次，不是因為孩子而見面。`
+      :`<br><br>離婚之後，你們每個月還是會在孩子的學校門口碰面，交接書包、交代功課，從來不多說一句。這是你們第一次，不是因為孩子而見面。`)
     :`<br><br>簽字那天之後，這是你們第一次見面。`):'';
   return lead+tail;
 }
@@ -484,7 +489,9 @@ function abroadEvent(next){
   const L=S.love, g=GIRL[L.pid], pc=playerCountry();
   if(L.apart&&pc===L.herC){ /* 回到她所在的國家：團聚 */
     L.apart=false; L.apartYrs=0; addBond(10); const gt=loveGainTxt('sta',1); board(1);
-    card('gold','團聚',`你回到 ${COUNTRY_N[pc]}。${hl(g.n)} 來機場接你。她第一句話不是「我好想你」，而是興奮地說起她最近的${g.work}。你聽著聽著就笑了——分開的這幾年，你們都長大了——${gt}，感情值 +10。`);
+    const fg=L.herC===g.c?FAR_GOOD[g.id]:null; /* 個別版本寫的是她的家鄉 */
+    card('gold','團聚',fg&&fg.meet?`${farFill(fg.meet)}——${gt}，感情值 +10。`
+      :`你回到 ${COUNTRY_N[pc]}。${hl(g.n)} 來機場接你。她第一句話不是「我好想你」，而是興奮地說起她最近的${g.work}。你聽著聽著就笑了——分開的這幾年，你們都長大了——${gt}，感情值 +10。`);
     next(); return; }
   if(L.apart){ addBond(-5);
     card('info','更遠了',`你轉往 ${COUNTRY_N[pc]}，${hl(g.n)} 還在 ${COUNTRY_N[L.herC]}。你們打開手機的世界時鐘，重新加了一個時區。感情值 −5。`);
@@ -517,21 +524,27 @@ function comeToYou(g){
   const L=S.love, pc=playerCountry();
   if(!L.apart||pc===L.herC||g.id==='peici'||(g.id==='misaki'&&pc!=='US'))return;
   if(!chance(followChance(g,pc===g.c)))return;
-  joinYou(g,`慶功的那天晚上，${hl(g.n)} 打電話給你。那頭很吵，有人在唱歌、有人在開香檳，她躲到走廊上，聲音有點喘：「我做到了。」停了一下，她又說：「所以，現在換我去找你。」`);
+  const fg=FAR_GOOD[g.id];
+  joinYou(g,fg&&fg.call?farFill(fg.call):`慶功的那天晚上，${hl(g.n)} 打電話給你。那頭很吵，有人在唱歌、有人在開香檳，她躲到走廊上，聲音有點喘：「我做到了。」停了一下，她又說：「所以，現在換我去找你。」`);
 }
 /* 她搬到你所在的國家，結束遠距 */
 function joinYou(g,lead){
-  const L=S.love, pc=playerCountry(), yrs=L.apartYrs||1, home=pc===g.c;
+  const L=S.love, pc=playerCountry(), yrs=L.apartYrs||1, home=pc===g.c, fg=FAR_GOOD[g.id];
   L.herC=pc; L.apart=false; L.apartYrs=0; L.withYrs=1; addBond(10);
   const gt=loveGainTxt('sta',1); board(1);
+  if(fg&&fg.air){
+    card('gold','她來找你了',`${lead}<br><br>${farFill(fg.air,{yrs})}${home?'<br>「回家了。」她說，「這次是跟你一起。」':''}<br><br>遠距 ${yrs} 年，你們終於又在同一個時區了——${gt}，感情值 +10。`);
+    return; }
   card('gold','她來找你了',`${lead}<br><br>一個月後，你在 ${COUNTRY_N[pc]} 的機場等她。她拖著兩個行李箱走出入境大廳，頭髮比你上次見到時長了一些，看到你的時候，先是笑，然後才哭。${home?'「回家了。」她說，「這次是跟你一起。」':`「我查好了，這裡也有${g.work}可以做。」她說，「不過那是下個月的事。這個月，我只想待在你旁邊。」`}<br><br>遠距 ${yrs} 年，你們終於又在同一個時區了——${gt}，感情值 +10。`);
 }
 /* 遠距中「休賽季全部留給她」成功、而且她已經圓夢：問她要不要搬過來一起生活（每個人都會問，答應與否看同行機率） */
 function askJoin(g,done){
-  const L=S.love, pc=playerCountry(), p=followChance(g,pc===g.c);
+  const L=S.love, pc=playerCountry(), p=followChance(g,pc===g.c), fg=FAR_GOOD[g.id]||{};
+  const yes=(L.herC!=='US'&&fg.yesAway)||fg.yes;
   choose(`<span class="ev-h">遠距｜一起生活</span><small>那三個月過得太快。離開前一晚，你看著她桌上攤開的工作行程，忽然很想問一件事：她已經做到了她想做的事，那接下來，要不要到 ${COUNTRY_N[pc]}，跟你一起生活？</small>`,[
     {t:'問她願不願意一起走',main:true,s:`由她決定（約 ${p}%）｜願意＝結束遠距、接同行路線`,f:()=>{
-      if(chance(p))joinYou(g,`${hl(g.n)} 沒有馬上回答。她把手上的行程表放下，走到窗邊看了很久，才轉過身來：「好。我在這裡想做的事，已經做完了。」`);
+      if(chance(p))joinYou(g,yes?farFill(yes):`${hl(g.n)} 沒有馬上回答。她把手上的行程表放下，走到窗邊看了很久，才轉過身來：「好。我在這裡想做的事，已經做完了。」`);
+      else if(fg.notYet)card('info','還不是時候',`${farFill(fg.notYet)}你點點頭，把機票收進口袋。`);
       else card('info','還不是時候',`${hl(g.n)} 握著你的手，想了很久：「這裡還有我放不下的人和事。再給我一點時間，好嗎？」你點點頭，把機票收進口袋。`);
       done(); }},
     {t:'把話吞回去，不勉強她',s:'維持遠距',f:()=>{
@@ -625,13 +638,43 @@ function longDistance(g,done){
       m=>`成功率 ${LOVE_ODDS[m]}%｜感情值 +${BOND_GAIN[m]}${BOND_FAIL[m]?`｜失敗 −${BOND_FAIL[m]}`:''}`,(m,good,o)=>{
       addBond(good?BOND_GAIN[m]:-BOND_FAIL[m]); const gt=good?modeGain(m):''; if(good)board(1);
       card(good?'good':'bad','遠距',`${good?o.g:o.b}${gt?'——'+gt:''}`);
-      if(L.bond<30&&chance(50)){
-        const k=pick(POS_AB[S.pos]),gk=addAb(k,-2); board(1);
-        const wasMarried=L.st==='married'; endRelation('far');
-        card('bad',wasMarried?'離婚':'分手',`${hl(g.n)} 打電話來，語氣很平靜，聽得出來她已經想了很久：「我們都值得一個能在身邊的人。」${wasMarried?'你們和平離婚。':'你們分手了。'}——${abGainTxt(k,-1,gk)}。`);
-      }
-      if(good&&m==='bold'&&L.pid===g.id&&L.apart&&L.ch>=3){ askJoin(g,done); return; }
-      done(); }));
+      const after=()=>{ if(good&&m==='bold'&&L.pid===g.id&&L.apart&&L.ch>=3){ askJoin(g,done); return; } done(); };
+      if(L.bond<30&&chance(50)){ farBreak(g,after); return; }
+      after(); }));
+}
+/* 遠距撐不下去：每個人有自己的分開劇情（data/girls-far.js）。
+   A／B 直接結束（隨機能力 −2）。C 她給你最後一個提議（每段感情一次）：答應 FAR_RETRY% 挽回——感情值回到 FAR_RETRY_BOND、
+   遠距繼續、體力 +1，失敗照樣分開（−2）；告訴她你去不了＝直接分開，因為你沒有拖，只 −1。 */
+export const FAR_RETRY=50, FAR_RETRY_BOND=40;
+export function farFill(t,o){
+  const L=S.love, x=o||{}, pc=playerCountry(), herC=x.herC||L.herC, tz=(TZ[pc]||{})[herC]||0;
+  return t.replace(/\{you\}/g,COUNTRY_N[pc]).replace(/\{her\}/g,COUNTRY_N[herC]||'')
+    .replace(/\{yrs\}/g,x.yrs||L.apartYrs||1).replace(/\{ex\}/g,(x.married!==undefined?x.married:L.st==='married')?'前妻':'前女友')
+    .replace(/\{flight\}/g,tz<=2?'三個多小時':'十幾個小時').replace(/\{firstHit\}/g,pureP()?'投出第一個三振':'打出第一支安打');
+}
+export function farBreak(g,done){
+  const L=S.love, f=FAR_END[g.id], married=L.st==='married', kids=married?(L.kids||0):0, post=(L.ch||0)>=3;
+  const o={herC:L.herC,married}, F=t=>farFill(t,o), title=married?'離婚':'分手';
+  const words=f?F(post?f.post:f.pre)+(f.then?F(f.then):''):'';
+  const split=(pen,lead,noPath)=>{
+    const k=pick(POS_AB[S.pos]),gk=addAb(k,-pen); board(1);
+    endRelation('far');
+    if(!f){ card('bad',title,`${hl(g.n)} 打電話來，語氣很平靜，聽得出來她已經想了很久：「我們都值得一個能在身邊的人。」${married?'你們和平離婚。':'你們分手了。'}——${abGainTxt(k,-1,gk)}。`); done(); return; }
+    const end=married?f.endM:(typeof f.endD==='string'?f.endD:f.endD[post?'post':'pre']);
+    const kidLine=kids>0?`孩子們跟著她留在${o.herC?COUNTRY_N[o.herC]:'那裡'}。往後每年寒暑假，你都會飛過去接他們，在入境大廳交接行李箱和暑假作業，誰都不多說一句。`:'';
+    const aft=!f.afterNoOnly||noPath?F(f.after):'';
+    card('bad',title,[lead,F(end)+kidLine,aft].filter(Boolean).join('<br><br>')+`<br>——${abGainTxt(k,-1,gk)}。`);
+    done(); };
+  if(!f){ split(2,'',false); return; }
+  if(f.type!=='C'||L.farOffer){ split(2,`${F(f.open)}<br><br>${words}`,false); return; }
+  L.farOffer=true;
+  card('bad',`遠距｜${g.n}`,`${F(f.open)}<br><br>${words}`);
+  choose(`<span class="ev-h">最後的提議｜${g.n}</span><small>${F(f.ask)}<br>感情值 ${L.bond}／100</small>`,[
+    {t:F(f.yes.t),main:true,s:`成功率 ${FAR_RETRY}%｜成功：感情值回到 ${FAR_RETRY_BOND}、遠距繼續、體力 +1｜失敗：${title}、隨機能力 −2`,f:()=>{
+      if(chance(FAR_RETRY)){ L.bond=FAR_RETRY_BOND; const gt=loveGainTxt('sta',1); board(1);
+        card('good','最後的提議',`${F(f.yes.g)}<br>感情值回到 ${L.bond}——${gt}。`); done(); return; }
+      split(2,F(f.yes.b),false); }},
+    {t:F(f.no.t),s:`${title}｜隨機能力 −1（你沒有拖）`,f:()=>split(1,F(f.no.txt),true)}]);
 }
 
 /* ---------- 外遇誘惑：機率隨感情值下降而升高；對象是你曾經心動過的人 ---------- */
