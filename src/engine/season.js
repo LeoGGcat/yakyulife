@@ -137,6 +137,8 @@ export function twoWayPayD(p,b){
 export function simSeason(lv){
   if((S.pos==='P'||S.pos==='TW')&&!S.role)S.role=pitcherRole();
   const L=LV[lv], par=L.par, a=S.ab, f=S.seasonFactor;
+  /* 引退季把出場機會讓給二軍年輕球員：出賽數與打席數打五折，無條件進位（見 flow/farewell.js）。 */
+  const half=S.farewellYr===S.year&&S.stage==='PRO', ft=n=>half?Math.ceil(n/2):n;
   const st={G:0,PA:0,AB:0,H:0,HR:0,RBI:0,SB:0,BB:0,W:0,L:0,SV:0,HLD:0,IP:0,SO:0,ER:0,avg:0,era:0,d:0};
   if(f<=0) return st;
   const TW=S.pos==='TW', share=TW?twEffort():null;
@@ -161,12 +163,12 @@ export function simSeason(lv){
       /* 二刀流砍的是「先發場次」，不是每場局數:真實世界是六人輪值多休一天，
          場次少、每場長度正常。砍 ipg 會讓他看起來像每場被早換的爛投手。 */
       const gs=Math.round(clamp(20+(a.sta-40)*0.18,10,30)*spLoad(lv)*f*perfF*(0.94+R()*0.08)*(TW?share.pit:1));
-      st[gK]=Math.max(1,gs);
+      st[gK]=ft(Math.max(1,gs));
       /* IP/GS:聯盟平均~5.0、優質先發5.2-6.0、工作馬6.1-6.5;由 d 值(綜合實力)決定,控球差略減 */
       const ipg=clamp(5.0+d*0.05+(a.sta-50)*0.012+(a.ctl-par)*0.006+N0(0.12),4.8,6.5);
       st.IP=+(st[gK]*ipg).toFixed(1);
     }else{
-      st[gK]=Math.max(1,Math.round(clamp(45+(Math.min(a.sta,60)-40)*0.3,25,68)*f*perfF*(0.94+R()*0.08)*(TW?share.pit:1))); /* 高體力後援:出賽數貢獻以 sta60 封頂,不會貼近先發工作量 */
+      st[gK]=ft(Math.max(1,Math.round(clamp(45+(Math.min(a.sta,60)-40)*0.3,25,68)*f*perfF*(0.94+R()*0.08)*(TW?share.pit:1)))); /* 高體力後援:出賽數貢獻以 sta60 封頂,不會貼近先發工作量 */
       st.IP=+(st[gK]*1.05).toFixed(1);
     }
     /* 四個率值都是「該聯盟平均 × exp(±k × (能力 − par))」(見 teams.js 的 env 與 ENV_K)。
@@ -228,9 +230,9 @@ export function simSeason(lv){
     const perfF=clamp(0.82+(d+posBar)*0.03,0.45,1.12);
     let useF=clamp(staF*perfF,0.10,1.0);
     if(S.traits.favorite)useF=Math.max(useF,0.85); /* 愛將:出賽率保底(體力偏低或低潮年才會生效,滿額主力無感) */
-    st.G=Math.min(L.g, Math.round(L.g*useF*f*(0.90+R()*0.10)*(TW?share.bat:1))); /* 上限=聯盟場次,不可超過;隨機項加寬(原0.95~1.01)—實力遠超聯盟水準時 staF*perfF 常年頂在1.0上限，
+    const fullG=Math.min(L.g, Math.round(L.g*useF*f*(0.90+R()*0.10)*(TW?share.bat:1))); st.G=ft(fullG); /* 上限=聯盟場次,不可超過;隨機項加寬(原0.95~1.01)—實力遠超聯盟水準時 staF*perfF 常年頂在1.0上限，
        只剩這個隨機項在決定出賽數，範圍太窄(僅約±3%)會讓生涯逐年出賽數/打席看起來年年幾乎一模一樣;加寬到±5%讓表現飽和的球季也有自然的年度落差 */
-    st.PA=Math.round(st.G*4.25);
+    st.PA=ft(Math.round(fullG*4.25));
     st._dh=S.dpos==='DH'; /* 只有正式登錄為 DH 的球季才按 DH 結算。 */
     st.BB=Math.round(st.PA*clamp(0.062+(a.eye-par)*0.0034,0.045,0.17));
     st.AB=st.PA-st.BB;
