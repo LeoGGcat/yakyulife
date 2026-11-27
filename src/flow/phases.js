@@ -232,7 +232,6 @@ export function twoWayAudit(){
 export function phasePre(){
   board(0); S.tmpInj=0; S.seasonFactor=1; S.skipMid=false; S.marketInjury='healthy'; S.prevD=S.lastD||0; S.lastD=0; S.lastPayD=0; /* 先保留上季 d 供投手定位判定 */
   checkChampionTrait(); /* 舊存檔已有五冠時也會補解鎖。 */
-  if(S.age>=48){ buyoutRemaining(1,true); endGame('身體已到極限，'+S.year+' 年春訓後宣布引退。'); return; }
   const declAge=S.age-(S.traits.disc?2:0); /* 自律狂:衰退曲線整體延後兩年 */
   if(declAge>=32){ const baseDec=declAge>=35?5+(declAge-35):2;
     const oldGhostActive=!!(S.oldGhostPending&&!S.oldGhostUsed);
