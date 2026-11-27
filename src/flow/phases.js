@@ -17,7 +17,7 @@ import {drawEvents, removeTrait, checkChampionTrait} from './events.js?v=2.1.6';
 import {loveEvent} from './love.js?v=2.1.6';
 import {runDraft, pathChoiceHS, pathChoiceU4, advance} from '../engine/draft.js?v=2.1.6';
 import {endGame} from '../ui/retire.js?v=2.1.6';
-import {canPlayTop, startFarewellSeason, finishFarewellSeason, oneDayContract} from './farewell.js?v=2.1.6';
+import {canPlayTop, playedTop, startFarewellSeason, finishFarewellSeason, oneDayContract} from './farewell.js?v=2.1.6';
 /* ================= 年度流程 ================= */
 export function startYear(){ S.yearOutsideIncome=0; stepQ.length=0; stepQ.push(phasePre,phaseMid,phaseEnd); divider(`${S.year} 年 · ${S.age} 歲 · ${stageLabel()}`); tlPush(); nextStep(); }
 /* 七下保送幾顆「6」。天才需要 5 顆，保送不足的部分要玩家自己擲出來。
@@ -402,9 +402,12 @@ export function phasePre(){
       }});
     }
     /* 能力還在一軍：打完這一季再走；只剩二軍水準：簽一日球員約，回一軍做最後一次出賽。見 farewell.js。 */
+    /* 沒上過所屬體系的一軍：沒有「回到一軍」可言，維持原本的引退記者會。 */
     oldOpts.push(canPlayTop()
       ?{t:'宣布最後一季',warn:true,s:'打完本季後引退',f:()=>startFarewellSeason(afterAsk)}
-      :{t:'簽下一日球員約',warn:true,s:'回到一軍完成告別戰後引退',f:oneDayContract});
+      :playedTop()
+      ?{t:'簽下一日球員約',warn:true,s:'回到一軍完成告別戰後引退',f:oneDayContract}
+      :{t:'召開引退記者會',warn:true,s:'結束選手生涯',f:()=>{buyoutRemaining(0.7,true);daibaFarewell(()=>endGame('功成身退，於 '+S.year+' 年宣布引退。'));}});
     choose('又是一年春訓，身體大不如前了',oldOpts);
     return;
   }

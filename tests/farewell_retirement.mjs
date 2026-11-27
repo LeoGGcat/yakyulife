@@ -47,17 +47,29 @@ try{
     document.getElementById('log').innerHTML='';
     s.stage='PRO'; phases.phaseEnd();
     out.top.endDone=!!s.done; out.top.endText=log().includes('結束引退巡禮');
-    /* 二軍能力：一日球員約，三種角色 */
+    /* 二軍能力、曾上過中職一軍：一日球員約，三種角色；告別戰寫進中職生涯數據，但不加球季數 */
+    const prior=pos=>{ const t=state.blankStat(); t.yr=5;
+      if(pos!=='P'){ t.G=300; t.PA=1000; t.AB=900; t.H=250; t.yrB=5; }
+      if(pos==='P'||pos==='TW'){ t.GP=150; t.IP=300; t.SO=200; t.ER=100; t.pH=280; t.pBB=90; t.yrP=5; }
+      return t; };
     for(const [pos,role,key] of [['IF',null,'bat'],['P','CL','pit'],['TW',null,'tw']]){
-      s=mk(pos,'CPBL','CPBL2',36,role);
+      s=mk(pos,'CPBL','CPBL2',36,role); s.stats.CPBL=prior(pos);
       phases.phasePre();
       const b=btns();
       click('一日球員約');
-      out[key]={btns:b,done:!!s.done,line:s.farewellLine,text:log()};
+      const t=s.stats.CPBL, row=s.log[s.log.length-1];
+      out[key]={btns:b,done:!!s.done,line:s.farewellLine,text:log(),yr:t.yr,G:t.G,PA:t.PA,GP:t.GP,IP:t.IP,
+        row:row&&row.tm, rowLv:row&&row.lv, rowSt:!!(row&&row.st&&row.st.oneDay)};
     }
-    /* 小聯盟二軍能力：一日大聯盟約，不寫進大聯盟生涯數據 */
-    s=mk('OF','MiLB','A3',40); phases.phasePre(); click('一日球員約');
-    out.milb={done:!!s.done,mlb:s.stats.MLB,text:log().includes('一日大聯盟球員約')};
+    /* 從沒上過中職一軍：沒有一日球員約，維持引退記者會 */
+    s=mk('IF','CPBL','CPBL2',36);
+    phases.phasePre();
+    out.never={btns:btns()};
+    click('召開引退記者會');
+    out.never.done=!!s.done; out.never.text=log().includes('功成身退');
+    /* 3A 老將、以前上過大聯盟：一日大聯盟約，數據記進大聯盟 */
+    s=mk('OF','MiLB','A3',40); s.stats.MLB=prior('OF'); phases.phasePre(); click('一日球員約');
+    out.milb={done:!!s.done,G:s.stats.MLB.G,yr:s.stats.MLB.yr,text:log().includes('一日大聯盟球員約')};
     /* 模擬分布：投一局一定是 3 個出局或被換下；打席結果都在表裡 */
     let bad=0;
     for(let i=0;i<500;i++){ const o=fw.farewellInning(44); if(!(o.outs===3||o.bf===9))bad++; if(!fw.paLine(fw.farewellPA(44)))bad++; }
@@ -83,16 +95,26 @@ try{
     assert.equal(r.done,true,k);
     assert.ok(r.text.includes('一日中職一軍球員約'),k);
     assert.ok(r.text.includes('告別戰'),k);
+    assert.equal(r.yr,5,`${k}：一日約不算一個球季`);
+    assert.ok(r.row.includes('一日球員約'),`${k}：年表要有告別戰那一列`);
+    assert.equal(r.rowLv,'CPBL1',k);
+    assert.ok(r.rowSt,k);
   }
+  assert.equal(result.bat.G,301); assert.equal(result.bat.PA,1001);
+  assert.equal(result.pit.GP,151); assert.ok(result.pit.IP>300);
+  assert.equal(result.tw.GP,151); assert.equal(result.tw.G,301); assert.equal(result.tw.PA,1001);
   assert.match(result.bat.line,/打數|保送/);
   assert.match(result.pit.line,/^\d\.\d 局/);
   assert.ok(result.pit.text.includes('最後一局'));
   assert.ok(result.bat.text.includes('最後一個打席'));
   assert.ok(result.tw.text.includes('最後一場'));
   assert.match(result.tw.line,/^投球 .*；打擊 /);
+  assert.ok(!result.never.btns.some(t=>t.includes('一日球員約')),'沒上過一軍不應有一日球員約');
+  assert.equal(result.never.done,true); assert.ok(result.never.text);
   assert.equal(result.milb.done,true);
   assert.ok(result.milb.text);
-  assert.equal(result.milb.mlb,null,'一日約不應產生大聯盟生涯數據');
+  assert.equal(result.milb.G,301,'一日大聯盟約記進大聯盟數據');
+  assert.equal(result.milb.yr,5);
   assert.equal(result.bad,0);
   assert.equal(errors.length,0,errors.join('\n'));
   console.log(JSON.stringify({bat:result.bat.line,pit:result.pit.line,tw:result.tw.line},null,2));
